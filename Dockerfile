@@ -12,6 +12,9 @@ RUN npm ci
 # Copy source
 COPY . .
 
+# Generate Prisma client (needed for types before tsc build)
+RUN npx prisma generate
+
 # Build
 RUN npm run build
 
@@ -28,6 +31,11 @@ COPY package*.json ./
 
 # Install only production dependencies
 RUN npm ci --only=production
+
+# Copy Prisma schema and generated client from builder
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 # Copy built application from builder
 COPY --from=builder /app/dist ./dist
