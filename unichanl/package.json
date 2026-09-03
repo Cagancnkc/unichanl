@@ -1,0 +1,36 @@
+{
+  "name": "unichanl",
+  "version": "0.1.0",
+  "description": "Local AI gateway with automatic model fallback. Your model can change. Your work doesn't have to.",
+  "type": "module",
+  "bin": {
+    "unichanl": "./dist/cli/index.js"
+  },
+  "scripts": {
+    "dev": "tsx src/cli/index.ts start",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/cli/index.js start",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "cac": "^6.7.14",
+    "dotenv": "^16.4.5",
+    "fastify": "^5.2.1",
+    "nanoid": "^5.0.8",
+    "pino": "^9.5.0",
+    "pino-pretty": "^13.0.0",
+    "undici": "^7.2.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

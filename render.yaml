@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: unichanl
+    runtime: node
+    buildCommand: npm run build
+    startCommand: node dist/server.js
+    region: frankfurt
+    plan: standard
+    autoDeploy: true
+    healthCheckPath: /api/health
+    numInstances: 1
