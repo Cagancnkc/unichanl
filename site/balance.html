@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bakiye · Unichanl</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style id="s"></style>
+</head>
+<body>
+<div class="wrap">
+  <div id="nav"></div>
+  <div id="app"></div>
+</div>
+
+<script type="module">
+import { api, getKey, mountNav, baseCss, fmtUsd, fmtDate } from './_ui.js';
+document.getElementById('s').textContent = baseCss;
+
+const app = document.getElementById('app');
+
+function tpl() {
+  return `
+  <div class="card">
+    <h1>Bakiye</h1>
+    <p class="sub">Mevcut kredi bakiyen ve son işlemler.</p>
+    <div class="grid" style="grid-template-columns:2fr 1fr">
+      <div class="metric">
+        <div class="lbl">Bakiye</div>
+        <div class="val" id="bal">—</div>
+      </div>
+      <div class="metric" style="display:flex;flex-direction:column;justify-content:center">
+        <button id="topupBtn">Kredi Yükle</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Otomatik Yükleme</h2>
+    <p class="sub">
+      Bakiyen <strong id="thresholdVal">$1.00</strong>'ın altına düştüğünde kayıtlı ödeme yönteminle
+      otomatik olarak <strong id="amountVal">$5.00</strong> yüklenir.
+    </p>
+    <label class="toggle-row">
+      <input type="checkbox" id="arToggle">
+      <span class="toggle-label">Otomatik yükleme aktif</span>
+    </label>
+    <button id="arSave" style="margin-top:16px" disabled>Kaydet</button>
+    <div class="err" id="arErr"></div>
+  </div>
+  <div class="card">
+    <h2>Son İşlemler</h2>
+    <div id="txWrap"></div>
+  </div>
+  <div class="err" id="err"></div>
+
+  <div class="modal" id="modal">
+    <div class="modal-card">
+      <h2>Kredi Yükle</h2>
+      <p class="sub">USD cinsinden miktar (5–1000).</p>
+      <form id="topupForm">
+        <div class="row">
+          <label for="amt">Miktar (USD)</label>
+          <input id="amt" type="number" min="5" max="1000" step="0.01" value="10" required>
+        </div>
+        <div class="row-actions">
+          <button type="submit" id="goBtn">Polar'a Git</button>
+          <button type="button" class="ghost" id="cancelBtn">Vazgeç</button>
+        </div>
+        <div class="err" id="topupErr"></div>
+      </form>
+    </div>
+  </div>`;
+}
+
+async function load() {
+  mountNav('balance');
+  app.innerHTML = tpl();
+  const err = document.getElementById('err');
+  try {
+    const [balData, rechargeData] = await Promise.all([
+      api('/api/billing/balance'),
+      api('/api/billing/recharge-settings'),
+    ]);
+    document.getElementById('bal').textContent = fmtUsd(balData.balanceUsd);
+    document.getElementById('thresholdVal').textContent = fmtUsd(rechargeData.autoRechargeThreshold);
+    document.getElementById('amountVal').textContent = fmtUsd(rechargeData.autoRechargeAmount);
+
+    const toggle = document.getElementById('arToggle');
+    const save = document.getElementById('arSave');
+    const arErr = document.getElementById('arErr');
+    const initialState = rechargeData.autoRechargeEnabled;
+    toggle.checked = initialState;
+
+    toggle.addEventListener('change', () => {
+      save.disabled = toggle.checked === initialState;
+    });
+
+    save.addEventListener('click', async () => {
+      save.disabled = true;
+      arErr.classList.remove('show');
+      try {
+        await api('/api/billing/recharge-settings', {
+          method: 'PUT',
+          body: JSON.stringify({ autoRechargeEnabled: toggle.checked }),
+        });
+        save.disabled = true;
+      } catch (ex) {
+        if (ex.message !== 'auth' && ex.message !== 'no_key') {
+          arErr.textContent = ex.message;
+          arErr.classList.add('show');
+          save.disabled = false;
+        }
+      }
+    });
+
+    const tx = balData.recentTransactions || [];
+    const wrap = document.getElementById('txWrap');
+    if (tx.length === 0) {
+      wrap.innerHTML = '<div class="empty">Henüz işlem yok.</div>';
+    } else {
+      wrap.innerHTML = `<table><thead><tr>
+        <th>Tarih</th><th>Tip</th><th>Miktar</th><th>Bakiye</th><th>Request</th>
+      </tr></thead><tbody>${tx.map(t => `<tr>
+        <td>${fmtDate(t.createdAt)}</td>
+        <td><span class="mono">${t.type}</span></td>
+        <td class="mono">${fmtUsd(t.amountUsd)}</td>
+        <td class="mono">${fmtUsd(t.balanceAfter)}</td>
+        <td class="mono">${t.requestId || '—'}</td>
+      </tr>`).join('')}</tbody></table>`;
+    }
+  } catch (ex) {
+    if (ex.message === 'auth' || ex.message === 'no_key') return;
+    err.textContent = ex.message;
+    err.classList.add('show');
+  }
+
+  const modal = document.getElementById('modal');
+  document.getElementById('topupBtn').addEventListener('click', () => modal.classList.add('show'));
+  document.getElementById('cancelBtn').addEventListener('click', () => modal.classList.remove('show'));
+  document.getElementById('topupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const go = document.getElementById('goBtn');
+    const terr = document.getElementById('topupErr');
+    terr.classList.remove('show');
+    go.disabled = true;
+    go.textContent = 'Yönlendiriliyor...';
+    try {
+      const amountUsd = parseFloat(document.getElementById('amt').value);
+      const r = await api('/api/billing/topup', {
+        method: 'POST',
+        body: JSON.stringify({ amountUsd, successUrl: location.origin + '/balance.html' }),
+      });
+      if (r?.url) location.href = r.url;
+      else throw new Error('checkout url alınamadı');
+    } catch (ex) {
+      terr.textContent = ex.message;
+      terr.classList.add('show');
+      go.disabled = false;
+      go.textContent = "Polar'a Git";
+    }
+  });
+}
+
+if (!getKey()) location.href = '/signup.html';
+else load();
+</script>
+</body>
+</html>

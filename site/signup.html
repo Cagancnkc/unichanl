@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kayıt · Unichanl</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#03090B;color:#F2F5F4;font-family:'Archivo',system-ui,sans-serif}a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}</style>
+</head>
+<body>
+
+<div style="min-height:100vh;width:100%;display:flex;flex-direction:column;background:#03090B">
+  <div style="height:5px;background:var(--accent,#DFFF00);flex:none"></div>
+  <div style="flex:1;display:grid;grid-template-columns:1fr 1px 1.15fr;gap:0;max-width:1440px;margin:0 auto;width:100%;padding:0 40px">
+
+    <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;padding:60px 40px">
+      <div style="width:100%;max-width:420px;border:1px solid #1C2A2D;border-radius:12px;background:#071114;padding:38px 36px">
+        <div style="display:flex;align-items:center;gap:11px;margin-bottom:30px">
+          <span style="display:inline-block;width:20px;height:20px;border-radius:4px;background:#DFFF00"></span>
+          <span style="font:600 17px 'Archivo';letter-spacing:.06em">UNICHANL</span>
+        </div>
+        <h1 style="font-family:'Newsreader',serif;font-weight:300;font-size:40px;line-height:1.05;letter-spacing:-.02em;margin:0 0 12px">İnşa etmeye devam et.</h1>
+        <p style="font-size:13.5px;line-height:1.6;color:#98A3A3;margin:0 0 28px">Unichanl hesabınızı oluşturun ve kodlama iş akışınızı modeller arasında sürdürün.</p>
+
+        <button onclick="oauthGoogle(event)" style="width:100%;height:44px;margin-bottom:22px;border:1px solid #1C2A2D;border-radius:8px;background:#0B171A;color:#F2F5F4;font:600 13.5px 'Archivo';cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px">
+          <svg width="16" height="16"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.7 30.2.5 24 .5 14.6.5 6.4 5.8 2.6 13.6l7.8 6.1C12.2 13.7 17.6 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.5 24c0-1.6-.1-2.8-.4-4.1H24v8.4h12.7c-.3 2.1-1.6 5.2-4.6 7.3l7.6 5.9c4.5-4.2 6.8-10.3 6.8-17.5z"></path><path fill="#FBBC05" d="M10.4 28.3c-.5-1.4-.8-2.8-.8-4.3s.3-3 .8-4.3l-7.8-6.1C1 16.7 0 20.2 0 24s1 7.3 2.6 10.4l7.8-6.1z"></path><path fill="#34A853" d="M24 47.5c6.2 0 11.5-2 15.3-5.6l-7.6-5.9c-2 1.4-4.7 2.4-7.7 2.4-6.4 0-11.8-4.2-13.6-10.1l-7.8 6.1C6.4 42.2 14.6 47.5 24 47.5z"></path></svg>
+          Google ile devam et
+        </button>
+
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+          <div style="flex:1;height:1px;background:#1C2A2D"></div>
+          <span style="font-size:12px;color:#657172">veya</span>
+          <div style="flex:1;height:1px;background:#1C2A2D"></div>
+        </div>
+
+        <div style="font-size:12.5px;color:#98A3A3;margin-bottom:8px">E-posta</div>
+        <input id="emailInput" value="" placeholder="siz@sirket.com" style="width:100%;height:44px;padding:0 14px;margin-bottom:16px;background:#0B171A;border:1px solid #1C2A2D;border-radius:8px;color:#F2F5F4;font:400 13.5px 'Archivo';outline:none">
+        <button onclick="doSignup(event)" style="width:100%;height:46px;border-radius:8px;background:var(--accent,#DFFF00);border:none;color:#03090B;font:600 14px 'Archivo';cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">Hesap oluştur →</button>
+        <div style="text-align:center;margin-top:18px;font-size:12.5px;color:#657172">Zaten bir hesabınız var mı? <button onclick="doSignup(event)" style="background:transparent;border:none;cursor:pointer;font:600 12.5px 'Archivo';color:#F2F5F4;text-decoration:underline;padding:0">Giriş yap.</button></div>
+      </div>
+      <div style="width:100%;max-width:420px;margin-top:20px;font:500 10px 'JetBrains Mono';letter-spacing:.16em;color:#3A4A4D">UNICHANL · GELİŞTİRİCİ ALTYAPISI</div>
+    </div>
+
+    <div style="background:#132023"></div>
+
+    <div style="display:flex;align-items:center;padding:60px 40px">
+      <div style="width:100%;border:1px solid #1C2A2D;border-radius:12px;background:#050F12;overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #132023;background:#071114">
+          <span style="display:flex;align-items:center;gap:10px;font:600 11px 'JetBrains Mono';letter-spacing:.14em">UNICHANL GEÇİDİ <span style="color:var(--accent,#DFFF00);animation:ucpulse 2s ease-in-out infinite">●</span> <span style="color:var(--accent,#DFFF00)">ÇALIŞIYOR</span></span>
+          <span style="font:500 10px 'JetBrains Mono';letter-spacing:.12em;color:#657172">YEREL · 127.0.0.1:20128</span>
+        </div>
+
+        <div style="padding:24px 20px 20px;display:flex;flex-direction:column;align-items:center">
+          <div style="width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+            <div><div style="font:600 9.5px 'JetBrains Mono';letter-spacing:.14em;color:#4C5758;margin-bottom:5px">GEÇERLİ OTURUM</div><div style="font:600 15px 'JetBrains Mono';color:var(--accent,#DFFF00)">#8F42A</div></div>
+            <div style="text-align:right"><div style="font:600 9.5px 'JetBrains Mono';letter-spacing:.14em;color:#4C5758;margin-bottom:5px">CLAUDE CODE</div><div style="font:500 10.5px 'JetBrains Mono';color:#4ADE80">● AKTİF</div></div>
+          </div>
+          <div style="width:100%;border:1px solid #132023;border-radius:8px;background:#0B171A;padding:12px 15px;font-size:12.5px;color:#C7CFCE;margin-bottom:6px">"Kimlik doğrulamayı uygulamaya devam et"</div>
+          <svg width="2" height="24"><line x1="1" y1="0" x2="1" y2="24" stroke="#2A3B3E" stroke-width="1.5" stroke-dasharray="4 4" style="animation:ucdash 1.6s linear infinite"></line></svg>
+          <div style="border:1px solid var(--accent,#DFFF00);border-radius:9px;background:rgba(223,255,0,.05);padding:12px 26px;text-align:center;font:600 11px 'JetBrains Mono';letter-spacing:.14em;color:var(--accent,#DFFF00);line-height:1.6">UNICHANL<br>YÖNLENDİRİCİ</div>
+          <svg width="360" height="34"><path d="M180 0v12M180 12H50v22M180 12h130v22M180 12v22" stroke="#2A3B3E" stroke-width="1.5" fill="none" stroke-dasharray="4 4" style="animation:ucdash 1.6s linear infinite"></path></svg>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%">
+            <div style="border:1px solid var(--accent,#DFFF00);border-radius:8px;background:rgba(223,255,0,.05);padding:12px;text-align:center"><div style="display:flex;align-items:center;justify-content:center;gap:6px;font:600 12px 'JetBrains Mono';margin-bottom:5px">CLAUDE</div><div style="font:500 9px 'JetBrains Mono';letter-spacing:.1em;color:var(--accent,#DFFF00);margin-bottom:5px">BİRİNCİL</div><div style="font:500 9.5px 'JetBrains Mono';color:#4ADE80">● KULLANILABİLİR</div></div>
+            <div style="border:1px solid #1C2A2D;border-radius:8px;background:#0B171A;padding:12px;text-align:center"><div style="display:flex;align-items:center;justify-content:center;gap:6px;font:600 12px 'JetBrains Mono';margin-bottom:5px">GPT</div><div style="font:500 9px 'JetBrains Mono';letter-spacing:.1em;color:#657172;margin-bottom:5px">YEDEK</div><div style="font:500 9.5px 'JetBrains Mono';color:#4ADE80">● KULLANILABİLİR</div></div>
+            <div style="border:1px solid #1C2A2D;border-radius:8px;background:#0B171A;padding:12px;text-align:center"><div style="display:flex;align-items:center;justify-content:center;gap:6px;font:600 12px 'JetBrains Mono';margin-bottom:5px">GEMINI</div><div style="font:500 9px 'JetBrains Mono';letter-spacing:.1em;color:#657172;margin-bottom:5px">YEDEK</div><div style="font:500 9.5px 'JetBrains Mono';color:#4ADE80">● KULLANILABİLİR</div></div>
+          </div>
+        </div>
+
+        <div style="padding:0 20px 20px">
+          
+            <div style="display:grid;grid-template-columns:80px 130px 1fr;gap:12px;padding:9px 0;border-bottom:1px solid #0C171A;font:500 10.5px 'JetBrains Mono'">
+              <span style="color:#4C5758">09:41:02</span>
+              <span style="letter-spacing:.1em;color:#98A3A3">İSTEK</span>
+              <span style="color:#98A3A3">Claude</span>
+            </div>
+          
+            <div style="display:grid;grid-template-columns:80px 130px 1fr;gap:12px;padding:9px 0;border-bottom:1px solid #0C171A;font:500 10.5px 'JetBrains Mono'">
+              <span style="color:#4C5758">09:41:07</span>
+              <span style="letter-spacing:.1em;color:#F87171">KOTA DOLDU</span>
+              <span style="color:#98A3A3">Claude</span>
+            </div>
+          
+            <div style="display:grid;grid-template-columns:80px 130px 1fr;gap:12px;padding:9px 0;border-bottom:1px solid #0C171A;font:500 10.5px 'JetBrains Mono'">
+              <span style="color:#4C5758">09:41:07</span>
+              <span style="letter-spacing:.1em;color:#C7CFCE">YÖNLENDİRME</span>
+              <span style="color:#98A3A3">Unichanl</span>
+            </div>
+          
+            <div style="display:grid;grid-template-columns:80px 130px 1fr;gap:12px;padding:9px 0;border-bottom:1px solid #0C171A;font:500 10.5px 'JetBrains Mono'">
+              <span style="color:#4C5758">09:41:08</span>
+              <span style="letter-spacing:.1em;color:#DFFF00">SÜRDÜRÜLDÜ</span>
+              <span style="color:#98A3A3">GPT</span>
+            </div>
+          
+        </div>
+
+        <div style="margin:0 20px 20px;border:1px solid #1C2A2D;border-radius:9px;background:#071114;overflow:hidden">
+          <div style="padding:11px 16px;border-bottom:1px solid #132023;font:600 10px 'JetBrains Mono';letter-spacing:.14em;color:#98A3A3">OTURUM SÜREKLİLİĞİ</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;padding:16px">
+            <div><div style="font:600 8.5px 'JetBrains Mono';letter-spacing:.12em;color:#4C5758;margin-bottom:4px">OTURUM</div><div style="font:500 11.5px 'JetBrains Mono';color:var(--accent,#DFFF00)">#8F42A</div></div>
+            <div><div style="font:600 8.5px 'JetBrains Mono';letter-spacing:.12em;color:#4C5758;margin-bottom:4px">BAĞLAM</div><div style="font:500 11.5px 'JetBrains Mono';color:#4ADE80">KORUNDU</div></div>
+            <div><div style="font:600 8.5px 'JetBrains Mono';letter-spacing:.12em;color:#4C5758;margin-bottom:4px">PROJE</div><div style="font:500 11.5px 'JetBrains Mono';color:#C7CFCE">unichanl-dashboard</div></div>
+            <div><div style="font:600 8.5px 'JetBrains Mono';letter-spacing:.12em;color:#4C5758;margin-bottom:4px">GEÇERLİ GÖREV</div><div style="font-size:11.5px;color:#C7CFCE">Kimlik doğrulamayı uygula</div></div>
+            <div><div style="font:600 8.5px 'JetBrains Mono';letter-spacing:.12em;color:#4C5758;margin-bottom:4px">AKTİF MODEL</div><div style="font:500 11.5px 'JetBrains Mono';color:var(--accent,#DFFF00)">GPT</div></div>
+            <div><div style="font:600 8.5px 'JetBrains Mono';letter-spacing:.12em;color:#4C5758;margin-bottom:4px">ÖNCEKİ MODEL</div><div style="font:500 11.5px 'JetBrains Mono';color:#657172">Claude</div></div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:24px;padding:12px 20px;border-top:1px solid #132023;background:#071114;font:500 10px 'JetBrains Mono';letter-spacing:.12em;color:#657172">
+          <span style="color:var(--accent,#DFFF00)">● YÖNLENDİRME AKTİF</span><span>5 ARAÇ BAĞLI</span><span>10 MODEL KULLANILABİLİR</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script async src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+let sb=null;
+async function initSupabase(){
+  if(sb) return sb;
+  if(!window.supabase) return null;
+  sb=window.supabase.createClient('https://bqycnltbdhconcjdmdml.supabase.co','sb_publishable_0gZpwTUpFhSK3vNtfojT-w_StHriUNP',{auth:{flowType:'implicit'}});
+  return sb;
+}
+window.oauthGoogle=async function(e){
+  if(e) e.preventDefault();
+  const supabase=await initSupabase();
+  if(!supabase){alert('Supabase hazır değil. Biraz bekle.');return;}
+  try{
+    await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin+'/callback.html'}});
+  }catch(err){
+    alert('Hata: '+(err.message||err));
+  }
+};
+window.doSignup=function(e){
+  if(e) e.preventDefault();
+  const email=document.getElementById('emailInput').value.trim();
+  if(!email||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){alert('Geçerli email girin');return;}
+  alert('Yakında: '+email);
+};
+</script>
+</body>
+</html>

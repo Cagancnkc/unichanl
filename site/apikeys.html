@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API Anahtarları · Unichanl</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style id="s"></style>
+</head>
+<body>
+<div class="wrap">
+  <div id="nav"></div>
+  <div id="app"></div>
+</div>
+
+<script type="module">
+import { api, getKey, mountNav, baseCss, fmtDate } from './_ui.js';
+document.getElementById('s').textContent = baseCss;
+
+const app = document.getElementById('app');
+
+async function load() {
+  mountNav('apikeys');
+  app.innerHTML = `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap">
+        <div>
+          <h1>API Anahtarları</h1>
+          <p class="sub">Aktif anahtarlar. Anahtar bir daha gösterilmez — sadece prefix.</p>
+        </div>
+        <a href="/keys.html"><button type="button">+ Yeni Anahtar</button></a>
+      </div>
+      <div id="wrap"></div>
+    </div>
+    <div class="err" id="err"></div>`;
+  await refresh();
+}
+
+async function refresh() {
+  const wrap = document.getElementById('wrap');
+  wrap.innerHTML = '<div class="empty">Yükleniyor...</div>';
+  try {
+    const data = await api('/api/keys');
+    const keys = data.keys || [];
+    if (keys.length === 0) {
+      wrap.innerHTML = '<div class="empty">Henüz anahtar yok.</div>';
+      return;
+    }
+    wrap.innerHTML = `<table><thead><tr>
+      <th>İsim</th><th>Prefix</th><th>Oluşturma</th><th>Son Kullanım</th><th>Durum</th><th></th>
+    </tr></thead><tbody>${keys.map(k => `<tr>
+      <td>${escape(k.name || '—')}</td>
+      <td class="mono">${escape(k.keyPrefix || '—')}</td>
+      <td>${fmtDate(k.createdAt)}</td>
+      <td>${fmtDate(k.lastUsedAt)}</td>
+      <td>${k.enabled === false ? '<span class="badge err">disabled</span>' : '<span class="badge ok">active</span>'}</td>
+      <td style="text-align:right"><button class="danger" data-del="${k.id}">Sil</button></td>
+    </tr>`).join('')}</tbody></table>`;
+    wrap.querySelectorAll('button[data-del]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Bu anahtarı silmek istediğine emin misin?')) return;
+        btn.disabled = true;
+        try {
+          await api('/api/keys/' + btn.dataset.del, { method: 'DELETE' });
+          await refresh();
+        } catch (ex) {
+          if (ex.message === 'auth' || ex.message === 'no_key') return;
+          const err = document.getElementById('err');
+          err.textContent = ex.message;
+          err.classList.add('show');
+          btn.disabled = false;
+        }
+      });
+    });
+  } catch (ex) {
+    if (ex.message === 'auth' || ex.message === 'no_key') return;
+    wrap.innerHTML = '';
+    const err = document.getElementById('err');
+    err.textContent = ex.message;
+    err.classList.add('show');
+  }
+}
+
+function escape(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+if (!getKey()) location.href = '/signup.html';
+else load();
+</script>
+</body>
+</html>
