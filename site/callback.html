@@ -20,15 +20,9 @@
   <div class="error" id="err"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = 'https://bqycnltbdhconcjdmdml.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_0gZpwTUpFhSK3vNtfojT-w_StHriUNP';
-
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { detectSessionInUrl: true, persistSession: true, flowType: 'implicit' }
-});
 const errEl = document.getElementById('err');
+const textEl = document.querySelector('.text');
 
 function showError(msg) {
   console.error('[callback]', msg);
@@ -39,44 +33,39 @@ function showError(msg) {
 const hashParams = new URLSearchParams((location.hash || '').replace(/^#/, ''));
 const queryParams = new URLSearchParams(location.search);
 const urlError = hashParams.get('error_description') || hashParams.get('error') || queryParams.get('error_description') || queryParams.get('error');
-if (urlError) {
-  showError(decodeURIComponent(urlError));
-}
+const accessToken = hashParams.get('access_token');
 
-let done = !!urlError;
+console.log('[callback] hash keys:', Array.from(hashParams.keys()));
+console.log('[callback] access_token present:', !!accessToken);
 
-async function exchange(session) {
+async function exchange(token) {
   try {
+    textEl.textContent = 'Hesap oluşturuluyor…';
+    console.log('[callback] posting to /api/auth/google');
     const r = await fetch('/api/auth/google', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ access_token: session.access_token }),
+      body: JSON.stringify({ access_token: token }),
     });
     console.log('[callback] exchange status', r.status);
     const data = await r.json().catch(() => ({}));
+    console.log('[callback] exchange body', data);
     if (!r.ok || !data.key) return showError(data.error || ('HTTP ' + r.status));
     localStorage.setItem('unichanl_key', data.key);
-    location.href = '/balance.html';
+    location.href = '/dashboard.html';
   } catch (e) {
+    console.error('[callback] fetch failed', e);
     showError(e.message || 'network');
   }
 }
 
-supabase.auth.onAuthStateChange((event, session) => {
-  console.log('[callback] authStateChange', event, !!session);
-  if (done || !session) return;
-  if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-    done = true;
-    exchange(session);
-  }
-});
-
-setTimeout(async () => {
-  if (done) return;
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session) { done = true; exchange(session); }
-  else { done = true; showError('Session alınamadı (timeout)'); }
-}, 3000);
+if (urlError) {
+  showError(decodeURIComponent(urlError));
+} else if (accessToken) {
+  exchange(accessToken);
+} else {
+  showError('access_token yok (URL hash boş)');
+}
 </script>
 </body>
 </html>
