@@ -8,6 +8,7 @@ export interface PolarCheckoutInput {
   customerEmail?: string;
   successUrl?: string;
   metadata?: Record<string, string>;
+  amount?: number;
 }
 
 export interface PolarCheckoutResponse {
@@ -29,6 +30,7 @@ export async function createCheckoutSession(input: PolarCheckoutInput): Promise<
   if (input.customerEmail) body.customer_email = input.customerEmail;
   if (input.successUrl) body.success_url = input.successUrl;
   if (input.metadata) body.metadata = input.metadata;
+  if (typeof input.amount === 'number') body.amount = input.amount;
 
   const res = await fetch(`${POLAR_API_BASE}/v1/checkouts/`, {
     method: 'POST',
@@ -84,4 +86,22 @@ export function productIdToTier(productId: string): UserTier {
   if (process.env.POLAR_PRODUCT_TEAM) map[process.env.POLAR_PRODUCT_TEAM] = 'team';
   if (process.env.POLAR_PRODUCT_ENTERPRISE) map[process.env.POLAR_PRODUCT_ENTERPRISE] = 'enterprise';
   return map[productId] ?? 'free';
+}
+
+export async function createRechargeSession(opts: {
+  userId: string;
+  customerEmail: string;
+  amountUsd: number;
+  successUrl?: string;
+}): Promise<{ url: string; checkoutId: string }> {
+  const productId = process.env.POLAR_PRODUCT_CREDIT;
+  if (!productId) throw new Error('POLAR_PRODUCT_CREDIT not set');
+  const session = await createCheckoutSession({
+    productId,
+    customerEmail: opts.customerEmail,
+    amount: Math.round(opts.amountUsd * 100),
+    successUrl: opts.successUrl,
+    metadata: { userId: opts.userId, kind: 'credit_topup', amountUsd: String(opts.amountUsd) },
+  });
+  return { url: session.url, checkoutId: session.id };
 }

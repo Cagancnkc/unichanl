@@ -8,7 +8,10 @@ import { logUsageAsync } from '../../services/usageLogger.js';
 import { openRouterAdapter } from '../../providers/openRouterAdapter.js';
 import { getCircuitBreaker } from '../../cache/circuitBreaker.js';
 import { sessionRepository } from '../../db/repositories/sessionRepository.js';
+import { userRepository } from '../../db/repositories/userRepository.js';
 import { logger } from '../../utils/logger.js';
+import { creditRepository } from '../../db/repositories/creditRepository.js';
+import { createRechargeSession } from '../../billing/polar.js';
 import type { ChatCompletionRequest, ChatMessage } from '../../types/index.js';
 
 export async function chatRoutes(app: FastifyInstance) {
@@ -16,6 +19,36 @@ export async function chatRoutes(app: FastifyInstance) {
     const startTime = Date.now();
     const requestId = request.id;
     const user = request.user;
+
+    const balance = await creditRepository.getBalance(user.id);
+    const settings = await userRepository.getRechargeSettings(user.id);
+    const threshold = settings?.autoRechargeThreshold ?? 1;
+
+    if (balance.lte(0) || (settings?.autoRechargeEnabled && balance.lt(threshold))) {
+      let autoRechargeUrl: string | undefined;
+      if (settings?.autoRechargeEnabled && process.env.POLAR_PRODUCT_CREDIT) {
+        try {
+          const sess = await createRechargeSession({
+            userId: user.id,
+            customerEmail: user.email,
+            amountUsd: Number(settings.autoRechargeAmount ?? 5),
+            successUrl: process.env.APP_URL ? `${process.env.APP_URL}/balance.html` : undefined,
+          });
+          autoRechargeUrl = sess.url;
+        } catch (err) {
+          logger.warn({ err, userId: user.id }, 'auto recharge session creation failed');
+        }
+      }
+      return reply.status(402).send({
+        error: {
+          message: 'Yetersiz bakiye. Kredi yükle.',
+          type: 'payment_required',
+          code: 'insufficient_credits',
+          balance: balance.toString(),
+          autoRechargeUrl,
+        },
+      });
+    }
 
     const body = normalizeRequest(request.body);
     const routingCtx = resolveRoutingContext(body, user.id);
@@ -133,6 +166,17 @@ async function handleStreaming(
     for await (const chunk of gen) {
       reply.raw.write(`data: ${JSON.stringify(chunk)}\n\n`);
       contentBuffer += chunk.choices[0]?.delta?.content ?? '';
+      const chunkUsage = (chunk as unknown as { usage?: { prompt_tokens?: number; completion_tokens?: number } }).usage;
+      if (chunkUsage) {
+        if (typeof chunkUsage.prompt_tokens === 'number') inputTokens = chunkUsage.prompt_tokens;
+        if (typeof chunkUsage.completion_tokens === 'number') outputTokens = chunkUsage.completion_tokens;
+      }
+    }
+
+    if (inputTokens === 0 && outputTokens === 0) {
+      const promptChars = messages.reduce((sum, m) => sum + m.content.length, 0);
+      inputTokens = Math.ceil(promptChars / 4);
+      outputTokens = Math.ceil(contentBuffer.length / 4);
     }
 
     reply.raw.write('data: [DONE]\n\n');
@@ -152,10 +196,7 @@ async function handleStreaming(
       apiKeyId: user.apiKeyId,
       sessionId: body.session_id,
       model,
-      usage:
-        inputTokens > 0
-          ? { prompt_tokens: inputTokens, completion_tokens: outputTokens, total_tokens: inputTokens + outputTokens }
-          : undefined,
+      usage: { prompt_tokens: inputTokens, completion_tokens: outputTokens, total_tokens: inputTokens + outputTokens },
       latencyMs,
       strategy: routingCtx.strategy,
       requestedModel: body.model,

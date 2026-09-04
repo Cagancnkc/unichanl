@@ -14,6 +14,7 @@ import { modelRoutes } from './api/routes/models.js';
 import { usageRoutes } from './api/routes/usage.js';
 import { billingRoutes } from './api/routes/billing.js';
 import { billingWebhookRoutes } from './api/routes/billingWebhook.js';
+import { authRoutes } from './api/routes/auth.js';
 import { generateRequestId } from './utils/id.js';
 
 export async function createApp() {
@@ -48,6 +49,7 @@ export async function createApp() {
 
   await app.register(healthRoutes, { prefix: '/api' });
   await app.register(billingWebhookRoutes, { prefix: '/api' });
+  await app.register(authRoutes);
 
   await app.register(
     async (protectedApp) => {

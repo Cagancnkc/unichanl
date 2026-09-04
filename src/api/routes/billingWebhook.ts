@@ -2,6 +2,7 @@ import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { verifyWebhookSignature, productIdToTier } from '../../billing/polar.js';
 import { userRepository } from '../../db/repositories/userRepository.js';
 import { subscriptionRepository } from '../../db/repositories/subscriptionRepository.js';
+import { creditRepository } from '../../db/repositories/creditRepository.js';
 import { logger } from '../../utils/logger.js';
 
 const ACTIVE_STATES = new Set(['active', 'trialing']);
@@ -46,6 +47,11 @@ async function handleEvent(event: { type: string; data: Record<string, unknown> 
     case 'subscription.canceled':
     case 'subscription.revoked':
       await upsertSubscriptionFromEvent(event.data);
+      return;
+    case 'order.paid':
+    case 'order.updated':
+    case 'checkout.completed':
+      await handleCreditTopup(event.data);
       return;
     default:
       logger.info({ type: event.type }, 'polar webhook: ignored event');
@@ -97,6 +103,61 @@ async function upsertSubscriptionFromEvent(data: Record<string, unknown>): Promi
   }
   const effectiveTier = ACTIVE_STATES.has(status) ? tier : 'free';
   await userRepository.updateTier(userId, effectiveTier);
+}
+
+async function handleCreditTopup(data: Record<string, unknown>): Promise<void> {
+  const metadata = (data.metadata ?? {}) as Record<string, unknown>;
+  const kind = str(metadata.kind);
+  if (kind !== 'credit_topup') {
+    logger.info({ orderId: data.id }, 'polar webhook: order without credit_topup metadata, skipping');
+    return;
+  }
+
+  const orderId = str(data.id);
+  if (!orderId) {
+    logger.warn({ data }, 'polar webhook: credit topup missing order id');
+    return;
+  }
+
+  const status = str(data.status);
+  if (status && status !== 'paid' && status !== 'succeeded') {
+    logger.info({ orderId, status }, 'polar webhook: order not paid yet, skipping');
+    return;
+  }
+
+  let userId = str(metadata.userId);
+  const customer = (data.customer ?? {}) as Record<string, unknown>;
+  const email = str(customer.email);
+  const polarCustomerId = str(data.customer_id) ?? str(customer.id);
+
+  if (!userId && email) {
+    const user = await userRepository.upsertByEmail(email, polarCustomerId ? { polarCustomerId } : {});
+    userId = user.id;
+  }
+  if (!userId) {
+    logger.warn({ orderId }, 'polar webhook: cannot resolve user for credit topup');
+    return;
+  }
+
+  const amountCents = typeof data.amount === 'number' ? data.amount : Number(data.amount);
+  const metaAmount = Number(metadata.amountUsd);
+  const amountUsd = Number.isFinite(amountCents) && amountCents > 0
+    ? amountCents / 100
+    : Number.isFinite(metaAmount) && metaAmount > 0
+    ? metaAmount
+    : 0;
+
+  if (amountUsd <= 0) {
+    logger.warn({ orderId, data }, 'polar webhook: credit topup amount unresolved');
+    return;
+  }
+
+  const newBalance = await creditRepository.topup(userId, amountUsd, orderId, {
+    source: 'polar',
+    productId: str(data.product_id) ?? str((data.product as Record<string, unknown> | undefined)?.id),
+  });
+
+  logger.info({ userId, orderId, amountUsd, newBalance: newBalance.toString() }, 'credit topup applied');
 }
 
 function str(v: unknown): string | undefined {

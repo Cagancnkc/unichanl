@@ -8,6 +8,9 @@ import { checkLocalAuth } from './localAuth.js';
 import { checkCloudAuth } from './cloudAuth.js';
 import { usageRepository } from '../../db/repositories/usageRepository.js';
 import { modelRepository } from '../../db/repositories/modelRepository.js';
+import { creditRepository } from '../../db/repositories/creditRepository.js';
+import { computeCost } from '../../local/costTracker.js';
+import { MARKUP_MULTIPLIER } from '../../config/pricing.js';
 
 const SSE_DONE = 'data: [DONE]\n\n';
 
@@ -48,6 +51,20 @@ export async function chatCompletionsRoutes(app: FastifyInstance): Promise<void>
       const local = checkLocalAuth(request);
       if (!local.ok) {
         return sendError(reply, cloud.status ?? local.status ?? 401, 'UNAUTHORIZED', cloud.message ?? local.message ?? 'Unauthorized');
+      }
+    }
+
+    if (authedUser) {
+      const balance = await creditRepository.getBalance(authedUser.id);
+      if (balance.lte(0)) {
+        return reply.status(402).send({
+          error: {
+            message: 'Insufficient credits. Top up at /billing/topup.',
+            type: 'payment_required',
+            code: 'insufficient_credits',
+            balance: balance.toString(),
+          },
+        });
       }
     }
 
@@ -136,17 +153,26 @@ export async function chatCompletionsRoutes(app: FastifyInstance): Promise<void>
     }
 
     if (authedUser) {
+      const cost = computeCost(routed.chosen, routed.response.data.usage);
+      const chargeUsd = cost.totalUsd * MARKUP_MULTIPLIER;
       persistUsage({
         requestId,
         user: authedUser,
         modelName: routed.chosen.id,
         provider: routed.chosen.providerName,
         usage: routed.response.data.usage,
+        totalCostUsd: cost.totalUsd,
         latencyMs: routed.response.latencyMs,
         strategy: routed.strategy,
         wasFailover: routed.attempts.length > 1,
         httpStatus: 200,
       }).catch((err) => logger.warn({ requestId, err }, 'usage persistence failed'));
+
+      if (chargeUsd > 0) {
+        creditRepository
+          .debit(authedUser.id, chargeUsd, requestId)
+          .catch((err) => logger.warn({ requestId, err, userId: authedUser.id }, 'credit debit failed'));
+      }
     }
 
     return reply.status(200).send(routed.response.data);
@@ -159,6 +185,7 @@ interface PersistUsageInput {
   modelName: string;
   provider: string;
   usage?: { prompt_tokens?: number; completion_tokens?: number } | undefined;
+  totalCostUsd: number;
   latencyMs: number;
   strategy: string;
   wasFailover: boolean;
@@ -176,7 +203,7 @@ async function persistUsage(input: PersistUsageInput): Promise<void> {
     provider: input.provider,
     inputTokens: input.usage?.prompt_tokens ?? 0,
     outputTokens: input.usage?.completion_tokens ?? 0,
-    totalCostUsd: 0,
+    totalCostUsd: input.totalCostUsd,
     latencyMs: input.latencyMs,
     routingStrategy: input.strategy,
     wasFailover: input.wasFailover,
