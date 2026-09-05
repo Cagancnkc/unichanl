@@ -326,6 +326,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     const doc = new DOMParser().parseFromString(template, 'text/html');
     document.documentElement.replaceWith(doc.documentElement);
 
+    // Re-inject favicon after bundler replaces documentElement
+    const favLink = document.createElement('link');
+    favLink.rel = 'icon';
+    favLink.type = 'image/png';
+    favLink.href = '/favicon.png?v=2';
+    document.head.appendChild(favLink);
+
     // Resolve page-frame markers: mint this document's own blob for each
     // framed page — from local text when this is the root, otherwise by
     // asking the direct parent over the relay protocol above. An
