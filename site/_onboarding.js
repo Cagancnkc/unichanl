@@ -1,6 +1,8 @@
 (function () {
   var STEPPER_ID = 'unichanl-onboarding';
   var ACCENT = '#DFFF00';
+  var ACCENT_SOFT = 'rgba(223,255,0,0.08)';
+  var ACCENT_BORDER = 'rgba(223,255,0,0.35)';
   var TEXT = '#e8efe6';
   var MUTED = '#8a9a94';
   var DIM = '#657172';
@@ -15,49 +17,58 @@
     var css = document.createElement('style');
     css.id = 'unichanl-onboarding-css';
     css.textContent = [
-      '#' + STEPPER_ID + '{background:' + CARD_BG + ';border:1px solid ' + BORDER + ';border-radius:16px;padding:28px;margin-bottom:20px;color:' + TEXT + ";font-family:Archivo,system-ui,sans-serif}",
-      '#' + STEPPER_ID + ' .uc-head{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:start;margin-bottom:24px}',
-      '#' + STEPPER_ID + ' .uc-head-l{display:flex;gap:14px;align-items:flex-start}',
-      '#' + STEPPER_ID + ' .uc-icon{width:40px;height:40px;border-radius:12px;background:' + ACCENT + ';display:grid;place-items:center;color:' + PAGE_BG + ';flex:0 0 40px}',
-      '#' + STEPPER_ID + ' .uc-label{display:block;font:600 10.5px "JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:' + DIM + '}',
-      '#' + STEPPER_ID + ' .uc-h{font-family:Newsreader,serif;font-weight:600;font-size:22px;line-height:1.15;margin:4px 0 6px;letter-spacing:-.01em;color:' + TEXT + '}',
-      '#' + STEPPER_ID + ' .uc-sub{font:14px Archivo,sans-serif;color:' + MUTED + ';margin:0}',
-      '#' + STEPPER_ID + ' .uc-head-r{text-align:right;min-width:220px;display:flex;flex-direction:column;align-items:flex-end;gap:6px}',
-      '#' + STEPPER_ID + ' .uc-count{font:11px "JetBrains Mono",monospace;color:' + DIM + '}',
-      '#' + STEPPER_ID + ' .uc-pct{font:12px "JetBrains Mono",monospace;color:' + ACCENT + '}',
-      '#' + STEPPER_ID + ' .uc-bar{width:220px;height:3px;background:#132023;border-radius:2px;overflow:hidden}',
-      '#' + STEPPER_ID + ' .uc-fill{height:100%;background:' + ACCENT + ';transition:width .3s ease}',
-      '#' + STEPPER_ID + ' .uc-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;position:relative;margin-bottom:24px}',
-      '#' + STEPPER_ID + ' .uc-step{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:8px}',
-      '#' + STEPPER_ID + ' .uc-step + .uc-step::before{content:"";position:absolute;left:-8px;right:calc(100% - 16px);top:16px;height:1px;background:' + BORDER + ';z-index:0}',
-      '#' + STEPPER_ID + ' .uc-step.done + .uc-step::before,#' + STEPPER_ID + ' .uc-step.done::before{background:' + ACCENT + '}',
-      '#' + STEPPER_ID + ' .uc-circle{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font:600 13px "JetBrains Mono",monospace;position:relative;z-index:1;flex:none}',
+      '#' + STEPPER_ID + '{background:' + CARD_BG + ';border:1px solid ' + BORDER + ';border-radius:16px;padding:20px 24px;margin-bottom:20px;color:' + TEXT + ";font-family:Archivo,system-ui,sans-serif;position:relative;overflow:hidden}",
+      '#' + STEPPER_ID + '::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:' + ACCENT + '}',
+
+      '#' + STEPPER_ID + ' .uc-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}',
+      '#' + STEPPER_ID + ' .uc-icon{width:34px;height:34px;border-radius:10px;background:' + ACCENT + ';display:grid;place-items:center;color:' + PAGE_BG + ';flex:none;box-shadow:0 0 0 4px ' + ACCENT_SOFT + '}',
+      '#' + STEPPER_ID + ' .uc-title-wrap{display:flex;flex-direction:column;gap:2px;min-width:0}',
+      '#' + STEPPER_ID + ' .uc-label{font:600 10px "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:' + ACCENT + '}',
+      '#' + STEPPER_ID + ' .uc-h{font-family:Archivo,sans-serif;font-weight:700;font-size:15px;line-height:1.2;margin:0;color:' + TEXT + '}',
+      '#' + STEPPER_ID + ' .uc-progress{display:flex;align-items:center;gap:10px;margin-left:auto;flex:none}',
+      '#' + STEPPER_ID + ' .uc-count{font:600 11px "JetBrains Mono",monospace;color:' + MUTED + '}',
+      '#' + STEPPER_ID + ' .uc-bar{width:110px;height:4px;background:' + BORDER + ';border-radius:99px;overflow:hidden}',
+      '#' + STEPPER_ID + ' .uc-fill{height:100%;background:' + ACCENT + ';transition:width .3s ease;box-shadow:0 0 8px ' + ACCENT + '}',
+      '#' + STEPPER_ID + ' .uc-pct{font:700 12px "JetBrains Mono",monospace;color:' + ACCENT + ';min-width:34px;text-align:right}',
+
+      '#' + STEPPER_ID + ' .uc-strip{display:flex;align-items:stretch;gap:0;margin:16px 0 0;background:' + PAGE_BG + ';border:1px solid ' + BORDER + ';border-radius:12px;padding:6px;overflow-x:auto}',
+      '#' + STEPPER_ID + ' .uc-chip{flex:1 1 0;min-width:150px;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;position:relative;transition:background .15s;cursor:default}',
+      '#' + STEPPER_ID + ' .uc-chip + .uc-chip::before{content:"";position:absolute;left:-1px;top:50%;transform:translateY(-50%);width:1px;height:60%;background:' + BORDER_DEEP + '}',
+      '#' + STEPPER_ID + ' .uc-chip.current{background:' + ACCENT_SOFT + ';box-shadow:inset 0 0 0 1px ' + ACCENT_BORDER + '}',
+      '#' + STEPPER_ID + ' .uc-chip.done .uc-chip-title{color:' + ACCENT + '}',
+      '#' + STEPPER_ID + ' .uc-chip.future .uc-chip-title{color:' + MUTED + '}',
+      '#' + STEPPER_ID + ' .uc-circle{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 12px "JetBrains Mono",monospace;flex:none}',
       '#' + STEPPER_ID + ' .uc-circle.done{background:' + ACCENT + ';color:' + PAGE_BG + '}',
-      '#' + STEPPER_ID + ' .uc-circle.current{background:transparent;border:1.5px solid ' + ACCENT + ';color:' + ACCENT + '}',
-      '#' + STEPPER_ID + ' .uc-circle.future{background:' + CARD_BG + ';border:1px solid ' + BORDER + ';color:' + DIM + '}',
-      '#' + STEPPER_ID + ' .uc-step-title{font:600 13px Archivo,sans-serif;color:' + TEXT + ';display:flex;align-items:center;gap:6px}',
-      '#' + STEPPER_ID + ' .uc-step-desc{font:11px Archivo,sans-serif;color:' + MUTED + ';margin:0;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}',
-      '#' + STEPPER_ID + ' .uc-badge{background:#0a2a1a;color:#7fff8a;border:1px solid #1a4a2a;padding:2px 8px;border-radius:6px;font:600 10px "JetBrains Mono",monospace;margin-left:6px}',
-      '#' + STEPPER_ID + ' .uc-active{background:' + CARD_INNER + ';border:1px solid ' + BORDER_DEEP + ';border-radius:12px;padding:20px;margin-top:4px}',
-      '#' + STEPPER_ID + ' .uc-active-label{font:600 10.5px "JetBrains Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:' + DIM + ';margin-bottom:6px}',
-      '#' + STEPPER_ID + ' .uc-active-title{font:600 15px Archivo,sans-serif;color:' + TEXT + ';margin-bottom:14px}',
-      '#' + STEPPER_ID + ' .uc-active-hint{font:13px Archivo,sans-serif;color:' + MUTED + ';margin:0 0 14px;line-height:1.5}',
-      '#' + STEPPER_ID + ' .uc-active-meta{font:12px "JetBrains Mono",monospace;color:' + MUTED + ';margin-bottom:12px}',
-      '#' + STEPPER_ID + ' .uc-active-meta strong{color:' + ACCENT + ';font-weight:600}',
-      '#' + STEPPER_ID + ' .uc-input-row{display:flex;gap:10px;align-items:stretch}',
-      '#' + STEPPER_ID + ' .uc-input{background:' + CARD_BG + ';border:1px solid ' + BORDER + ';border-radius:10px;padding:10px 14px;color:' + TEXT + ';font:14px "JetBrains Mono",monospace;width:120px}',
+      '#' + STEPPER_ID + ' .uc-circle.current{background:' + ACCENT + ';color:' + PAGE_BG + ';box-shadow:0 0 0 3px ' + ACCENT_SOFT + '}',
+      '#' + STEPPER_ID + ' .uc-circle.future{background:transparent;border:1.5px solid ' + BORDER_DEEP + ';color:' + DIM + '}',
+      '#' + STEPPER_ID + ' .uc-chip-title{font:600 12.5px Archivo,sans-serif;color:' + TEXT + ';line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+
+      '#' + STEPPER_ID + ' .uc-active{margin-top:14px;background:' + CARD_INNER + ';border:1px solid ' + ACCENT_BORDER + ';border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}',
+      '#' + STEPPER_ID + ' .uc-active-l{flex:1 1 260px;min-width:0}',
+      '#' + STEPPER_ID + ' .uc-active-label{font:700 10px "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:' + ACCENT + ';margin-bottom:4px}',
+      '#' + STEPPER_ID + ' .uc-active-title{font:700 14px Archivo,sans-serif;color:' + TEXT + ';margin-bottom:4px}',
+      '#' + STEPPER_ID + ' .uc-active-hint{font:12.5px Archivo,sans-serif;color:' + MUTED + ';margin:0;line-height:1.45}',
+      '#' + STEPPER_ID + ' .uc-active-r{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}',
+      '#' + STEPPER_ID + ' .uc-active-meta{font:12px "JetBrains Mono",monospace;color:' + MUTED + ';margin-right:4px}',
+      '#' + STEPPER_ID + ' .uc-active-meta strong{color:' + ACCENT + ';font-weight:700}',
+      '#' + STEPPER_ID + ' .uc-input{background:' + PAGE_BG + ';border:1px solid ' + BORDER + ';border-radius:8px;padding:9px 12px;color:' + TEXT + ';font:13px "JetBrains Mono",monospace;width:96px}',
       '#' + STEPPER_ID + ' .uc-input:focus{outline:none;border-color:' + ACCENT + '}',
-      '#' + STEPPER_ID + ' .uc-btn{background:' + ACCENT + ';color:' + PAGE_BG + ';border:none;border-radius:10px;padding:12px 20px;font:700 13px Archivo,sans-serif;letter-spacing:.02em;cursor:pointer;white-space:nowrap;transition:filter .15s}',
-      '#' + STEPPER_ID + ' .uc-btn:hover{filter:brightness(1.05)}',
+      '#' + STEPPER_ID + ' .uc-btn{background:' + ACCENT + ';color:' + PAGE_BG + ';border:none;border-radius:8px;padding:10px 16px;font:700 12.5px Archivo,sans-serif;letter-spacing:.02em;cursor:pointer;white-space:nowrap;transition:filter .15s}',
+      '#' + STEPPER_ID + ' .uc-btn:hover{filter:brightness(1.08)}',
       '#' + STEPPER_ID + ' .uc-btn:disabled{opacity:.5;cursor:not-allowed}',
-      '#' + STEPPER_ID + ' .uc-btn.ghost{background:transparent;color:' + TEXT + ';border:1px solid ' + BORDER + ';padding:8px 14px;font:600 12px Archivo,sans-serif;letter-spacing:0}',
-      '#' + STEPPER_ID + ' .uc-btn.ghost:hover{filter:none;border-color:' + ACCENT + ';color:' + ACCENT + '}',
-      '#' + STEPPER_ID + ' .uc-pre{background:' + PAGE_BG + ';border:1px solid ' + BORDER + ';border-radius:10px;padding:14px;font:12px "JetBrains Mono",monospace;color:' + TEXT + ';white-space:pre;overflow-x:auto;margin:0}',
-      '#' + STEPPER_ID + ' .uc-pre-row{display:flex;gap:10px;align-items:flex-start}',
-      '#' + STEPPER_ID + ' .uc-pre-row .uc-pre{flex:1}',
-      '#' + STEPPER_ID + ' .uc-done-banner{background:' + CARD_BG + ';border:1px solid ' + BORDER + ';border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:10px;margin-bottom:20px;color:' + MUTED + ';font:13px Archivo,sans-serif}',
-      '#' + STEPPER_ID + ' .uc-done-banner strong{color:' + TEXT + ';font-weight:600}',
-      '#' + STEPPER_ID + ' .uc-done-banner .uc-check{color:' + ACCENT + '}'
+      '#' + STEPPER_ID + ' .uc-btn.ghost{background:transparent;color:' + ACCENT + ';border:1px solid ' + ACCENT_BORDER + ';padding:8px 14px;font-weight:600}',
+      '#' + STEPPER_ID + ' .uc-btn.ghost:hover{filter:none;background:' + ACCENT_SOFT + '}',
+      '#' + STEPPER_ID + ' .uc-pre{background:' + PAGE_BG + ';border:1px solid ' + BORDER + ';border-radius:8px;padding:10px 12px;font:11.5px "JetBrains Mono",monospace;color:' + TEXT + ';white-space:pre;overflow-x:auto;margin:0;flex:1 1 260px;min-width:0}',
+      '#' + STEPPER_ID + ' .uc-badge{background:' + ACCENT + ';color:' + PAGE_BG + ';padding:2px 7px;border-radius:99px;font:700 9.5px "JetBrains Mono",monospace;margin-left:6px;display:inline-flex;align-items:center;gap:3px}',
+
+      '#' + STEPPER_ID + ' .uc-done-banner{background:' + ACCENT_SOFT + ';border:1px solid ' + ACCENT_BORDER + ';border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px;margin-bottom:14px;color:' + TEXT + ';font:13px Archivo,sans-serif}',
+      '#' + STEPPER_ID + ' .uc-done-banner strong{color:' + ACCENT + ';font-weight:700}',
+      '#' + STEPPER_ID + ' .uc-done-banner .uc-check{color:' + ACCENT + ';display:inline-flex}',
+
+      '@media (max-width:720px){#' + STEPPER_ID + ' .uc-strip{overflow-x:auto}',
+      '#' + STEPPER_ID + ' .uc-chip{min-width:140px}',
+      '#' + STEPPER_ID + ' .uc-active{flex-direction:column;align-items:stretch}',
+      '#' + STEPPER_ID + ' .uc-active-r{justify-content:flex-start}}'
     ].join('\n');
     document.head.appendChild(css);
   }
@@ -75,10 +86,10 @@
 
   function stepDescriptors() {
     return [
-      { key: 'topup',    title: 'Bakiye y\u00fckle',              desc: '\u0130lk iste\u011fini g\u00f6ndermek i\u00e7in minimum $5 kredi y\u00fckle.' },
-      { key: 'cli',      title: 'Claude Code / Codex CLI',        desc: "CLI'nin Unichanl u\u00e7 noktas\u0131n\u0131 kullanacak \u015fekilde yap\u0131land\u0131r." },
-      { key: 'apiKey',   title: 'API anahtar\u0131 olu\u015ftur', desc: 'Uygulaman i\u00e7in yeni bir Unichanl anahtar\u0131 \u00fcret.' },
-      { key: 'firstRun', title: 'Ba\u015flamaya haz\u0131r',      desc: '\u0130lk iste\u011fini g\u00f6nder ve dashboardda g\u00f6r.' }
+      { key: 'topup',    title: 'Bakiye y\u00fckle' },
+      { key: 'cli',      title: 'CLI ba\u011fla' },
+      { key: 'apiKey',   title: 'Anahtar olu\u015ftur' },
+      { key: 'firstRun', title: '\u0130lk istek' }
     ];
   }
 
@@ -93,14 +104,15 @@
   }
 
   function rocketSvg() {
-    return '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1-2 5-2 5s4-.5 5-2c.5-.9.4-2.2-.4-3-.8-.8-2.1-.9-3-.4z"/><path d="M12 15l-3-3a22 22 0 0 1 8-11c3 0 6 3 6 6a22 22 0 0 1-11 8"/><path d="M9 12H5s.5-2.7 2-4 5-1 5-1M12 15v4s2.7-.5 4-2 1-5 1-5"/></svg>';
+    return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1-2 5-2 5s4-.5 5-2c.5-.9.4-2.2-.4-3-.8-.8-2.1-.9-3-.4z"/><path d="M12 15l-3-3a22 22 0 0 1 8-11c3 0 6 3 6 6a22 22 0 0 1-11 8"/></svg>';
   }
-  function checkSvg() {
-    return '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
+  function checkSvg(size) {
+    var s = size || 14;
+    return '<svg viewBox="0 0 24 24" width="' + s + '" height="' + s + '" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
   }
 
   function circle(step, state) {
-    if (state === 'done') return '<div class="uc-circle done">' + checkSvg() + '</div>';
+    if (state === 'done') return '<div class="uc-circle done">' + checkSvg(13) + '</div>';
     return '<div class="uc-circle ' + state + '">' + step + '</div>';
   }
 
@@ -116,57 +128,50 @@
   }
 
   function activeCard(step, onb) {
+    var label, title, hint, right;
     if (step === 1) {
       var bal = onb.walletBalanceUsd || '0';
-      return [
-        '<div class="uc-active">',
-          '<div class="uc-active-label">\u0130LK Y\u00dcKLEME</div>',
-          '<div class="uc-active-title">' + esc(stepActiveTitle(1)) + '</div>',
-          '<p class="uc-active-hint">Min $5 y\u00fckleyerek ba\u015fla. Y\u00fcklenen tutar direkt c\u00fczdan\u0131na eklenir.</p>',
-          '<div class="uc-active-meta">C\u00fczdan kredisi: <strong>$' + esc(bal) + '</strong></div>',
-          '<div class="uc-input-row">',
-            '<input id="uc-topup-amt" class="uc-input" type="number" min="5" step="1" value="5" />',
-            '<button id="uc-topup-go" class="uc-btn">Bakiye Y\u00fckle</button>',
-          '</div>',
-        '</div>'
+      label = '\u0130LK Y\u00dcKLEME';
+      title = stepActiveTitle(1);
+      hint = 'Min $5 y\u00fckleyerek ba\u015fla. Y\u00fcklenen tutar direkt c\u00fczdan\u0131na eklenir.';
+      right = [
+        '<span class="uc-active-meta">C\u00fczdan: <strong>$' + esc(bal) + '</strong></span>',
+        '<input id="uc-topup-amt" class="uc-input" type="number" min="5" step="1" value="5" />',
+        '<button id="uc-topup-go" class="uc-btn">Bakiye Y\u00fckle</button>'
       ].join('');
-    }
-    if (step === 2) {
+    } else if (step === 2) {
       var snippet = 'ANTHROPIC_BASE_URL=http://127.0.0.1:20128\nANTHROPIC_AUTH_TOKEN=' + maskedKeyHint();
-      return [
-        '<div class="uc-active">',
-          '<div class="uc-active-label">CLI YAPILANDIRMASI</div>',
-          '<div class="uc-active-title">' + esc(stepActiveTitle(2)) + '</div>',
-          '<p class="uc-active-hint">Claude Code veya Codex CLI\u2019nin trafi\u011fini Unichanl\u2019a y\u00f6nlendirmek i\u00e7in terminal ortam\u0131na a\u015fa\u011f\u0131daki de\u011fi\u015fkenleri ekle.</p>',
-          '<div class="uc-pre-row">',
-            '<pre id="uc-cfg-pre" class="uc-pre">' + esc(snippet) + '</pre>',
-            '<button id="uc-copy-cfg" class="uc-btn ghost">Kopyala</button>',
-          '</div>',
-        '</div>'
+      label = 'CLI YAPILANDIRMASI';
+      title = stepActiveTitle(2);
+      hint = 'Terminal ortam\u0131na a\u015fa\u011f\u0131daki de\u011fi\u015fkenleri ekleyerek Claude Code / Codex trafi\u011fini Unichanl\u2019a y\u00f6nlendir.';
+      right = [
+        '<pre id="uc-cfg-pre" class="uc-pre">' + esc(snippet) + '</pre>',
+        '<button id="uc-copy-cfg" class="uc-btn ghost">Kopyala</button>'
       ].join('');
-    }
-    if (step === 3) {
-      return [
-        '<div class="uc-active">',
-          '<div class="uc-active-label">API ANAHTARI</div>',
-          '<div class="uc-active-title">' + esc(stepActiveTitle(3)) + '</div>',
-          '<p class="uc-active-hint">Uygulaman veya CLI i\u00e7in yeni bir Unichanl anahtar\u0131 \u00fcret. Anahtar\u0131 sadece bir kez g\u00f6receksin \u2014 g\u00fcvenli sakla.</p>',
-          '<button id="uc-create-key" class="uc-btn">Anahtar Olu\u015ftur</button>',
-        '</div>'
-      ].join('');
-    }
-    if (step === 4) {
+    } else if (step === 3) {
+      label = 'API ANAHTARI';
+      title = stepActiveTitle(3);
+      hint = 'Uygulaman veya CLI i\u00e7in yeni bir anahtar \u00fcret. Anahtar sadece bir kez g\u00f6r\u00fcn\u00fcr.';
+      right = '<button id="uc-create-key" class="uc-btn">Anahtar Olu\u015ftur</button>';
+    } else if (step === 4) {
       var snip = 'claude "Merhaba, \u00e7al\u0131\u015f\u0131yor musun?"';
-      return [
-        '<div class="uc-active">',
-          '<div class="uc-active-label">\u0130LK \u0130STEK</div>',
-          '<div class="uc-active-title">' + esc(stepActiveTitle(4)) + '</div>',
-          '<p class="uc-active-hint">CLI\u2019yi kur ve terminalden ilk komutunu \u00e7al\u0131\u015ft\u0131r. \u00d6rnek:</p>',
-          '<pre class="uc-pre">' + esc(snip) + '</pre>',
-        '</div>'
-      ].join('');
+      label = '\u0130LK \u0130STEK';
+      title = stepActiveTitle(4);
+      hint = 'CLI\u2019yi kur ve terminalden ilk komutunu \u00e7al\u0131\u015ft\u0131r:';
+      right = '<pre class="uc-pre">' + esc(snip) + '</pre>';
+    } else {
+      return '';
     }
-    return '';
+    return [
+      '<div class="uc-active">',
+        '<div class="uc-active-l">',
+          '<div class="uc-active-label">' + esc(label) + '</div>',
+          '<div class="uc-active-title">' + esc(title) + '</div>',
+          '<p class="uc-active-hint">' + esc(hint) + '</p>',
+        '</div>',
+        '<div class="uc-active-r">' + right + '</div>',
+      '</div>'
+    ].join('');
   }
 
   function buildStepperHTML(onb) {
@@ -181,12 +186,11 @@
       var idx = i + 1;
       var done = onb.steps[s.key] && onb.steps[s.key].done;
       var state = done ? 'done' : (idx === current ? 'current' : 'future');
-      var badge = done ? '<span class="uc-badge">\u2713 Tamam</span>' : '';
+      var badge = done ? '<span class="uc-badge">' + checkSvg(9) + '</span>' : '';
       return [
-        '<div class="uc-step ' + state + '">',
+        '<div class="uc-chip ' + state + '">',
           circle(idx, state),
-          '<div class="uc-step-title">' + esc(s.title) + badge + '</div>',
-          '<p class="uc-step-desc">' + esc(s.desc) + '</p>',
+          '<span class="uc-chip-title">' + esc(s.title) + badge + '</span>',
         '</div>'
       ].join('');
     }).join('');
@@ -195,8 +199,8 @@
 
     var doneBanner = (!current && doneCount > 0) ? [
       '<div class="uc-done-banner">',
-        '<span class="uc-check">' + checkSvg() + '</span>',
-        '<strong>Kurulum tamamland\u0131</strong>',
+        '<span class="uc-check">' + checkSvg(16) + '</span>',
+        '<strong>Kurulum tamamland\u0131.</strong>',
         '<span>Art\u0131k trafi\u011fi izleyebilir ve yeni istekler g\u00f6nderebilirsin.</span>',
       '</div>'
     ].join('') : '';
@@ -206,22 +210,19 @@
     return [
       '<section id="' + STEPPER_ID + '">',
         doneBanner,
-        '<div class="uc-head">',
-          '<div class="uc-head-l">',
-            '<div class="uc-icon">' + rocketSvg() + '</div>',
-            '<div>',
-              '<span class="uc-label">BA\u015eLAYALIM</span>',
-              '<h2 class="uc-h">\u0130lk iste\u011fini g\u00f6nder</h2>',
-              '<p class="uc-sub">K\u0131sa bir kurulum sonras\u0131 Unichanl trafi\u011fin buradan akmaya ba\u015flar.</p>',
-            '</div>',
+        '<div class="uc-top">',
+          '<div class="uc-icon">' + rocketSvg() + '</div>',
+          '<div class="uc-title-wrap">',
+            '<span class="uc-label">BA\u015eLAYALIM</span>',
+            '<h3 class="uc-h">\u0130lk iste\u011fini g\u00f6nder</h3>',
           '</div>',
-          '<div class="uc-head-r">',
+          '<div class="uc-progress">',
             '<span class="uc-count">' + countLabel + '</span>',
-            '<span class="uc-pct">%' + pct + '</span>',
             '<div class="uc-bar"><div class="uc-fill" style="width:' + pct + '%"></div></div>',
+            '<span class="uc-pct">%' + pct + '</span>',
           '</div>',
         '</div>',
-        '<div class="uc-row">' + stepHTML + '</div>',
+        '<div class="uc-strip">' + stepHTML + '</div>',
         activeBlock,
       '</section>'
     ].join('');
