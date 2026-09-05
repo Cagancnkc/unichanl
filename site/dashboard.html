@@ -391,22 +391,237 @@ document.addEventListener('DOMContentLoaded', async function() {
 (function () {
   var KEY = localStorage.getItem('unichanl_key');
   if (!KEY) { location.replace('/signup.html'); return; }
+
   function j(p) {
     return fetch(p, { headers: { Authorization: 'Bearer ' + KEY } }).then(function (r) {
       if (r.status === 401) { localStorage.removeItem('unichanl_key'); location.replace('/signup.html'); throw new Error('auth'); }
       return r.json().catch(function () { return {}; });
+    }).catch(function (e) {
+      if (e && e.message === 'auth') throw e;
+      console.warn('[unichanl] endpoint failed', p, e);
+      return null;
     });
   }
+
+  function fmtUsd(v) {
+    var n = Number(v);
+    if (!isFinite(n)) return '$0.00';
+    return '$' + n.toFixed(n < 1 ? 3 : 2);
+  }
+  function shortDate(iso) {
+    if (!iso) return '—';
+    var d = new Date(iso);
+    if (isNaN(d)) return String(iso).slice(0, 10);
+    return d.toISOString().slice(0, 10);
+  }
+  function relTime(iso) {
+    if (!iso) return '—';
+    var d = new Date(iso);
+    if (isNaN(d)) return String(iso);
+    var s = Math.max(0, Math.floor((Date.now() - d.getTime()) / 1000));
+    if (s < 60) return s + 's';
+    if (s < 3600) return Math.floor(s / 60) + 'm';
+    if (s < 86400) return Math.floor(s / 3600) + 'h';
+    return Math.floor(s / 86400) + 'd';
+  }
+  function providerTint(name) {
+    var map = { openai:'#10A37F', anthropic:'#D97757', google:'#4285F4', mistral:'#FF7000', meta:'#0668E1', groq:'#F55036', cohere:'#7C7CF7', xai:'#000000' };
+    return map[String(name || '').toLowerCase()] || '#657172';
+  }
+
+  function normalize(balance, models, keys, usage) {
+    var b = balance || {};
+    var balNum = Number(b.balanceUsd || 0);
+    var balanceStr = fmtUsd(balNum);
+
+    var keyList = ((keys || {}).keys || []).map(function (k) {
+      var mask = (k.keyPrefix || k.prefix || 'tkg') + '…' + (k.suffix || '');
+      var last = k.lastUsedAt || k.updatedAt;
+      return {
+        id: k.id,
+        name: k.name || 'API Key',
+        mask: mask,
+        created: shortDate(k.createdAt),
+        used: last ? relTime(last) : 'hiç',
+        requests: String(k.requestCount != null ? k.requestCount : (k.usage != null ? k.usage : 0)),
+        statusColor: (k.revokedAt || k.revoked) ? '#F87171' : '#4ADE80',
+        status: (k.revokedAt || k.revoked) ? 'revoked' : 'active'
+      };
+    });
+
+    var modelList = ((models || {}).models || []).map(function (m) {
+      var providerName = (m.provider && (m.provider.slug || m.provider.name)) || m.providerSlug || m.provider || '—';
+      var cbState = String(m.circuitState || 'closed').toLowerCase();
+      return {
+        id: m.id || m.slug,
+        name: m.displayName || m.name || m.slug || m.id,
+        provider: providerName,
+        tint: providerTint(providerName),
+        badge: String(providerName).slice(0, 2).toUpperCase(),
+        cap: m.capabilities && m.capabilities.length ? m.capabilities[0] : (m.modalities ? String(m.modalities) : 'Metin'),
+        input: m.inputPricePerMillion != null ? fmtUsd(m.inputPricePerMillion) + '/M' : (m.pricing && m.pricing.input != null ? fmtUsd(m.pricing.input) + '/M' : '—'),
+        output: m.outputPricePerMillion != null ? fmtUsd(m.outputPricePerMillion) + '/M' : (m.pricing && m.pricing.output != null ? fmtUsd(m.pricing.output) + '/M' : '—'),
+        latency: m.avgLatencyMs != null ? (Math.round(m.avgLatencyMs) + 'ms') : '—',
+        status: cbState === 'open' ? 'down' : (cbState === 'halfopen' ? 'degraded' : 'active'),
+        statusColor: cbState === 'open' ? '#F87171' : (cbState === 'halfopen' ? '#F5A524' : '#4ADE80')
+      };
+    });
+
+    var summary = ((usage || {}).summary) || {};
+    var recentRaw = ((usage || {}).recent) || [];
+    var recentList = recentRaw.map(function (u) {
+      var status = String(u.status || (u.errorMessage ? 'error' : 'ok')).toLowerCase();
+      var failed = status !== 'ok' && status !== '200' && status !== 'success';
+      return {
+        time: relTime(u.createdAt || u.timestamp),
+        id: String(u.id || '').slice(0, 8),
+        session: String(u.sessionId || u.requestId || '').slice(0, 8),
+        model: u.modelId || u.model || '—',
+        req: u.requestPreview || u.prompt || u.method || '—',
+        requested: u.modelId || u.model || '—',
+        selected: u.actualModel || u.modelId || u.model || '—',
+        failed: failed,
+        latency: u.latencyMs != null ? (u.latencyMs + 'ms') : '—',
+        cost: u.costUsd != null ? fmtUsd(u.costUsd) : '$0.000',
+        status: failed ? 'FAIL' : 'OK',
+        statusColor: failed ? '#F87171' : '#4ADE80'
+      };
+    });
+
+    var byModel = ((usage || {}).byModel) || [];
+    var totalCost = Number(summary.totalCostUsd || 0);
+    var palette = ['#DFFF00', '#4ADE80', '#60A5FA', '#F5A524', '#F87171', '#7C7CF7', '#10A37F', '#D97757'];
+    var dist = byModel.map(function (row, i) {
+      var cost = Number((row._sum && row._sum.costUsd) || row.cost || 0);
+      return {
+        name: row.modelId || row.model || 'model',
+        cost: fmtUsd(cost),
+        pct: totalCost > 0 ? Math.round((cost / totalCost) * 100) + '%' : '0%',
+        color: palette[i % palette.length]
+      };
+    });
+
+    return {
+      balanceStr: balanceStr,
+      balanceNum: balNum,
+      keys: keyList,
+      models: modelList,
+      modelsFiltered: modelList,
+      recent: recentList,
+      log: recentList,
+      dist: dist,
+      bars: dist,
+      providers: [],
+      rules: [],
+      summary: {
+        totalRequests: summary.totalRequests || 0,
+        totalTokens: summary.totalTokens || 0,
+        totalCostStr: fmtUsd(summary.totalCostUsd || 0)
+      }
+    };
+  }
+
+  // Reach into DC-runtime registry (Object.assign(window, { registry: runtime.registry.entries, ... })).
+  // window.registry === bound Map.prototype.entries → iterable of [name, entry] pairs.
+  function forEachEntry(cb) {
+    try {
+      if (typeof window.registry !== 'function') return false;
+      var pairs = Array.from(window.registry());
+      if (!pairs.length) return false;
+      for (var i = 0; i < pairs.length; i++) cb(pairs[i][0], pairs[i][1]);
+      return true;
+    } catch (e) { return false; }
+  }
+
+  function injectProps(payload) {
+    return forEachEntry(function (name, entry) {
+      if (!entry || typeof entry !== 'object') return;
+      entry.propOverrides = Object.assign({}, entry.propOverrides || {}, payload);
+      // registry.bump not exposed — trigger subs directly (equivalent to bump).
+      if (entry.subs && typeof entry.subs.forEach === 'function') {
+        entry.subs.forEach(function (s) { try { s(); } catch (e) { /* ignore */ } });
+      }
+    });
+  }
+
+  function waitForBundle(fn) {
+    var attempts = 0;
+    var iv = setInterval(function () {
+      attempts++;
+      if (typeof window.registry === 'function') {
+        try {
+          var pairs = Array.from(window.registry());
+          if (pairs.length) { clearInterval(iv); fn(pairs); return; }
+        } catch (e) { /* not ready */ }
+      }
+      if (attempts > 150) { clearInterval(iv); console.warn('[unichanl] bundle registry not found after 15s'); fn([]); }
+    }, 100);
+  }
+
+  // Literal placeholders baked into the template that have no {{ binding }}.
+  // Kept as text→text map. Only the balance card + savings pill are user-visible
+  // real-value slots; model prices ($X.XX/M) come from the mock JS array inside
+  // the template and get replaced when propOverrides.models kicks in.
+  var patched = false;
+  function buildLiteralMap(payload) {
+    return {
+      '$42.18': payload.balanceStr,
+      '$61.40 tasarruf': ''
+    };
+  }
+  function patchLiterals(map) {
+    var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+    var node, changed = false;
+    while ((node = w.nextNode())) {
+      var v = node.nodeValue;
+      if (!v) continue;
+      var out = v;
+      for (var k in map) {
+        if (out.indexOf(k) !== -1) out = out.split(k).join(map[k] || '');
+      }
+      if (out !== v) { node.nodeValue = out; changed = true; }
+    }
+    return changed;
+  }
+
   window.__unichanl = { key: KEY, loading: true };
+
   Promise.all([
     j('/api/billing/balance'),
     j('/api/models'),
     j('/api/keys'),
     j('/api/usage?limit=50')
   ]).then(function (r) {
-    window.__unichanl = { key: KEY, loading: false, balance: r[0], models: r[1], keys: r[2], usage: r[3] };
+    var payload = normalize(r[0], r[1], r[2], r[3]);
+    window.__unichanl = { key: KEY, loading: false, balance: r[0], models: r[1], keys: r[2], usage: r[3], payload: payload };
     window.dispatchEvent(new CustomEvent('unichanl:data', { detail: window.__unichanl }));
-  }).catch(function (e) { if (e && e.message !== 'auth') console.error('[unichanl] data fetch failed', e); });
+
+    var literals = buildLiteralMap(payload);
+
+    waitForBundle(function () {
+      injectProps(payload);
+      patchLiterals(literals);
+      patched = true;
+
+      // Re-apply on any subsequent DOM mutation (bundle re-renders or route changes).
+      // characterData:false — React swaps text nodes rather than editing them, so
+      // childList/subtree covers real updates without echoing our own patches.
+      var mo = new MutationObserver(function () {
+        // Debounce with rAF so we batch a whole render pass.
+        if (mo._pending) return;
+        mo._pending = true;
+        requestAnimationFrame(function () {
+          mo._pending = false;
+          injectProps(payload);
+          patchLiterals(literals);
+        });
+      });
+      mo.observe(document.body, { childList: true, subtree: true });
+    });
+  }).catch(function (e) {
+    if (e && e.message === 'auth') return;
+    console.error('[unichanl] data fetch failed', e);
+  });
 })();
 </script>
 </body>
