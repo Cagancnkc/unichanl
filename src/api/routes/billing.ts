@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { createCheckoutSession } from '../../billing/polar.js';
 import { creditRepository } from '../../db/repositories/creditRepository.js';
 import { userRepository } from '../../db/repositories/userRepository.js';
+import { subscriptionRepository } from '../../db/repositories/subscriptionRepository.js';
 import { MIN_TOPUP_USD, MAX_TOPUP_USD } from '../../config/pricing.js';
 import { ValidationError } from '../../utils/errors.js';
 
@@ -100,5 +101,23 @@ export async function billingRoutes(app: FastifyInstance): Promise<void> {
     const user = request.user;
     await userRepository.setRechargeSettings(user.id, { autoRechargeEnabled: body.data.autoRechargeEnabled });
     reply.status(204).send();
+  });
+
+  app.get('/billing/subscription', async (request: FastifyRequest, reply) => {
+    const sub = await subscriptionRepository.findActiveByUser(request.user.id);
+    if (!sub) {
+      reply.send({ subscription: null });
+      return;
+    }
+    reply.send({
+      subscription: {
+        id: sub.id,
+        tier: sub.tier,
+        status: sub.status,
+        currentPeriodStart: sub.currentPeriodStart?.toISOString() ?? null,
+        currentPeriodEnd: sub.currentPeriodEnd?.toISOString() ?? null,
+        cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
+      },
+    });
   });
 }

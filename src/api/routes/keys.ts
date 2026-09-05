@@ -2,6 +2,7 @@ import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { apiKeyRepository } from '../../db/repositories/apiKeyRepository.js';
 import { userRepository } from '../../db/repositories/userRepository.js';
+import { usageRepository } from '../../db/repositories/usageRepository.js';
 import { ValidationError, NotFoundError } from '../../utils/errors.js';
 
 const createKeySchema = z.object({
@@ -39,8 +40,25 @@ export async function keyRoutes(app: FastifyInstance) {
   });
 
   app.get('/keys', async (request: FastifyRequest, reply) => {
-    const keys = await apiKeyRepository.listByUser(request.user.id);
-    reply.send({ keys });
+    const [keys, usageCounts] = await Promise.all([
+      apiKeyRepository.listByUser(request.user.id),
+      usageRepository.getCountsByApiKey(request.user.id),
+    ]);
+    const usageMap = new Map(
+      usageCounts.map((u) => [u.apiKeyId, { requestCount: u._count.id, lastUsedAt: u._max.createdAt }]),
+    );
+    reply.send({
+      keys: keys.map((k) => {
+        const u = usageMap.get(k.id);
+        return {
+          ...k,
+          usage: {
+            requestCount: u?.requestCount ?? 0,
+            lastUsedAt: (u?.lastUsedAt ?? k.lastUsedAt) ?? null,
+          },
+        };
+      }),
+    });
   });
 
   app.delete('/keys/:id', async (request: FastifyRequest<{ Params: { id: string } }>, reply) => {

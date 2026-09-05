@@ -15,6 +15,9 @@ import { usageRoutes } from './api/routes/usage.js';
 import { billingRoutes } from './api/routes/billing.js';
 import { billingWebhookRoutes } from './api/routes/billingWebhook.js';
 import { authRoutes } from './api/routes/auth.js';
+import { providerRoutes } from './api/routes/providers.js';
+import { ruleRoutes } from './api/routes/rules.js';
+import { sessionRoutes } from './api/routes/sessions.js';
 import { generateRequestId } from './utils/id.js';
 
 export async function createApp() {
@@ -60,6 +63,9 @@ export async function createApp() {
       await protectedApp.register(modelRoutes, { prefix: '/api' });
       await protectedApp.register(usageRoutes, { prefix: '/api' });
       await protectedApp.register(billingRoutes, { prefix: '/api' });
+      await protectedApp.register(providerRoutes, { prefix: '/api' });
+      await protectedApp.register(ruleRoutes, { prefix: '/api' });
+      await protectedApp.register(sessionRoutes, { prefix: '/api' });
     },
   );
 

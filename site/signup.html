@@ -135,11 +135,23 @@ window.oauthGoogle=async function(e){
     alert('Hata: '+(err.message||err));
   }
 };
-window.doSignup=function(e){
+window.doSignup=async function(e){
   if(e) e.preventDefault();
+  const btn=document.querySelector('[onclick*="doSignup"]');
   const email=document.getElementById('emailInput').value.trim();
   if(!email||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){alert('Geçerli email girin');return;}
-  alert('Yakında: '+email);
+  const prev=btn?btn.textContent:null;
+  if(btn){btn.disabled=true;btn.textContent='Oluşturuluyor…';}
+  try{
+    const r=await fetch('/api/keys/create',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,name:'signup'})});
+    const j=await r.json().catch(function(){return{};});
+    if(!r.ok||!j.key){throw new Error((j.error&&j.error.message)||'Kayıt başarısız');}
+    localStorage.setItem('unichanl_key',j.key);
+    location.href='/dashboard.html';
+  }catch(err){
+    alert('Hata: '+(err.message||err));
+    if(btn){btn.disabled=false;btn.textContent=prev||'Devam Et';}
+  }
 };
 </script>
 </body>

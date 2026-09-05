@@ -45,4 +45,35 @@ export const usageRepository = {
       },
     });
   },
+
+  async getCountsByApiKey(userId: string) {
+    return prisma.usageRecord.groupBy({
+      by: ['apiKeyId'],
+      where: { userId },
+      _count: { id: true },
+      _max: { createdAt: true },
+    });
+  },
+
+  async getDailyUsage(userId: string, since: Date) {
+    const rows = await prisma.$queryRaw<
+      Array<{ day: Date; requests: bigint; tokens: bigint; cost: number }>
+    >`
+      SELECT
+        date_trunc('day', "createdAt") AS day,
+        COUNT(*)::bigint AS requests,
+        (COALESCE(SUM("inputTokens"), 0) + COALESCE(SUM("outputTokens"), 0))::bigint AS tokens,
+        COALESCE(SUM("totalCostUsd"), 0)::float8 AS cost
+      FROM "UsageRecord"
+      WHERE "userId" = ${userId} AND "createdAt" >= ${since}
+      GROUP BY day
+      ORDER BY day ASC
+    `;
+    return rows.map((r) => ({
+      day: r.day.toISOString(),
+      requests: Number(r.requests),
+      tokens: Number(r.tokens),
+      cost: Number(r.cost),
+    }));
+  },
 };

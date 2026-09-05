@@ -429,23 +429,25 @@ document.addEventListener('DOMContentLoaded', async function() {
     return map[String(name || '').toLowerCase()] || '#657172';
   }
 
-  function normalize(balance, models, keys, usage) {
+  function normalize(balance, models, keys, usage, providers, rules, sessions, subscription) {
     var b = balance || {};
     var balNum = Number(b.balanceUsd || 0);
     var balanceStr = fmtUsd(balNum);
 
     var keyList = ((keys || {}).keys || []).map(function (k) {
       var mask = (k.keyPrefix || k.prefix || 'tkg') + '…' + (k.suffix || '');
-      var last = k.lastUsedAt || k.updatedAt;
+      var u = k.usage || {};
+      var lastUsed = u.lastUsedAt || k.lastUsedAt || k.updatedAt;
+      var reqCount = u.requestCount != null ? u.requestCount : (k.requestCount != null ? k.requestCount : 0);
       return {
         id: k.id,
         name: k.name || 'API Key',
         mask: mask,
         created: shortDate(k.createdAt),
-        used: last ? relTime(last) : 'hiç',
-        requests: String(k.requestCount != null ? k.requestCount : (k.usage != null ? k.usage : 0)),
-        statusColor: (k.revokedAt || k.revoked) ? '#F87171' : '#4ADE80',
-        status: (k.revokedAt || k.revoked) ? 'revoked' : 'active'
+        used: lastUsed ? relTime(lastUsed) : 'hiç',
+        requests: String(reqCount),
+        statusColor: (k.revokedAt || k.revoked || k.enabled === false) ? '#F87171' : '#4ADE80',
+        status: (k.revokedAt || k.revoked || k.enabled === false) ? 'revoked' : 'active'
       };
     });
 
@@ -501,6 +503,89 @@ document.addEventListener('DOMContentLoaded', async function() {
       };
     });
 
+    var providerList = ((providers || {}).providers || []).map(function (p) {
+      var health = p.health || {};
+      var status = String(health.status || 'unknown').toLowerCase();
+      var color = status === 'healthy' || status === 'up' ? '#4ADE80'
+                : status === 'degraded' ? '#F5A524'
+                : status === 'down' || status === 'unhealthy' ? '#F87171'
+                : '#657172';
+      return {
+        id: p.id,
+        name: p.displayName || p.name,
+        displayName: p.displayName || p.name,
+        slug: p.name,
+        enabled: p.enabled !== false,
+        enabledStr: p.enabled === false ? 'kapalı' : 'aktif',
+        status: status,
+        statusColor: color,
+        latency: health.latencyMs != null ? (Math.round(health.latencyMs) + 'ms') : '—',
+        errorRate: health.errorRate != null ? ((Number(health.errorRate) * 100).toFixed(1) + '%') : '—',
+        checkedAt: health.checkedAt ? relTime(health.checkedAt) : '—',
+        tint: providerTint(p.name)
+      };
+    });
+
+    var ruleList = ((rules || {}).rules || []).map(function (r) {
+      return {
+        id: r.id,
+        name: r.name,
+        description: r.description || '',
+        strategy: r.strategy,
+        priority: r.priority,
+        enabled: r.enabled !== false,
+        enabledStr: r.enabled === false ? 'kapalı' : 'aktif',
+        statusColor: r.enabled === false ? '#F87171' : '#4ADE80'
+      };
+    });
+
+    var sessionList = ((sessions || {}).sessions || []).map(function (s) {
+      return {
+        id: String(s.id || '').slice(0, 8),
+        title: s.title || 'Oturum',
+        model: s.currentModel || s.model || '—',
+        tokens: String(s.tokenCount || 0),
+        updated: relTime(s.updatedAt || s.createdAt),
+        created: shortDate(s.createdAt)
+      };
+    });
+
+    var sub = (subscription && subscription.subscription) ? subscription.subscription : null;
+    var subscriptionPayload = sub ? {
+      planName: sub.tier || 'Ücretsiz',
+      statusStr: sub.status || '—',
+      periodEndStr: sub.currentPeriodEnd ? shortDate(sub.currentPeriodEnd) : '—',
+      cancelStr: sub.cancelAtPeriodEnd ? 'dönem sonunda iptal' : 'yenilenecek',
+      active: true
+    } : {
+      planName: 'Ücretsiz',
+      statusStr: 'aktif',
+      periodEndStr: '—',
+      cancelStr: '—',
+      active: false
+    };
+
+    var analytics = ((usage || {}).analytics) || {};
+    var avgLatency = analytics.avgLatency != null ? analytics.avgLatency : 0;
+    var dailyUsage = (analytics.dailyUsage || []).map(function (d) {
+      return {
+        day: shortDate(d.day),
+        requests: d.requests || 0,
+        tokens: d.tokens || 0,
+        cost: fmtUsd(d.cost || 0)
+      };
+    });
+
+    var integrationsList = providerList.map(function (p) {
+      return {
+        name: p.displayName,
+        slug: p.slug,
+        status: p.enabled ? 'bağlı' : 'kapalı',
+        statusColor: p.enabled ? '#4ADE80' : '#657172',
+        tint: p.tint
+      };
+    });
+
     return {
       balanceStr: balanceStr,
       balanceNum: balNum,
@@ -511,8 +596,20 @@ document.addEventListener('DOMContentLoaded', async function() {
       log: recentList,
       dist: dist,
       bars: dist,
-      providers: [],
-      rules: [],
+      providers: providerList,
+      integrations: integrationsList,
+      integrationsList: integrationsList,
+      rules: ruleList,
+      sessions: sessionList,
+      requests: sessionList,
+      subscription: subscriptionPayload,
+      analytics: {
+        avgLatency: avgLatency,
+        avgLatencyStr: avgLatency ? (avgLatency + 'ms') : '—',
+        dailyUsage: dailyUsage
+      },
+      dailyUsage: dailyUsage,
+      avgLatency: avgLatency,
       summary: {
         totalRequests: summary.totalRequests || 0,
         totalTokens: summary.totalTokens || 0,
@@ -586,34 +683,134 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   window.__unichanl = { key: KEY, loading: true };
 
-  Promise.all([
-    j('/api/billing/balance'),
-    j('/api/models'),
-    j('/api/keys'),
-    j('/api/usage?limit=50')
-  ]).then(function (r) {
-    var payload = normalize(r[0], r[1], r[2], r[3]);
-    window.__unichanl = { key: KEY, loading: false, balance: r[0], models: r[1], keys: r[2], usage: r[3], payload: payload };
-    window.dispatchEvent(new CustomEvent('unichanl:data', { detail: window.__unichanl }));
+  function authHeaders() {
+    return { 'Content-Type': 'application/json', Authorization: 'Bearer ' + KEY };
+  }
 
+  function showToast(msg) {
+    var t = document.createElement('div');
+    t.textContent = msg;
+    t.style.cssText = 'position:fixed;right:20px;bottom:20px;z-index:99999;background:#111;color:#DFFF00;border:1px solid #DFFF00;padding:12px 18px;border-radius:8px;font:14px system-ui;box-shadow:0 6px 24px rgba(0,0,0,.4);opacity:0;transition:opacity .2s;';
+    document.body.appendChild(t);
+    requestAnimationFrame(function () { t.style.opacity = '1'; });
+    setTimeout(function () {
+      t.style.opacity = '0';
+      setTimeout(function () { t.remove(); }, 250);
+    }, 2600);
+  }
+
+  function detectAction(el) {
+    var txt = (el.textContent || '').trim().toLowerCase();
+    var closest = el.closest('[data-action]');
+    if (closest && closest.dataset.action) return closest.dataset.action;
+    if (/yeni anahtar|yeni api key|create.*key/i.test(txt)) return 'createKey';
+    if (/^sil$|revoke|iptal.*key/i.test(txt)) return 'revokeKey';
+    if (/yükle|top.?up|kredi.*yükle|bakiye.*yükle/i.test(txt)) return 'topup';
+    if (/kaydet|save.*setting/i.test(txt)) return 'saveSettings';
+    if (/yeni kural|create rule/i.test(txt)) return 'createRule';
+    if (/kural.*sil|delete rule/i.test(txt)) return 'deleteRule';
+    return null;
+  }
+
+  var refetching = false;
+  function refetchAll() {
+    if (refetching) return;
+    refetching = true;
+    fetchAll().then(function () { refetching = false; });
+  }
+
+  function fetchAll() {
+    return Promise.all([
+      j('/api/billing/balance'),
+      j('/api/models'),
+      j('/api/keys'),
+      j('/api/usage?limit=50'),
+      j('/api/providers'),
+      j('/api/rules'),
+      j('/api/sessions?limit=20'),
+      j('/api/billing/subscription')
+    ]).then(function (r) {
+      var payload = normalize(r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7]);
+      window.__unichanl = {
+        key: KEY, loading: false,
+        balance: r[0], models: r[1], keys: r[2], usage: r[3],
+        providers: r[4], rules: r[5], sessions: r[6], subscription: r[7],
+        payload: payload
+      };
+      window.dispatchEvent(new CustomEvent('unichanl:data', { detail: window.__unichanl }));
+      injectProps(payload);
+      patchLiterals(buildLiteralMap(payload));
+      return payload;
+    });
+  }
+
+  document.body.addEventListener('click', function (e) {
+    var t = e.target.closest ? e.target.closest('button,a,[role="button"]') : null;
+    if (!t) return;
+    var action = detectAction(t);
+    if (!action) return;
+
+    if (action === 'createKey') {
+      e.preventDefault(); e.stopPropagation();
+      var name = prompt('API key adı:', 'dashboard-' + Date.now().toString(36));
+      if (!name) return;
+      fetch('/api/keys', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ name: name }) })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (res && res.key) {
+            prompt('Yeni API anahtarınız (bir daha gösterilmeyecek):', res.key);
+            refetchAll();
+          } else {
+            showToast('Anahtar oluşturulamadı');
+          }
+        })
+        .catch(function () { showToast('Anahtar oluşturulamadı'); });
+    } else if (action === 'revokeKey') {
+      e.preventDefault(); e.stopPropagation();
+      var row = t.closest('[data-key-id]');
+      var id = t.dataset.keyId || (row && row.dataset.keyId);
+      if (!id) { showToast('Key ID bulunamadı'); return; }
+      if (!confirm('Bu key silinsin mi?')) return;
+      fetch('/api/keys/' + id, { method: 'DELETE', headers: authHeaders() })
+        .then(function () { showToast('Anahtar iptal edildi'); refetchAll(); })
+        .catch(function () { showToast('Silme başarısız'); });
+    } else if (action === 'topup') {
+      e.preventDefault(); e.stopPropagation();
+      var amtStr = prompt('Yükleme miktarı (USD):', '10');
+      if (!amtStr) return;
+      var amt = parseFloat(amtStr);
+      if (!isFinite(amt) || amt < 5) { showToast('Minimum $5'); return; }
+      fetch('/api/billing/topup', {
+        method: 'POST', headers: authHeaders(),
+        body: JSON.stringify({ amountUsd: amt, successUrl: location.origin + '/dashboard.html' })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          if (res && res.url) location.href = res.url;
+          else showToast('Ödeme başlatılamadı');
+        })
+        .catch(function () { showToast('Ödeme başlatılamadı'); });
+    } else if (action === 'saveSettings' || action === 'createRule' || action === 'deleteRule' || action === 'toggleRule') {
+      e.preventDefault(); e.stopPropagation();
+      showToast('Bu özellik yakında aktif olacak');
+    }
+  }, true);
+
+  fetchAll().then(function (payload) {
     var literals = buildLiteralMap(payload);
-
     waitForBundle(function () {
       injectProps(payload);
       patchLiterals(literals);
       patched = true;
 
-      // Re-apply on any subsequent DOM mutation (bundle re-renders or route changes).
-      // characterData:false — React swaps text nodes rather than editing them, so
-      // childList/subtree covers real updates without echoing our own patches.
       var mo = new MutationObserver(function () {
-        // Debounce with rAF so we batch a whole render pass.
         if (mo._pending) return;
         mo._pending = true;
         requestAnimationFrame(function () {
           mo._pending = false;
-          injectProps(payload);
-          patchLiterals(literals);
+          var p = (window.__unichanl && window.__unichanl.payload) || payload;
+          injectProps(p);
+          patchLiterals(buildLiteralMap(p));
         });
       });
       mo.observe(document.body, { childList: true, subtree: true });
