@@ -31,17 +31,19 @@
       '#' + STEPPER_ID + ' .uc-fill{height:100%;background:' + ACCENT + ';transition:width .3s ease;box-shadow:0 0 8px ' + ACCENT + '}',
       '#' + STEPPER_ID + ' .uc-pct{font:700 12px "JetBrains Mono",monospace;color:' + ACCENT + ';min-width:34px;text-align:right}',
 
-      '#' + STEPPER_ID + ' .uc-strip{display:flex;align-items:stretch;gap:0;margin:16px 0 0;background:' + PAGE_BG + ';border:1px solid ' + BORDER + ';border-radius:12px;padding:6px;overflow-x:auto}',
-      '#' + STEPPER_ID + ' .uc-chip{flex:1 1 0;min-width:150px;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;position:relative;transition:background .15s;cursor:default}',
-      '#' + STEPPER_ID + ' .uc-chip + .uc-chip::before{content:"";position:absolute;left:-1px;top:50%;transform:translateY(-50%);width:1px;height:60%;background:' + BORDER_DEEP + '}',
-      '#' + STEPPER_ID + ' .uc-chip.current{background:' + ACCENT_SOFT + ';box-shadow:inset 0 0 0 1px ' + ACCENT_BORDER + '}',
-      '#' + STEPPER_ID + ' .uc-chip.done .uc-chip-title{color:' + ACCENT + '}',
-      '#' + STEPPER_ID + ' .uc-chip.future .uc-chip-title{color:' + MUTED + '}',
-      '#' + STEPPER_ID + ' .uc-circle{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 12px "JetBrains Mono",monospace;flex:none}',
-      '#' + STEPPER_ID + ' .uc-circle.done{background:' + ACCENT + ';color:' + PAGE_BG + '}',
-      '#' + STEPPER_ID + ' .uc-circle.current{background:' + ACCENT + ';color:' + PAGE_BG + ';box-shadow:0 0 0 3px ' + ACCENT_SOFT + '}',
-      '#' + STEPPER_ID + ' .uc-circle.future{background:transparent;border:1.5px solid ' + BORDER_DEEP + ';color:' + DIM + '}',
-      '#' + STEPPER_ID + ' .uc-chip-title{font:600 12.5px Archivo,sans-serif;color:' + TEXT + ';line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+      '#' + STEPPER_ID + ' .uc-strip{display:flex;align-items:flex-start;gap:0;margin:20px 0 0;overflow-x:auto;padding-bottom:4px}',
+      '#' + STEPPER_ID + ' .uc-step{display:flex;flex-direction:column;align-items:center;position:relative;flex:1 1 0;min-width:80px}',
+      '#' + STEPPER_ID + ' .uc-step + .uc-step::before{content:"";position:absolute;top:13px;right:50%;left:-50%;height:2px;background:' + BORDER + ';z-index:0}',
+      '#' + STEPPER_ID + ' .uc-step.done + .uc-step::before{background:' + ACCENT + '}',
+      '#' + STEPPER_ID + ' .uc-step.current + .uc-step::before{background:' + ACCENT + '}',
+      '#' + STEPPER_ID + ' .uc-circle{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 11px "JetBrains Mono",monospace;flex:none;position:relative;z-index:1}',
+      '#' + STEPPER_ID + ' .uc-circle.done{background:' + ACCENT + ';color:' + PAGE_BG + ';border:2px solid ' + ACCENT + '}',
+      '#' + STEPPER_ID + ' .uc-circle.current{background:transparent;border:2px solid ' + ACCENT + ';color:' + ACCENT + '}',
+      '#' + STEPPER_ID + ' .uc-circle.future{background:transparent;border:2px solid ' + DIM + ';color:' + DIM + '}',
+      '#' + STEPPER_ID + ' .uc-step-label{font:600 11px Archivo,sans-serif;text-align:center;margin-top:6px;line-height:1.2;max-width:90px;white-space:normal}',
+      '#' + STEPPER_ID + ' .uc-step.done .uc-step-label{color:' + ACCENT + '}',
+      '#' + STEPPER_ID + ' .uc-step.current .uc-step-label{color:' + TEXT + '}',
+      '#' + STEPPER_ID + ' .uc-step.future .uc-step-label{color:' + DIM + '}',
 
       '#' + STEPPER_ID + ' .uc-active{margin-top:14px;background:' + CARD_INNER + ';border:1px solid ' + ACCENT_BORDER + ';border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}',
       '#' + STEPPER_ID + ' .uc-active-l{flex:1 1 260px;min-width:0}',
@@ -65,8 +67,10 @@
       '#' + STEPPER_ID + ' .uc-done-banner strong{color:' + ACCENT + ';font-weight:700}',
       '#' + STEPPER_ID + ' .uc-done-banner .uc-check{color:' + ACCENT + ';display:inline-flex}',
 
+      '#' + STEPPER_ID + ' .uc-current-step-label{font:700 10px "JetBrains Mono",monospace;letter-spacing:.14em;text-transform:uppercase;color:' + ACCENT + ';margin:18px 0 6px}',
+
       '@media (max-width:720px){#' + STEPPER_ID + ' .uc-strip{overflow-x:auto}',
-      '#' + STEPPER_ID + ' .uc-chip{min-width:140px}',
+      '#' + STEPPER_ID + ' .uc-step{min-width:72px}',
       '#' + STEPPER_ID + ' .uc-active{flex-direction:column;align-items:stretch}',
       '#' + STEPPER_ID + ' .uc-active-r{justify-content:flex-start}}'
     ].join('\n');
@@ -186,16 +190,16 @@
       var idx = i + 1;
       var done = onb.steps[s.key] && onb.steps[s.key].done;
       var state = done ? 'done' : (idx === current ? 'current' : 'future');
-      var badge = done ? '<span class="uc-badge">' + checkSvg(9) + '</span>' : '';
       return [
-        '<div class="uc-chip ' + state + '">',
+        '<div class="uc-step ' + state + '">',
           circle(idx, state),
-          '<span class="uc-chip-title">' + esc(s.title) + badge + '</span>',
+          '<span class="uc-step-label">' + esc(s.title) + '</span>',
         '</div>'
       ].join('');
     }).join('');
 
-    var activeBlock = current ? activeCard(current, onb) : '';
+    var currentStepLabel = current ? '<div class="uc-current-step-label">\u015eUANKI ADIM</div>' : '';
+    var activeBlock = current ? currentStepLabel + activeCard(current, onb) : '';
 
     var doneBanner = (!current && doneCount > 0) ? [
       '<div class="uc-done-banner">',
@@ -371,7 +375,17 @@
   }
 
   ensureStyles();
+  window.addEventListener('unichanl:onboarding', mount);
   window.addEventListener('unichanl:data', mount);
+
+  window.addEventListener('unichanl:inflated', function () {
+    if (window.__unichanl && window.__unichanl.onboarding) {
+      try { mo.disconnect(); } catch (_) {}
+      mo.observe(document.body, { childList: true, subtree: true });
+      mount();
+    }
+  });
+
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (t && t.closest && t.closest('[data-nav]')) {

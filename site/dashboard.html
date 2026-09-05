@@ -373,6 +373,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (window.Babel && typeof window.Babel.transformScriptTags === 'function') {
       window.Babel.transformScriptTags();
     }
+    window.dispatchEvent(new CustomEvent('unichanl:inflated'));
   } catch (err) {
     setStatus('Error unpacking: ' + err.message);
     console.error('Bundle unpack error:', err);
@@ -712,6 +713,20 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   window.__unichanl = { key: KEY, loading: true };
 
+  // Early onboarding fetch — fires independently before fetchAll completes
+  (function () {
+    fetch('/api/dashboard/onboarding-status', {
+      headers: { Authorization: 'Bearer ' + KEY }
+    }).then(function (r) {
+      return r.ok ? r.json() : null;
+    }).then(function (o) {
+      if (!o) return;
+      if (!window.__unichanl) window.__unichanl = {};
+      window.__unichanl.onboarding = o;
+      window.dispatchEvent(new CustomEvent('unichanl:onboarding', { detail: o }));
+    }).catch(function () {});
+  }());
+
   function authHeaders() {
     return { 'Content-Type': 'application/json', Authorization: 'Bearer ' + KEY };
   }
@@ -757,15 +772,15 @@ document.addEventListener('DOMContentLoaded', async function() {
       j('/api/providers'),
       j('/api/rules'),
       j('/api/sessions?limit=20'),
-      j('/api/billing/subscription'),
-      j('/api/dashboard/onboarding-status').catch(function () { return null; })
+      j('/api/billing/subscription')
     ]).then(function (r) {
       var payload = normalize(r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7]);
+      var prevOnboarding = window.__unichanl && window.__unichanl.onboarding;
       window.__unichanl = {
         key: KEY, loading: false,
         balance: r[0], models: r[1], keys: r[2], usage: r[3],
         providers: r[4], rules: r[5], sessions: r[6], subscription: r[7],
-        onboarding: r[8],
+        onboarding: prevOnboarding || null,
         payload: payload
       };
       window.dispatchEvent(new CustomEvent('unichanl:data', { detail: window.__unichanl }));
@@ -852,6 +867,6 @@ document.addEventListener('DOMContentLoaded', async function() {
   });
 })();
 </script>
-<script src="/_onboarding.js?v=3" defer></script>
+<script src="/_onboarding.js?v=4" defer></script>
 </body>
 </html>
