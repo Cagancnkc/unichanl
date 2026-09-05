@@ -671,6 +671,25 @@ document.addEventListener('DOMContentLoaded', async function() {
   // the template and get replaced when propOverrides.models kicks in.
   var patched = false;
   function buildLiteralMap(payload) {
+    if (!payload || typeof payload !== 'object') {
+      return {
+        '12,842': '—',
+        '▲ 8.2%': '',
+        'geçen haftaya göre': '',
+        '99.2%': '—',
+        '▲ 0.3%': '',
+        'yük devretmeler dahil': '',
+        '1.8s': '—',
+        '▼ 0.2s': '',
+        'modeller arası p50': '',
+        '$42.18': '—',
+        '$61.40 tasarruf': '',
+        'yönlendirme ile': '',
+        '89,204': '—',
+        '402M': '—',
+        '$1,284.60': '—'
+      };
+    }
     var s = payload.summary || {};
     var totalReq = s.totalRequests || 0;
     var totalReqStr = totalReq ? totalReq.toLocaleString('tr-TR') : '—';
@@ -678,6 +697,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     var totalTokensStr = totalTokens ? totalTokens.toLocaleString('tr-TR') : '—';
     var avgMs = Number(payload.avgLatency || 0);
     var latStr = avgMs > 0 ? (avgMs >= 1000 ? (avgMs / 1000).toFixed(1) + 's' : Math.round(avgMs) + 'ms') : '—';
+    var balanceStr = payload.balanceStr || '—';
+    var totalCostStr = s.totalCostStr || '—';
     return {
       '12,842': totalReqStr,
       '▲ 8.2%': '',
@@ -688,12 +709,12 @@ document.addEventListener('DOMContentLoaded', async function() {
       '1.8s': latStr,
       '▼ 0.2s': '',
       'modeller arası p50': '',
-      '$42.18': payload.balanceStr,
+      '$42.18': balanceStr,
       '$61.40 tasarruf': '',
       'yönlendirme ile': '',
       '89,204': totalReqStr,
       '402M': totalTokensStr,
-      '$1,284.60': s.totalCostStr || '—'
+      '$1,284.60': totalCostStr
     };
   }
   function patchLiterals(map) {
@@ -787,6 +808,9 @@ document.addEventListener('DOMContentLoaded', async function() {
       injectProps(payload);
       patchLiterals(buildLiteralMap(payload));
       return payload;
+    }).catch(function (e) {
+      patchLiterals(buildLiteralMap(null));
+      throw e;
     });
   }
 
