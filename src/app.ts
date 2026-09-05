@@ -18,6 +18,7 @@ import { authRoutes } from './api/routes/auth.js';
 import { providerRoutes } from './api/routes/providers.js';
 import { ruleRoutes } from './api/routes/rules.js';
 import { sessionRoutes } from './api/routes/sessions.js';
+import { onboardingRoutes } from './api/routes/onboarding.js';
 import { generateRequestId } from './utils/id.js';
 
 export async function createApp() {
@@ -66,6 +67,7 @@ export async function createApp() {
       await protectedApp.register(providerRoutes, { prefix: '/api' });
       await protectedApp.register(ruleRoutes, { prefix: '/api' });
       await protectedApp.register(sessionRoutes, { prefix: '/api' });
+      await protectedApp.register(onboardingRoutes, { prefix: '/api' });
     },
   );
 

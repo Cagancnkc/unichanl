@@ -661,9 +661,29 @@ document.addEventListener('DOMContentLoaded', async function() {
   // the template and get replaced when propOverrides.models kicks in.
   var patched = false;
   function buildLiteralMap(payload) {
+    var s = payload.summary || {};
+    var totalReq = s.totalRequests || 0;
+    var totalReqStr = totalReq ? totalReq.toLocaleString('tr-TR') : '—';
+    var totalTokens = s.totalTokens || 0;
+    var totalTokensStr = totalTokens ? totalTokens.toLocaleString('tr-TR') : '—';
+    var avgMs = Number(payload.avgLatency || 0);
+    var latStr = avgMs > 0 ? (avgMs >= 1000 ? (avgMs / 1000).toFixed(1) + 's' : Math.round(avgMs) + 'ms') : '—';
     return {
+      '12,842': totalReqStr,
+      '▲ 8.2%': '',
+      'geçen haftaya göre': '',
+      '99.2%': '—',
+      '▲ 0.3%': '',
+      'yük devretmeler dahil': '',
+      '1.8s': latStr,
+      '▼ 0.2s': '',
+      'modeller arası p50': '',
       '$42.18': payload.balanceStr,
-      '$61.40 tasarruf': ''
+      '$61.40 tasarruf': '',
+      'yönlendirme ile': '',
+      '89,204': totalReqStr,
+      '402M': totalTokensStr,
+      '$1,284.60': s.totalCostStr || '—'
     };
   }
   function patchLiterals(map) {
@@ -728,13 +748,15 @@ document.addEventListener('DOMContentLoaded', async function() {
       j('/api/providers'),
       j('/api/rules'),
       j('/api/sessions?limit=20'),
-      j('/api/billing/subscription')
+      j('/api/billing/subscription'),
+      j('/api/dashboard/onboarding-status').catch(function () { return null; })
     ]).then(function (r) {
       var payload = normalize(r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7]);
       window.__unichanl = {
         key: KEY, loading: false,
         balance: r[0], models: r[1], keys: r[2], usage: r[3],
         providers: r[4], rules: r[5], sessions: r[6], subscription: r[7],
+        onboarding: r[8],
         payload: payload
       };
       window.dispatchEvent(new CustomEvent('unichanl:data', { detail: window.__unichanl }));
@@ -821,5 +843,6 @@ document.addEventListener('DOMContentLoaded', async function() {
   });
 })();
 </script>
+<script src="/_onboarding.js" defer></script>
 </body>
 </html>

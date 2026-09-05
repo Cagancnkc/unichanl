@@ -94,4 +94,17 @@ export const creditRepository = {
       take: limit,
     });
   },
+
+  async hasRealTopup(userId: string): Promise<Date | null> {
+    const topups = await prisma.creditTransaction.findMany({
+      where: { userId, type: 'topup' },
+      orderBy: { createdAt: 'asc' },
+      select: { createdAt: true, metadata: true },
+    });
+    for (const tx of topups) {
+      const meta = (tx.metadata ?? {}) as Record<string, unknown>;
+      if (meta.source !== 'signup_bonus') return tx.createdAt;
+    }
+    return null;
+  },
 };
