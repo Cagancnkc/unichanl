@@ -64,7 +64,7 @@ export const usageRepository = {
         COUNT(*)::bigint AS requests,
         (COALESCE(SUM("inputTokens"), 0) + COALESCE(SUM("outputTokens"), 0))::bigint AS tokens,
         COALESCE(SUM("totalCostUsd"), 0)::float8 AS cost
-      FROM "UsageRecord"
+      FROM "usage_records"
       WHERE "userId" = ${userId} AND "createdAt" >= ${since}
       GROUP BY day
       ORDER BY day ASC
