@@ -32,7 +32,7 @@ export async function chatRoutes(app: FastifyInstance) {
             userId: user.id,
             customerEmail: user.email,
             amountUsd: Number(settings.autoRechargeAmount ?? 5),
-            successUrl: process.env.APP_URL ? `${process.env.APP_URL}/balance.html` : undefined,
+            successUrl: process.env.APP_URL ? `${process.env.APP_URL}/dashboard.html` : undefined,
           });
           autoRechargeUrl = sess.url;
         } catch (err) {
