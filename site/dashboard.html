@@ -518,15 +518,19 @@ LOADERS.models=async function(){
         <td class="mono" style="text-align:right;color:#98A3A3">${m.contextWindow?fmtInt(m.contextWindow):'—'}</td>
         <td>${pill}</td>
         <td style="text-align:center">
-          <input type="checkbox" class="model-toggle" data-model-id="${esc(m.id)}" ${m.enabled?'checked':''} style="cursor:pointer">
+          <button type="button" class="togg model-toggle${m.enabled?' on':''}" data-model-id="${esc(m.id)}" aria-pressed="${m.enabled?'true':'false'}" title="${m.enabled?'Aktif':'Pasif'}"></button>
         </td>
       </tr>`;
     }).join('')}</tbody></table>`;
 
-    document.querySelectorAll('.model-toggle').forEach(cb=>{
-      cb.addEventListener('change',async e=>{
-        const modelId=e.target.dataset.modelId;
-        const enabled=e.target.checked;
+    document.querySelectorAll('.model-toggle').forEach(btn=>{
+      btn.addEventListener('click',async e=>{
+        const el=e.currentTarget;
+        const modelId=el.dataset.modelId;
+        const enabled=!el.classList.contains('on');
+        el.classList.toggle('on',enabled);
+        el.setAttribute('aria-pressed',enabled?'true':'false');
+        el.title=enabled?'Aktif':'Pasif';
         try{
           await api('/api/models/'+encodeURIComponent(modelId)+'/toggle',{
             method:'PATCH',
@@ -534,7 +538,9 @@ LOADERS.models=async function(){
           });
           toast(enabled?'Model aktifleştirildi':'Model devre dışı bırakıldı','info');
         }catch(err){
-          e.target.checked=!enabled;
+          el.classList.toggle('on',!enabled);
+          el.setAttribute('aria-pressed',!enabled?'true':'false');
+          el.title=!enabled?'Aktif':'Pasif';
           toast('Değişiklik başarısız oldu','error');
         }
       });
