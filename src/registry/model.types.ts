@@ -47,6 +47,7 @@ export interface ModelMetadata {
   enabled: boolean;
   availability: AvailabilityState;
   health: HealthSnapshot;
+  campaignUnlimited?: boolean;
 }
 
 export function emptyHealth(): HealthSnapshot {

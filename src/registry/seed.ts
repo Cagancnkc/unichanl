@@ -22,6 +22,7 @@ export function seedModels(): ModelMetadata[] {
       tags: ['reasoning', 'code'],
       enabled: true,
       availability: 'AVAILABLE',
+      campaignUnlimited: true,
     }),
     m({
       id: 'nvidia/llama-3.3-nemotron-super-49b-v1',
@@ -38,6 +39,7 @@ export function seedModels(): ModelMetadata[] {
       tags: ['reasoning', 'fast'],
       enabled: true,
       availability: 'AVAILABLE',
+      campaignUnlimited: true,
     }),
     m({
       id: 'nvidia/qwen2.5-coder-32b-instruct',
@@ -54,6 +56,7 @@ export function seedModels(): ModelMetadata[] {
       tags: ['code', 'fast'],
       enabled: true,
       availability: 'AVAILABLE',
+      campaignUnlimited: true,
     }),
     m({
       id: 'nvidia/mistral-nemotron',
@@ -70,6 +73,7 @@ export function seedModels(): ModelMetadata[] {
       tags: ['chat', 'fast'],
       enabled: true,
       availability: 'AVAILABLE',
+      campaignUnlimited: true,
     }),
     m({
       id: 'nvidia/deepseek-r1',
@@ -86,6 +90,7 @@ export function seedModels(): ModelMetadata[] {
       tags: ['reasoning', 'long-context'],
       enabled: true,
       availability: 'AVAILABLE',
+      campaignUnlimited: true,
     }),
 
     m({

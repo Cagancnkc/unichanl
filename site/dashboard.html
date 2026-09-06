@@ -418,12 +418,35 @@ LOADERS.overview=async function(){
 
 /* ---------- MODELS ---------- */
 LOADERS.models=async function(){
+  const LOGOS={
+    'nvidia':'https://logo.clearbit.com/nvidia.com',
+    'openrouter':'https://logo.clearbit.com/openrouter.ai',
+    'anthropic':'https://logo.clearbit.com/anthropic.com',
+    'openai':'https://logo.clearbit.com/openai.com',
+    'meta':'https://logo.clearbit.com/meta.com',
+    'mistral':'https://logo.clearbit.com/mistral.ai',
+    'deepseek':'https://logo.clearbit.com/deepseek.com',
+    'qwen':'https://logo.clearbit.com/qwenlm.github.io'
+  };
+  function getProviderKey(modelId){
+    if(modelId.startsWith('nvidia/'))return'nvidia';
+    if(modelId.startsWith('openrouter/')){
+      const p=modelId.split('/')[1];
+      return p||'openrouter';
+    }
+    return'openrouter';
+  }
+  function getLogo(modelId){
+    const provider=getProviderKey(modelId);
+    return LOGOS[provider]||LOGOS['openrouter'];
+  }
   const el=$('#view-models');
   el.innerHTML=`
     <div style="max-width:1180px;margin:0 auto">
       <div class="crumb">UNICHANL / KATALOG</div>
       <h1 class="h1">Modeller</h1>
       <p class="sub">Tek uç nokta arkasında her model. Canlı fiyatları, gecikmeyi ve erişilebilirliği karşılaştırın, ardından herhangi birine yönlendirin.</p>
+      <div id="campaign-section" style="display:none;margin-bottom:2rem"></div>
       <div class="card" style="overflow:hidden">
         <div id="models-body"><div class="empty">Yükleniyor…</div></div>
       </div>
@@ -432,22 +455,90 @@ LOADERS.models=async function(){
   const models=data?.models||[];
   const body=$('#models-body');
   if(!models.length){body.innerHTML='<div class="empty">Katalogda model yok. Backend seed\'i çalıştırın.</div>';return;}
+
+  const campaignModels=models.filter(m=>m.campaignUnlimited);
+  const regularModels=models.filter(m=>!m.campaignUnlimited);
+
+  if(campaignModels.length){
+    const campEl=$('#campaign-section');
+    campEl.style.display='block';
+    campEl.innerHTML=`
+      <div class="card" style="background:linear-gradient(135deg,#1a3a52 0%,#2d5a3d 100%);border:1px solid #3d7a5d">
+        <div style="padding:1.5rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+            <div>
+              <h2 style="margin:0;color:#E8F5E9;font-size:1.25rem;font-weight:600">Sınırsız Modeller</h2>
+              <p style="margin:0.5rem 0 0 0;color:#B0D9C9;font-size:0.9rem">$5 / 3 Ay • NVIDIA'nın Kampanyası</p>
+            </div>
+            <span class="pill ok" style="padding:0.4rem 0.8rem">Aktif</span>
+          </div>
+          <p style="color:#A0D0BF;font-size:0.85rem;margin:0.5rem 0 1.5rem 0">NVIDIA'nın sınırlı süreli teklifindeki modeller — hiçbir token sayacı yok, sınırsız kullanım.</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem">
+            ${campaignModels.map(m=>{
+              const logo=getLogo(m.id);
+              return `
+                <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:0.5rem;padding:1rem;display:flex;flex-direction:column;gap:0.75rem">
+                  <div style="display:flex;align-items:center;gap:0.75rem">
+                    <img src="${esc(logo)}" alt="Logo" style="width:32px;height:32px;border-radius:0.25rem;background:#fff;object-fit:contain" onerror="this.style.display='none'">
+                    <div style="flex:1">
+                      <div style="color:#E8F5E9;font-size:0.85rem;font-weight:500">${esc(m.displayName||m.id)}</div>
+                      <div style="color:#80B0A0;font-size:0.75rem">${esc(m.id)}</div>
+                    </div>
+                  </div>
+                  <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+                    ${m.tags.slice(0,2).map(t=>`<span style="background:rgba(255,255,255,0.1);color:#A0D0BF;padding:0.25rem 0.5rem;border-radius:0.25rem;font-size:0.7rem">${esc(t)}</span>`).join('')}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      </div>`;
+  }
+
   body.innerHTML=`<table class="tbl">
-    <thead><tr><th>MODEL</th><th>SAĞLAYICI</th><th style="text-align:right">GİRDİ /1K</th><th style="text-align:right">ÇIKTI /1K</th><th style="text-align:right">CONTEXT</th><th>DURUM</th></tr></thead>
-    <tbody>${models.map(m=>{
+    <thead><tr><th>MODEL</th><th>SAĞLAYICI</th><th style="text-align:right">GİRDİ /1K</th><th style="text-align:right">ÇIKTI /1K</th><th style="text-align:right">CONTEXT</th><th>DURUM</th><th style="text-align:center">AKTIF</th></tr></thead>
+    <tbody>${regularModels.map(m=>{
       const cb=m.circuitState||'closed';
       const pill=cb==='open'?'<span class="pill err">Kapalı</span>':cb==='half-open'?'<span class="pill warn">Test</span>':'<span class="pill ok">Sağlıklı</span>';
       const inPrice=m.inputPricePer1k??m.pricing?.inputPer1k??0;
       const outPrice=m.outputPricePer1k??m.pricing?.outputPer1k??0;
+      const logo=getLogo(m.id);
       return `<tr>
-        <td><div style="display:flex;flex-direction:column;gap:2px"><span style="color:#F2F5F4;font-weight:600">${esc(m.displayName||m.id)}</span><span class="mono" style="font-size:11px;color:#657172">${esc(m.id)}</span></div></td>
+        <td><div style="display:flex;align-items:center;gap:0.75rem">
+          <img src="${esc(logo)}" alt="Logo" style="width:24px;height:24px;border-radius:0.25rem;background:#fff;object-fit:contain" onerror="this.style.display='none'">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <span style="color:#F2F5F4;font-weight:600">${esc(m.displayName||m.id)}</span>
+            <span class="mono" style="font-size:11px;color:#657172">${esc(m.id)}</span>
+          </div>
+        </div></td>
         <td class="mono" style="font-size:12px;color:#98A3A3">${esc(m.provider||'—')}</td>
         <td class="mono" style="text-align:right;color:#C7CFCE">${fmtUsd(inPrice)}</td>
         <td class="mono" style="text-align:right;color:#C7CFCE">${fmtUsd(outPrice)}</td>
         <td class="mono" style="text-align:right;color:#98A3A3">${m.contextWindow?fmtInt(m.contextWindow):'—'}</td>
         <td>${pill}</td>
+        <td style="text-align:center">
+          <input type="checkbox" class="model-toggle" data-model-id="${esc(m.id)}" ${m.enabled?'checked':''} style="cursor:pointer">
+        </td>
       </tr>`;
     }).join('')}</tbody></table>`;
+
+    document.querySelectorAll('.model-toggle').forEach(cb=>{
+      cb.addEventListener('change',async e=>{
+        const modelId=e.target.dataset.modelId;
+        const enabled=e.target.checked;
+        try{
+          await api('/api/models/'+encodeURIComponent(modelId)+'/toggle',{
+            method:'PATCH',
+            body:JSON.stringify({enabled})
+          });
+          toast(enabled?'Model aktifleştirildi':'Model devre dışı bırakıldı','info');
+        }catch(err){
+          e.target.checked=!enabled;
+          toast('Değişiklik başarısız oldu','error');
+        }
+      });
+    });
 };
 
 /* ---------- PROVIDERS ---------- */
