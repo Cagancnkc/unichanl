@@ -21,9 +21,9 @@ export async function onboardingRoutes(app: FastifyInstance): Promise<void> {
     };
     const cli: StepState = { done: usageCount >= 1, completedAt: null };
     const apiKey: StepState = { done: apiKeyCount >= 1, completedAt: null };
-    const firstRun: StepState = { done: usageCount >= 2, completedAt: null };
+    const firstRun: StepState = { done: usageCount >= 3, completedAt: null };
 
-    const stepOrder = [topup, cli, apiKey, firstRun];
+    const stepOrder = [topup, apiKey, cli, firstRun];
     let currentStep: number | null = null;
     for (let i = 0; i < stepOrder.length; i++) {
       if (!stepOrder[i].done) {

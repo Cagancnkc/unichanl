@@ -95,8 +95,8 @@
   function stepDescriptors() {
     return [
       { key: 'topup',    title: 'Bakiye y\u00fckle' },
-      { key: 'cli',      title: 'CLI ba\u011fla' },
       { key: 'apiKey',   title: 'Anahtar olu\u015ftur' },
+      { key: 'cli',      title: 'CLI ba\u011fla' },
       { key: 'firstRun', title: '\u0130lk istek' }
     ];
   }
@@ -104,8 +104,8 @@
   function stepActiveTitle(step) {
     var map = {
       1: 'Bakiyeni y\u00fckle',
-      2: "CLI'yi Unichanl'a ba\u011fla",
-      3: 'Yeni bir API anahtar\u0131 olu\u015ftur',
+      2: 'Yeni bir API anahtar\u0131 olu\u015ftur',
+      3: "CLI'yi Unichanl'a ba\u011fla",
       4: '\u0130lk iste\u011fini g\u00f6nder'
     };
     return map[step] || '';
@@ -154,19 +154,19 @@
         '<button id="uc-topup-go" class="uc-btn">Bakiye Y\u00fckle</button>'
       ].join('');
     } else if (step === 2) {
+      label = 'API ANAHTARI';
+      title = stepActiveTitle(2);
+      hint = 'Uygulaman veya CLI i\u00e7in yeni bir anahtar \u00fcret. Anahtar sadece bir kez g\u00f6r\u00fcn\u00fcr.';
+      right = '<button id="uc-create-key" class="uc-btn">Anahtar Olu\u015ftur</button>';
+    } else if (step === 3) {
       var snippet = 'ANTHROPIC_BASE_URL=http://127.0.0.1:20128\nANTHROPIC_AUTH_TOKEN=' + maskedKeyHint();
       label = 'CLI YAPILANDIRMASI';
-      title = stepActiveTitle(2);
+      title = stepActiveTitle(3);
       hint = 'Terminal ortam\u0131na a\u015fa\u011f\u0131daki de\u011fi\u015fkenleri ekleyerek Claude Code / Codex trafi\u011fini Unichanl\u2019a y\u00f6nlendir.';
       right = [
         '<pre id="uc-cfg-pre" class="uc-pre">' + esc(snippet) + '</pre>',
         '<button id="uc-copy-cfg" class="uc-btn ghost">Kopyala</button>'
       ].join('');
-    } else if (step === 3) {
-      label = 'API ANAHTARI';
-      title = stepActiveTitle(3);
-      hint = 'Uygulaman veya CLI i\u00e7in yeni bir anahtar \u00fcret. Anahtar sadece bir kez g\u00f6r\u00fcn\u00fcr.';
-      right = '<button id="uc-create-key" class="uc-btn">Anahtar Olu\u015ftur</button>';
     } else if (step === 4) {
       var snip = 'claude "Merhaba, \u00e7al\u0131\u015f\u0131yor musun?"';
       label = '\u0130LK \u0130STEK';
@@ -190,7 +190,7 @@
 
   function buildStepperHTML(onb) {
     var steps = stepDescriptors();
-    var stateKeys = ['topup', 'cli', 'apiKey', 'firstRun'];
+    var stateKeys = ['topup', 'apiKey', 'cli', 'firstRun'];
     var doneCount = 0;
     stateKeys.forEach(function (k) { if (onb.steps[k] && onb.steps[k].done) doneCount++; });
     var pct = onb.progressPercent != null ? onb.progressPercent : Math.round((doneCount / 4) * 100);
@@ -373,6 +373,53 @@
       }).catch(function () {});
   }
 
+  var pollHandle = null;
+  function startPolling() {
+    if (pollHandle) return;
+    pollHandle = setInterval(function () {
+      if (document.visibilityState === 'hidden') return;
+      refreshOnboarding();
+    }, 15000);
+  }
+  function stopPolling() {
+    if (!pollHandle) return;
+    clearInterval(pollHandle);
+    pollHandle = null;
+  }
+
+  function updateProgressInPlace(existing, onb) {
+    var stateKeys = ['topup', 'apiKey', 'cli', 'firstRun'];
+    var doneCount = 0;
+    stateKeys.forEach(function (k) { if (onb.steps[k] && onb.steps[k].done) doneCount++; });
+    var pct = onb.progressPercent != null ? onb.progressPercent : Math.round((doneCount / 4) * 100);
+    var current = onb.currentStep;
+
+    var fill = existing.querySelector('.uc-fill');
+    if (fill) fill.style.width = pct + '%';
+    var pctEl = existing.querySelector('.uc-pct');
+    if (pctEl) pctEl.textContent = '%' + pct;
+    var countEl = existing.querySelector('.uc-count');
+    if (countEl) countEl.textContent = '4 ad\u0131mdan ' + doneCount + stepSuffix(doneCount);
+
+    var steps = stepDescriptors();
+    var stepNodes = existing.querySelectorAll('.uc-strip .uc-step');
+    steps.forEach(function (s, i) {
+      var node = stepNodes[i];
+      if (!node) return;
+      var idx = i + 1;
+      var done = onb.steps[s.key] && onb.steps[s.key].done;
+      var state = done ? 'done' : (idx === current ? 'current' : 'future');
+      node.classList.remove('done', 'current', 'future');
+      node.classList.add(state);
+      var circleEl = node.querySelector('.uc-circle');
+      if (circleEl) {
+        circleEl.classList.remove('done', 'current', 'future');
+        circleEl.classList.add(state);
+        circleEl.innerHTML = state === 'done' ? checkSvg(13) : String(idx);
+      }
+    });
+  }
+
   var mounting = false;
   function mount() {
     if (mounting) return;
@@ -384,6 +431,7 @@
 
       if (onb.currentStep === null) {
         if (existing) existing.remove();
+        stopPolling();
         return;
       }
 
@@ -397,19 +445,31 @@
       var target = findStatGrid(container);
       if (!target) return;
 
-      var html = buildStepperHTML(onb);
+      var lastStep = existing ? existing._currentStep : undefined;
+      var stepChanged = lastStep !== onb.currentStep;
 
-      if (existing && existing.parentElement === container) {
-        var wrap = document.createElement('div');
-        wrap.innerHTML = html;
-        container.replaceChild(wrap.firstElementChild, existing);
+      if (existing && existing.parentElement === container && !stepChanged) {
+        updateProgressInPlace(existing, onb);
+        existing._currentStep = onb.currentStep;
       } else {
-        if (existing) existing.remove();
-        var wrap2 = document.createElement('div');
-        wrap2.innerHTML = html;
-        container.insertBefore(wrap2.firstElementChild, target);
+        var html = buildStepperHTML(onb);
+        if (existing && existing.parentElement === container) {
+          var wrap = document.createElement('div');
+          wrap.innerHTML = html;
+          var next = wrap.firstElementChild;
+          container.replaceChild(next, existing);
+          next._currentStep = onb.currentStep;
+        } else {
+          if (existing) existing.remove();
+          var wrap2 = document.createElement('div');
+          wrap2.innerHTML = html;
+          var node = wrap2.firstElementChild;
+          container.insertBefore(node, target);
+          node._currentStep = onb.currentStep;
+        }
+        bindActions();
       }
-      bindActions();
+      startPolling();
     } finally {
       mounting = false;
     }
@@ -435,7 +495,11 @@
     }
   }, true);
   document.addEventListener('visibilitychange', function () {
-    if (document.visibilityState === 'visible') refreshOnboarding();
+    if (document.visibilityState === 'visible') {
+      refreshOnboarding();
+    } else {
+      stopPolling();
+    }
   });
 
   var mo = new MutationObserver(function () {
