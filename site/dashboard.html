@@ -7,7 +7,8 @@
 <link rel="icon" type="image/png" href="/favicon.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:ital,wght@0,400;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" onload="this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@400&family=JetBrains+Mono:wght@400;500;600;700&display=swap"></noscript>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JCH03R81M2"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-JCH03R81M2');</script>
 <script type="text/javascript">
@@ -595,33 +596,244 @@ LOADERS.providers=async function(){
 };
 
 /* ---------- ROUTING ---------- */
+const RULE_STRATEGIES=[
+  {key:'lowest_cost',title:'En düşük maliyet',hint:'Her istekte en ucuz uygun modeli seçer. Maliyet optimizasyonu için ideal.'},
+  {key:'highest_quality',title:'En yüksek kalite',hint:'Kalite skoru en yüksek modeli tercih eder. Fiyattan bağımsız en iyi çıktı.'},
+  {key:'weighted_round_robin',title:'Ağırlıklı sıralı',hint:'Trafiği modeller arasında ağırlıklı olarak paylaştırır. Yük dengeleme.'},
+  {key:'failover',title:'Yedekli devir',hint:'Birincil model başarısız olursa yedeğe otomatik geçer. Yüksek kullanılabilirlik.'}
+];
+
 LOADERS.routing=async function(){
   const el=$('#view-routing');
   el.innerHTML=`
     <div style="max-width:1180px;margin:0 auto">
       <div class="crumb">UNICHANL / YÖNLENDİRME</div>
-      <h1 class="h1">Yönlendirme</h1>
-      <p class="sub">Aktif kurallar. Öncelik ve stratejiye göre model seçimi.</p>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+        <div style="min-width:0">
+          <h1 class="h1">Yönlendirme</h1>
+          <p class="sub">Aktif kurallar. Öncelik ve stratejiye göre model seçimi.</p>
+        </div>
+        <button id="rule-new" class="btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Yönlendirme Kuralı Oluştur</button>
+      </div>
       <div class="card" style="overflow:hidden">
         <div id="rules-body"><div class="empty">Yükleniyor…</div></div>
       </div>
     </div>`;
+  $('#rule-new').addEventListener('click',()=>openRuleWizard());
+  await renderRulesTable();
+};
+
+async function renderRulesTable(){
+  const b=$('#rules-body');
+  if(!b)return;
+  b.innerHTML='<div class="empty">Yükleniyor…</div>';
   const data=await api('/api/rules');
   const rules=data?.rules||[];
-  const b=$('#rules-body');
-  if(!rules.length){b.innerHTML='<div class="empty">Aktif yönlendirme kuralı yok.</div>';return;}
+  if(!rules.length){
+    b.innerHTML=`<div class="empty" style="padding:56px 24px">
+      <div style="font-size:15px;color:#C7CFCE;margin-bottom:8px">Henüz yönlendirme kuralın yok.</div>
+      <div style="font-size:13px;color:#657172;margin-bottom:20px;max-width:440px;margin-left:auto;margin-right:auto">Kural olmadığında istekler varsayılan stratejiyle işlenir. İlk kuralını oluşturmak için aşağıdaki butona bas — adım adım rehber seni yönlendirir.</div>
+      <button id="rule-new-empty" class="btn">İlk Kuralı Oluştur</button>
+    </div>`;
+    const b2=$('#rule-new-empty');if(b2)b2.addEventListener('click',()=>openRuleWizard());
+    return;
+  }
   b.innerHTML=`<table class="tbl">
     <thead><tr><th>AD</th><th>STRATEJİ</th><th>ÖNCELİK</th><th>DURUM</th></tr></thead>
     <tbody>${rules.map(r=>{
       const on=r.enabled!==false;
       return `<tr>
-        <td><span style="color:#F2F5F4;font-weight:600">${esc(r.name||r.id)}</span></td>
+        <td><span style="color:#F2F5F4;font-weight:600">${esc(r.name||r.id)}</span>${r.description?`<div style="font-size:11.5px;color:#657172;margin-top:2px">${esc(r.description)}</div>`:''}</td>
         <td class="mono" style="font-size:12px;color:#C7CFCE">${esc(r.strategy||'—')}</td>
         <td class="mono" style="font-size:12px;color:#98A3A3">${r.priority??'—'}</td>
         <td>${on?'<span class="pill ok">Aktif</span>':'<span class="pill mut">Pasif</span>'}</td>
       </tr>`;
     }).join('')}</tbody></table>`;
-};
+}
+
+function openRuleWizard(){
+  const state={step:1,guide:false,name:'',description:'',strategy:'lowest_cost',priority:10,enabled:true,conditions:{modelPrefix:'',minTokens:'',maxTokens:'',userTier:''}};
+  const close=modal(ruleWizardHtml(state),{onMount:(root,closeFn)=>{bindRuleWizard(root,state,closeFn);}});
+}
+
+function ruleWizardHtml(s){
+  const pct=Math.round((s.step/4)*100);
+  return `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+      <div style="width:34px;height:34px;border-radius:9px;background:rgba(223,255,0,.12);border:1px solid rgba(223,255,0,.35);display:grid;place-items:center;color:#DFFF00">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h6"/></svg>
+      </div>
+      <div style="flex:1">
+        <div style="font:600 10px 'JetBrains Mono';color:#DFFF00;letter-spacing:.14em;text-transform:uppercase">Sihirbaz · Adım ${s.step}/4</div>
+        <h3 style="font-family:'Newsreader',serif;font-weight:400;font-size:22px;margin:2px 0 0">Yeni Yönlendirme Kuralı</h3>
+      </div>
+      <button id="rw-guide-toggle" class="link" title="Kılavuz görünümü" style="color:${s.guide?'#DFFF00':'#98A3A3'};font:600 11px 'JetBrains Mono';letter-spacing:.1em">${s.guide?'KILAVUZ ✓':'KILAVUZ'}</button>
+    </div>
+    <div style="height:4px;background:#1C2A2D;border-radius:99px;overflow:hidden;margin:14px 0 18px"><div style="width:${pct}%;height:100%;background:#DFFF00;transition:width .2s"></div></div>
+    <div id="rw-body">${ruleWizardStep(s)}</div>
+    <div style="display:flex;justify-content:space-between;gap:10px;margin-top:22px;padding-top:16px;border-top:1px solid #132023">
+      <button id="rw-cancel" class="btn ghost">İptal</button>
+      <div style="display:flex;gap:8px">
+        ${s.step>1?'<button id="rw-back" class="btn ghost">Geri</button>':''}
+        ${s.step<4?'<button id="rw-next" class="btn">İleri</button>':'<button id="rw-submit" class="btn">Kuralı Oluştur</button>'}
+      </div>
+    </div>`;
+}
+
+function ruleWizardStep(s){
+  const guide=s.guide;
+  if(s.step===1){
+    return `
+      ${guide?guideBox('Kurala tanımlayıcı bir isim ver. Örn: "Ucuz kısa mesajlar" veya "Yedek Claude". Açıklama opsiyoneldir ama ekipçe kullanacaksan faydalıdır.'):''}
+      <label style="display:block;font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:6px;text-transform:uppercase">Ad</label>
+      <input id="rw-name" class="inp" value="${esc(s.name)}" placeholder="Örn: Düşük maliyet kuralı" maxlength="80">
+      <label style="display:block;font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin:14px 0 6px;text-transform:uppercase">Açıklama (opsiyonel)</label>
+      <textarea id="rw-desc" class="inp" rows="3" placeholder="Ne zaman devreye giriyor?" maxlength="500">${esc(s.description)}</textarea>`;
+  }
+  if(s.step===2){
+    return `
+      ${guide?guideBox('Strateji, kural devreye girdiğinde hangi modelin seçileceğini belirler. Maliyet için "en düşük maliyet", kritik iş için "en yüksek kalite" veya "yedekli devir" tercih et.'):''}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        ${RULE_STRATEGIES.map(x=>`
+          <label class="rw-strat ${s.strategy===x.key?'sel':''}" data-k="${x.key}" style="border:1px solid ${s.strategy===x.key?'rgba(223,255,0,.5)':'#1C2A2D'};background:${s.strategy===x.key?'rgba(223,255,0,.06)':'#03090B'};border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .12s">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+              <span style="width:14px;height:14px;border-radius:50%;border:2px solid ${s.strategy===x.key?'#DFFF00':'#4C5758'};display:inline-flex;align-items:center;justify-content:center">${s.strategy===x.key?'<span style="width:6px;height:6px;border-radius:50%;background:#DFFF00"></span>':''}</span>
+              <span style="font-weight:600;font-size:13.5px;color:#F2F5F4">${x.title}</span>
+            </div>
+            <div style="font-size:12px;color:#98A3A3;line-height:1.4;padding-left:24px">${x.hint}</div>
+          </label>`).join('')}
+      </div>`;
+  }
+  if(s.step===3){
+    const c=s.conditions;
+    return `
+      ${guide?guideBox('Koşullar opsiyoneldir. Boş bırakırsan kural tüm isteklere uygulanır. Model önekiyle sadece belirli modelleri kapsa (örn: "claude-"), token aralığıyla uzun/kısa istekleri hedefle.'):''}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label style="display:block;font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:6px;text-transform:uppercase">Model öneki</label>
+          <input id="rw-modelprefix" class="inp" value="${esc(c.modelPrefix)}" placeholder="claude-, gpt-4">
+        </div>
+        <div>
+          <label style="display:block;font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:6px;text-transform:uppercase">Kullanıcı planı</label>
+          <select id="rw-tier" class="inp">
+            <option value="">— hepsi —</option>
+            <option value="free"${c.userTier==='free'?' selected':''}>free</option>
+            <option value="pro"${c.userTier==='pro'?' selected':''}>pro</option>
+            <option value="team"${c.userTier==='team'?' selected':''}>team</option>
+            <option value="enterprise"${c.userTier==='enterprise'?' selected':''}>enterprise</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:6px;text-transform:uppercase">Min token</label>
+          <input id="rw-mintok" class="inp" type="number" min="0" value="${esc(c.minTokens)}" placeholder="0">
+        </div>
+        <div>
+          <label style="display:block;font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:6px;text-transform:uppercase">Max token</label>
+          <input id="rw-maxtok" class="inp" type="number" min="0" value="${esc(c.maxTokens)}" placeholder="—">
+        </div>
+      </div>`;
+  }
+  return `
+    ${guide?guideBox('Yüksek öncelik (1-100) önce değerlendirilir. Aynı öncelikte birden fazla kural varsa oluşturma sırasına göre değerlendirilir. Pasif kurallar kaydedilir ama çalıştırılmaz.'):''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:center">
+      <div>
+        <label style="display:block;font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:6px;text-transform:uppercase">Öncelik (1-100)</label>
+        <input id="rw-priority" class="inp" type="number" min="1" max="100" value="${s.priority}">
+      </div>
+      <div>
+        <label style="display:block;font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:6px;text-transform:uppercase">Durum</label>
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 0">
+          <button id="rw-toggle" type="button" class="togg ${s.enabled?'on':''}"></button>
+          <span id="rw-toggle-lbl" style="font-size:13px;color:${s.enabled?'#DFFF00':'#657172'}">${s.enabled?'Aktif':'Pasif'}</span>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:18px;padding:14px 16px;background:#050D0F">
+      <div style="font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:8px;text-transform:uppercase">Özet</div>
+      <div style="font-size:13px;color:#C7CFCE;line-height:1.6">
+        <div><strong style="color:#F2F5F4">${esc(s.name||'—')}</strong></div>
+        <div>Strateji: <span class="mono" style="color:#DFFF00">${esc(s.strategy)}</span></div>
+        ${summarizeConditions(s.conditions)}
+      </div>
+    </div>`;
+}
+
+function guideBox(txt){
+  return `<div style="background:rgba(223,255,0,.06);border:1px solid rgba(223,255,0,.25);border-radius:9px;padding:11px 14px;font-size:12.5px;color:#C7CFCE;line-height:1.5;margin-bottom:14px"><span style="color:#DFFF00;font-weight:600">Kılavuz:</span> ${esc(txt)}</div>`;
+}
+
+function summarizeConditions(c){
+  const parts=[];
+  if(c.modelPrefix)parts.push('model öneki: '+c.modelPrefix);
+  if(c.userTier)parts.push('plan: '+c.userTier);
+  if(c.minTokens)parts.push('min token: '+c.minTokens);
+  if(c.maxTokens)parts.push('max token: '+c.maxTokens);
+  return parts.length?`<div>Koşullar: <span class="mono" style="color:#98A3A3">${esc(parts.join(', '))}</span></div>`:'<div style="color:#657172">Koşul: yok (tüm istekler)</div>';
+}
+
+function bindRuleWizard(root,s,closeFn){
+  const rerender=()=>{
+    const card=root.querySelector('.modal-card');
+    card.innerHTML='';
+    card.insertAdjacentHTML('afterbegin',ruleWizardHtml(s));
+    bindRuleWizard(root,s,closeFn);
+  };
+  const readStep=()=>{
+    if(s.step===1){
+      const n=root.querySelector('#rw-name');if(n)s.name=n.value.trim();
+      const d=root.querySelector('#rw-desc');if(d)s.description=d.value.trim();
+    }else if(s.step===3){
+      s.conditions={
+        modelPrefix:(root.querySelector('#rw-modelprefix')||{}).value?.trim()||'',
+        userTier:(root.querySelector('#rw-tier')||{}).value||'',
+        minTokens:(root.querySelector('#rw-mintok')||{}).value||'',
+        maxTokens:(root.querySelector('#rw-maxtok')||{}).value||''
+      };
+    }else if(s.step===4){
+      const p=parseInt((root.querySelector('#rw-priority')||{}).value,10);
+      if(Number.isFinite(p))s.priority=Math.min(100,Math.max(1,p));
+    }
+  };
+  const cancel=root.querySelector('#rw-cancel');if(cancel)cancel.onclick=closeFn;
+  const back=root.querySelector('#rw-back');if(back)back.onclick=()=>{readStep();s.step=Math.max(1,s.step-1);rerender();};
+  const next=root.querySelector('#rw-next');
+  if(next)next.onclick=()=>{
+    readStep();
+    if(s.step===1&&s.name.length<2){toast('Ad en az 2 karakter olmalı','err');return;}
+    s.step=Math.min(4,s.step+1);rerender();
+  };
+  const submit=root.querySelector('#rw-submit');
+  if(submit)submit.onclick=async()=>{
+    readStep();
+    if(!s.name||s.name.length<2){toast('Ad en az 2 karakter olmalı','err');return;}
+    submit.disabled=true;
+    try{
+      const conditions={};
+      if(s.conditions.modelPrefix)conditions.modelPrefix=s.conditions.modelPrefix;
+      if(s.conditions.userTier)conditions.userTier=s.conditions.userTier;
+      if(s.conditions.minTokens)conditions.minTokens=parseInt(s.conditions.minTokens,10);
+      if(s.conditions.maxTokens)conditions.maxTokens=parseInt(s.conditions.maxTokens,10);
+      await api('/api/rules',{method:'POST',body:JSON.stringify({
+        name:s.name,
+        description:s.description||undefined,
+        strategy:s.strategy,
+        conditions,
+        priority:s.priority,
+        enabled:s.enabled
+      })});
+      toast('Kural oluşturuldu','ok');
+      closeFn();
+      await renderRulesTable();
+    }catch(err){
+      toast(err.message||'Kural oluşturulamadı','err');
+      submit.disabled=false;
+    }
+  };
+  const guide=root.querySelector('#rw-guide-toggle');if(guide)guide.onclick=()=>{readStep();s.guide=!s.guide;rerender();};
+  root.querySelectorAll('.rw-strat').forEach(el=>el.onclick=()=>{s.strategy=el.dataset.k;rerender();});
+  const tog=root.querySelector('#rw-toggle');
+  if(tog)tog.onclick=()=>{s.enabled=!s.enabled;const lbl=root.querySelector('#rw-toggle-lbl');tog.classList.toggle('on',s.enabled);if(lbl){lbl.textContent=s.enabled?'Aktif':'Pasif';lbl.style.color=s.enabled?'#DFFF00':'#657172';}};
+}
 
 /* ---------- REQUESTS ---------- */
 LOADERS.requests=async function(){

@@ -38,6 +38,44 @@ OPENROUTER_API_KEY=sk-or-v1-...
 LOG_LEVEL=info  # trace | debug | info | warn | error
 ```
 
+### Polar (Ödeme)
+
+Bakiye yükleme ve abonelik için gereklidir. Panel'deki "Bakiye Yükle" akışının Polar
+checkout'a doğru tutarla yönlendirebilmesi için `POLAR_PRODUCT_CREDIT` bir
+**pay-what-you-want** ürünün ID'si olmalıdır.
+
+```env
+POLAR_ACCESS_TOKEN=polar_oat_...
+POLAR_PRODUCT_CREDIT=<pay-what-you-want product ID>
+POLAR_WEBHOOK_SECRET=whsec_...
+
+# Abonelik ürünleri (opsiyonel)
+POLAR_PRODUCT_PRO=<product-id>
+POLAR_PRODUCT_TEAM=<product-id>
+POLAR_PRODUCT_ENTERPRISE=<product-id>
+
+# Top-up limitleri (opsiyonel, varsayılan: 5 – 1000 USD)
+MIN_TOPUP_USD=5
+MAX_TOPUP_USD=1000
+```
+
+**Nasıl elde edilir:**
+
+1. **Access Token:** polar.sh → Dashboard → Settings → Access Tokens → **Create Token**.
+   `checkouts:write` scope işaretli olmalı. Üretilen `polar_oat_...` değerini
+   `POLAR_ACCESS_TOKEN`'e yapıştır.
+2. **Kredi ürünü (`POLAR_PRODUCT_CREDIT`):** Products → **New Product** →
+   pricing type: **Pay what you want** → minimum $5 → kaydet → ürün ID'sini
+   (`polar_prod_...`) kopyala. Bu, kullanıcının panelde girdiği tutarın Polar
+   checkout'ta hazır gelmesini sağlar (API server-side `POST /v1/checkouts/` ile
+   `amount` cent olarak gönderilir).
+3. **Webhook Secret:** Webhooks → **Add Endpoint** → URL:
+   `https://<domain>/api/billing/webhook` → oluşan `whsec_...` secret'ı
+   `POLAR_WEBHOOK_SECRET`'e yapıştır. Ödemeler onaylandığında bakiye burada güncellenir.
+
+Kredi ürünü tanımlı değilse panel `credit_product_not_configured` hatası döner ve
+kullanıcı anlaşılır bir uyarı görür.
+
 ## 📝 How to Get Each Value
 
 ### 1. JWT_SECRET (Generate New)

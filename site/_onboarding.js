@@ -55,6 +55,10 @@
       '#' + STEPPER_ID + ' .uc-active-meta strong{color:' + ACCENT + ';font-weight:700}',
       '#' + STEPPER_ID + ' .uc-input{background:' + PAGE_BG + ';border:1px solid ' + BORDER + ';border-radius:8px;padding:9px 12px;color:' + TEXT + ';font:13px "JetBrains Mono",monospace;width:96px}',
       '#' + STEPPER_ID + ' .uc-input:focus{outline:none;border-color:' + ACCENT + '}',
+      '#' + STEPPER_ID + ' .uc-chips{display:inline-flex;gap:6px;margin-right:6px}',
+      '#' + STEPPER_ID + ' .uc-chip{background:transparent;border:1px solid ' + BORDER + ';color:' + MUTED + ';border-radius:99px;padding:5px 11px;font:600 11.5px "JetBrains Mono",monospace;cursor:pointer;transition:all .12s}',
+      '#' + STEPPER_ID + ' .uc-chip:hover{border-color:' + ACCENT_BORDER + ';color:' + TEXT + '}',
+      '#' + STEPPER_ID + ' .uc-chip.active{background:' + ACCENT_SOFT + ';border-color:' + ACCENT_BORDER + ';color:' + ACCENT + '}',
       '#' + STEPPER_ID + ' .uc-btn{background:' + ACCENT + ';color:' + PAGE_BG + ';border:none;border-radius:8px;padding:10px 16px;font:700 12.5px Archivo,sans-serif;letter-spacing:.02em;cursor:pointer;white-space:nowrap;transition:filter .15s}',
       '#' + STEPPER_ID + ' .uc-btn:hover{filter:brightness(1.08)}',
       '#' + STEPPER_ID + ' .uc-btn:disabled{opacity:.5;cursor:not-allowed}',
@@ -137,10 +141,16 @@
       var bal = onb.walletBalanceUsd || '0';
       label = '\u0130LK Y\u00dcKLEME';
       title = stepActiveTitle(1);
-      hint = 'Min $5 y\u00fckleyerek ba\u015fla. Y\u00fcklenen tutar direkt c\u00fczdan\u0131na eklenir.';
+      hint = 'Min $5 y\u00fckleyerek ba\u015fla. Y\u00fcklenen tutar direkt c\u00fczdan\u0131na eklenir. \u00d6deme Polar \u00fczerinden g\u00fcvenle i\u015flenir.';
       right = [
         '<span class="uc-active-meta">C\u00fczdan: <strong>$' + esc(bal) + '</strong></span>',
-        '<input id="uc-topup-amt" class="uc-input" type="number" min="5" step="1" value="5" />',
+        '<span class="uc-chips">',
+          '<button type="button" class="uc-chip active" data-amt="5">$5</button>',
+          '<button type="button" class="uc-chip" data-amt="10">$10</button>',
+          '<button type="button" class="uc-chip" data-amt="25">$25</button>',
+          '<button type="button" class="uc-chip" data-amt="50">$50</button>',
+        '</span>',
+        '<input id="uc-topup-amt" class="uc-input" type="number" min="5" max="1000" step="1" value="5" />',
         '<button id="uc-topup-go" class="uc-btn">Bakiye Y\u00fckle</button>'
       ].join('');
     } else if (step === 2) {
@@ -267,19 +277,50 @@
 
   function bindActions() {
     var topupBtn = document.getElementById('uc-topup-go');
+    var topupInput = document.getElementById('uc-topup-amt');
+    var chips = document.querySelectorAll('#' + STEPPER_ID + ' .uc-chip');
+    if (chips && chips.length && !chips[0]._bound) {
+      chips.forEach(function (c) {
+        c._bound = true;
+        c.addEventListener('click', function () {
+          var v = c.getAttribute('data-amt');
+          if (topupInput) topupInput.value = v;
+          chips.forEach(function (x) { x.classList.remove('active'); });
+          c.classList.add('active');
+        });
+      });
+    }
+    if (topupInput && !topupInput._bound) {
+      topupInput._bound = true;
+      topupInput.addEventListener('input', function () {
+        var v = String(topupInput.value);
+        chips.forEach(function (x) { x.classList.toggle('active', x.getAttribute('data-amt') === v); });
+      });
+    }
     if (topupBtn && !topupBtn._bound) {
       topupBtn._bound = true;
       topupBtn.addEventListener('click', function () {
         var input = document.getElementById('uc-topup-amt');
         var amt = parseFloat(input && input.value);
         if (!isFinite(amt) || amt < 5) { toast('Minimum $5'); return; }
+        if (amt > 1000) { toast('Maksimum $1000'); return; }
         topupBtn.disabled = true;
         fetch('/api/billing/topup', {
           method: 'POST', headers: authHeaders(),
           body: JSON.stringify({ amountUsd: amt, successUrl: location.origin + '/dashboard.html' })
-        }).then(function (r) { return r.json(); }).then(function (res) {
-          if (res && res.url) location.href = res.url;
-          else { toast('\u00d6deme ba\u015flat\u0131lamad\u0131'); topupBtn.disabled = false; }
+        }).then(function (r) {
+          return r.json().then(function (body) { return { ok: r.ok, status: r.status, body: body }; });
+        }).then(function (res) {
+          if (res.ok && res.body && res.body.url) { location.href = res.body.url; return; }
+          var code = res.body && res.body.error && res.body.error.code;
+          if (code === 'credit_product_not_configured') {
+            toast('Polar \u00fcr\u00fcn\u00fc yap\u0131land\u0131r\u0131lmam\u0131\u015f \u2014 y\u00f6neticinizle ileti\u015fime ge\u00e7in');
+          } else if (code === 'amount_out_of_range') {
+            toast('Tutar $5\u2013$1000 aral\u0131\u011f\u0131nda olmal\u0131');
+          } else {
+            toast((res.body && res.body.error && res.body.error.message) || '\u00d6deme ba\u015flat\u0131lamad\u0131');
+          }
+          topupBtn.disabled = false;
         }).catch(function () { toast('\u00d6deme ba\u015flat\u0131lamad\u0131'); topupBtn.disabled = false; });
       });
     }
