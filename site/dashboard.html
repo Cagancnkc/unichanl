@@ -1062,6 +1062,7 @@ LOADERS.settings=async function(){
 };
 
 /* ---------- INTEGRATIONS ---------- */
+const integrationLogo=(id)=>{const logos={claude:' src="https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/dark/claude.png" style="width:14px;height:14px;border-radius:2px;object-fit:contain"',openai:' src="https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/dark/openai.png" style="width:14px;height:14px;border-radius:2px;object-fit:contain"',cursor:' src="https://avatars.githubusercontent.com/u/121462547?s=32" style="width:14px;height:14px;border-radius:2px;object-fit:contain"',opencode:'<svg style="width:14px;height:14px;flex-shrink:0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#C7CFCE" stroke-width="1.5"/><path d="M9 7v10M15 7v10M7 12h10" stroke="#C7CFCE" stroke-width="1.5" stroke-linecap="round"/></svg>'};return id==='claude-code'?`<img${logos.claude} onerror="this.style.display='none'">`:id==='codex'?`<img${logos.openai} onerror="this.style.display='none'">`:id==='cursor'?`<img${logos.cursor} onerror="this.style.display='none'">`:id==='opencode'?logos.opencode:''};
 const INTEGRATIONS=[
   {id:'claude-code',name:'Claude Code',desc:'Anthropic resmi CLI. Unichanl gateway üzerinden trafiği yönlendirir.',install:'npm install -g @anthropic-ai/claude-code',env:'ANTHROPIC_BASE_URL=http://127.0.0.1:20128\nANTHROPIC_AUTH_TOKEN=<UNICHANL_KEY>',run:'claude "Merhaba, çalışıyor musun?"'},
   {id:'codex',name:'Codex CLI',desc:'OpenAI uyumlu istemci; herhangi bir modele Unichanl üzerinden erişim.',install:'npm install -g @openai/codex',env:'OPENAI_BASE_URL=http://127.0.0.1:20128/v1\nOPENAI_API_KEY=<UNICHANL_KEY>',run:'codex "test"'},
@@ -1080,7 +1081,7 @@ LOADERS.integrations=async function(){
         ${INTEGRATIONS.map(it=>`
           <div class="card" style="padding:22px 24px">
             <div class="row-split" style="margin-bottom:8px">
-              <div style="font-weight:600;font-size:16px;color:#F2F5F4">${esc(it.name)}</div>
+              <div style="font-weight:600;font-size:16px;color:#F2F5F4;display:flex;align-items:center;gap:8px">${integrationLogo(it.id)}${esc(it.name)}</div>
               <span class="pill mut">${esc(it.id)}</span>
             </div>
             <p style="color:#98A3A3;font-size:13px;margin:0 0 16px;line-height:1.5">${esc(it.desc)}</p>
