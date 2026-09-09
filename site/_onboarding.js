@@ -1,5 +1,20 @@
 (function () {
   var STEPPER_ID = 'unichanl-onboarding';
+  var POLAR_CHECKOUT_URL = 'https://buy.polar.sh/polar_cl_KPLbu6b1dABR2LXgvmEu2jeALNSSn5HnuujYD4BudFI';
+
+  function buildPolarCheckoutUrl(amountUsd) {
+    var params = new URLSearchParams();
+    var cents = Math.round(amountUsd * 100);
+    if (isFinite(cents) && cents > 0) {
+      params.set('amount', String(cents));
+      params.set('prefilled_amount', String(cents));
+    }
+    var email = null;
+    try { email = localStorage.getItem('unichanl_email') || localStorage.getItem('unichanl_user_email'); } catch (_) {}
+    if (email) params.set('customer_email', email);
+    var q = params.toString();
+    return q ? POLAR_CHECKOUT_URL + '?' + q : POLAR_CHECKOUT_URL;
+  }
   var ACCENT = '#DFFF00';
   var ACCENT_SOFT = 'rgba(223,255,0,0.08)';
   var ACCENT_BORDER = 'rgba(223,255,0,0.35)';
@@ -305,23 +320,7 @@
         if (!isFinite(amt) || amt < 5) { toast('Minimum $5'); return; }
         if (amt > 1000) { toast('Maksimum $1000'); return; }
         topupBtn.disabled = true;
-        fetch('/api/billing/topup', {
-          method: 'POST', headers: authHeaders(),
-          body: JSON.stringify({ amountUsd: amt, successUrl: location.origin + '/dashboard.html' })
-        }).then(function (r) {
-          return r.json().then(function (body) { return { ok: r.ok, status: r.status, body: body }; });
-        }).then(function (res) {
-          if (res.ok && res.body && res.body.url) { location.href = res.body.url; return; }
-          var code = res.body && res.body.error && res.body.error.code;
-          if (code === 'credit_product_not_configured') {
-            toast('Polar \u00fcr\u00fcn\u00fc yap\u0131land\u0131r\u0131lmam\u0131\u015f \u2014 y\u00f6neticinizle ileti\u015fime ge\u00e7in');
-          } else if (code === 'amount_out_of_range') {
-            toast('Tutar $5\u2013$1000 aral\u0131\u011f\u0131nda olmal\u0131');
-          } else {
-            toast((res.body && res.body.error && res.body.error.message) || '\u00d6deme ba\u015flat\u0131lamad\u0131');
-          }
-          topupBtn.disabled = false;
-        }).catch(function () { toast('\u00d6deme ba\u015flat\u0131lamad\u0131'); topupBtn.disabled = false; });
+        location.href = buildPolarCheckoutUrl(amt);
       });
     }
 

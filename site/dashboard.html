@@ -319,6 +319,17 @@ function modal(html,{onClose,onMount}={}){
 }
 
 const VIEWS=['overview','models','providers','routing','requests','usage','apikeys','settings','integrations','pricing'];
+const POLAR_CHECKOUT_URL='https://buy.polar.sh/polar_cl_KPLbu6b1dABR2LXgvmEu2jeALNSSn5HnuujYD4BudFI';
+function buildPolarCheckoutUrl(amountUsd){
+  const params=new URLSearchParams();
+  const cents=Math.round(amountUsd*100);
+  if(Number.isFinite(cents)&&cents>0){params.set('amount',String(cents));params.set('prefilled_amount',String(cents));}
+  let email=null;
+  try{email=localStorage.getItem('unichanl_email')||localStorage.getItem('unichanl_user_email');}catch(_){}
+  if(email)params.set('customer_email',email);
+  const q=params.toString();
+  return q?`${POLAR_CHECKOUT_URL}?${q}`:POLAR_CHECKOUT_URL;
+}
 
 function setActive(name){
   $$('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.nav===name));
@@ -1217,14 +1228,12 @@ LOADERS.pricing=async function(){
 
   await refreshPricing();
   $$('.topup-preset',el).forEach(b=>b.addEventListener('click',()=>{$('#topup-amt').value=b.dataset.amt;}));
-  $('#topup-go').addEventListener('click',async()=>{
+  $('#topup-go').addEventListener('click',()=>{
     const amt=parseFloat($('#topup-amt').value);
     if(!Number.isFinite(amt)||amt<5){toast('Minimum $5','err');return;}
+    if(amt>1000){toast('Maksimum $1000','err');return;}
     const btn=$('#topup-go');btn.disabled=true;
-    try{
-      const res=await api('/api/billing/topup',{method:'POST',body:JSON.stringify({amountUsd:amt,successUrl:location.origin+'/dashboard.html'})});
-      if(res?.url){location.href=res.url;}else{toast('Ödeme başlatılamadı','err');btn.disabled=false;}
-    }catch(err){toast(err.message||'Ödeme başlatılamadı','err');btn.disabled=false;}
+    location.href=buildPolarCheckoutUrl(amt);
   });
   const tog=$('#ar-tog');
   tog.addEventListener('click',async()=>{
