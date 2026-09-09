@@ -51,13 +51,15 @@ const errEl = document.getElementById('err');
 const textEl = document.querySelector('.text');
 
 function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-function showError(msg, code, requestId) {
-  console.error('[callback]', code || '', msg, requestId || '');
+function showError(msg, code, requestId, hint) {
+  console.error('[callback]', code || '', msg, requestId || '', hint || '');
   if (window.ucTrack) ucTrack('signup_error', { method: 'google', code: code || 'unknown', reason: String(msg||'').slice(0,80) });
   var retryHref = (code === 'OAUTH_TOKEN_INVALID' || code === 'AUTH_UNAVAILABLE') ? '/signup.html' : '/signup.html';
   var retryLabel = (code === 'OAUTH_TOKEN_INVALID') ? 'Tekrar giriş yap' : 'Kayıt sayfasına dön';
   errEl.innerHTML = 'Hata: ' + escapeHtml(msg)
+    + (code ? '<br><small style="opacity:.6">Kod: ' + escapeHtml(code) + '</small>' : '')
     + (requestId ? '<br><small style="opacity:.6">İstek: ' + escapeHtml(requestId) + '</small>' : '')
+    + (hint ? '<br><small style="opacity:.5;font-family:monospace">' + escapeHtml(hint) + '</small>' : '')
     + '<br><br><a href="' + retryHref + '" style="color:#DFFF00">← ' + retryLabel + '</a>';
 }
 
@@ -86,7 +88,8 @@ async function exchange(token) {
       const msg = (typeof errObj === 'string') ? errObj : (errObj && errObj.message) || ('HTTP ' + r.status);
       const code = (errObj && typeof errObj === 'object') ? errObj.code : undefined;
       const rid = (errObj && typeof errObj === 'object') ? errObj.request_id : undefined;
-      return showError(msg, code, rid);
+      const hint = (errObj && typeof errObj === 'object') ? errObj.hint : undefined;
+      return showError(msg, code, rid, hint);
     }
     localStorage.setItem('unichanl_key', data.key);
     if (window.ucTrack) {

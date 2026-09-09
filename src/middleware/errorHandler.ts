@@ -70,6 +70,38 @@ export function errorHandler(
     return;
   }
 
+  if (error instanceof Prisma.PrismaClientValidationError) {
+    logger.error(
+      { err: error, requestId: request.id, method: request.method, url: request.url },
+      'Prisma validation error — schema drift or bad payload',
+    );
+    reply.status(500).send({
+      error: {
+        code: 'DB_SCHEMA_MISMATCH',
+        message: 'Veritabanı şeması ile kod uyuşmuyor — migration eksik olabilir',
+        request_id: request.id,
+        hint: String(error.message).split('\n').slice(0, 3).join(' ').slice(0, 300),
+      },
+    });
+    return;
+  }
+
+  if (error instanceof Prisma.PrismaClientUnknownRequestError) {
+    logger.error(
+      { err: error, requestId: request.id, method: request.method, url: request.url },
+      'Prisma unknown request error',
+    );
+    reply.status(500).send({
+      error: {
+        code: 'DB_UNKNOWN_ERROR',
+        message: 'Veritabanı bilinmeyen hata',
+        request_id: request.id,
+        hint: String(error.message).slice(0, 300),
+      },
+    });
+    return;
+  }
+
   logger.error(
     { err: error, requestId: request.id, method: request.method, url: request.url },
     'İşlenmeyen hata',
@@ -79,6 +111,7 @@ export function errorHandler(
       code: 'INTERNAL_ERROR',
       message: 'Sunucu içi hata',
       request_id: request.id,
+      hint: (error as Error).name + ': ' + String((error as Error).message || '').slice(0, 300),
     },
   });
 }
