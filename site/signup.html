@@ -47,6 +47,12 @@
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "ye1vi6d8n9");
 </script>
+<script>
+window.ucTrack=function(n,p){p=p||{};try{window.clarity&&clarity('event',n)}catch(e){}try{Object.keys(p).length&&window.clarity&&clarity('set',n,JSON.stringify(p))}catch(e){}try{window.gtag&&gtag('event',n,p)}catch(e){}};
+window.ucUtm=function(){var q=new URLSearchParams(location.search),ref=document.referrer||'',s=q.get('utm_source')||'';if(!s){s=/t\.co|twitter\.com|x\.com/i.test(ref)?'twitter':/reddit\.com/i.test(ref)?'reddit':(ref?'referral':'direct')}return{source:s,medium:q.get('utm_medium')||'',campaign:q.get('utm_campaign')||''}};
+window.ucWithUtm=function(u){var q=location.search;return q?u+(u.includes('?')?'&':'?')+q.slice(1):u};
+(function(){try{sessionStorage.setItem('uc_src',ucUtm().source)}catch(e){}})();
+</script>
 </head>
 <body>
 
@@ -90,7 +96,7 @@
     <div style="background:#132023"></div>
 
     <div style="display:flex;align-items:center;padding:60px 40px">
-      <div style="width:100%;border:1px solid #1C2A2D;border-radius:12px;background:#050F12;overflow:hidden">
+      <div role="img" aria-label="Unichanl geçidi çalışıyor görseli" style="width:100%;border:1px solid #1C2A2D;border-radius:12px;background:#050F12;overflow:hidden;pointer-events:none;user-select:none">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #132023;background:#071114">
           <span style="display:flex;align-items:center;gap:10px;font:600 11px 'JetBrains Mono';letter-spacing:.14em">UNICHANL GEÇİDİ <span style="color:var(--accent,#DFFF00);animation:ucpulse 2s ease-in-out infinite">●</span> <span style="color:var(--accent,#DFFF00)">ÇALIŞIYOR</span></span>
           <span style="font:500 10px 'JetBrains Mono';letter-spacing:.12em;color:#657172">YEREL · 127.0.0.1:20128</span>
@@ -174,29 +180,54 @@ window.oauthGoogle=async function(e){
   const supabase=await initSupabase();
   if(!supabase){alert('Supabase hazır değil. Biraz bekle.');return;}
   try{
+    if(window.ucTrack) ucTrack('signup_start',{method:'google',source:sessionStorage.uc_src||'direct'});
     await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin+'/callback.html'}});
   }catch(err){
-    alert('Hata: '+(err.message||err));
+    if(window.ucTrack) ucTrack('signup_error',{method:'google',reason:(err.message||String(err)).slice(0,80)});
+    showSignupErr('Hata: '+(err.message||err));
   }
 };
 window.doSignup=async function(e){
   if(e) e.preventDefault();
   const btn=document.querySelector('[onclick*="doSignup"]');
   const email=document.getElementById('emailInput').value.trim();
-  if(!email||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){alert('Geçerli email girin');return;}
+  if(!email||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
+    if(window.ucTrack) ucTrack('signup_error',{method:'email',reason:'invalid_email'});
+    showSignupErr('Geçerli email girin');return;
+  }
   const prev=btn?btn.textContent:null;
   if(btn){btn.disabled=true;btn.textContent='Oluşturuluyor…';}
+  if(window.ucTrack) ucTrack('signup_submit',{method:'email',source:sessionStorage.uc_src||'direct'});
   try{
     const r=await fetch('/api/keys/create',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,name:'signup'})});
     const j=await r.json().catch(function(){return{};});
     if(!r.ok||!j.key){throw new Error((j.error&&j.error.message)||'Kayıt başarısız');}
     localStorage.setItem('unichanl_key',j.key);
+    if(window.ucTrack) ucTrack('signup_success',{method:'email'});
     location.href='/dashboard.html';
   }catch(err){
-    alert('Hata: '+(err.message||err));
+    if(window.ucTrack) ucTrack('signup_error',{method:'email',reason:(err.message||String(err)).slice(0,80)});
+    showSignupErr('Hata: '+(err.message||err));
     if(btn){btn.disabled=false;btn.textContent=prev||'Devam Et';}
   }
 };
+
+function showSignupErr(msg){
+  var host=document.getElementById('emailInput');
+  if(!host){alert(msg);return;}
+  var box=document.getElementById('signupErr');
+  if(!box){
+    box=document.createElement('div');
+    box.id='signupErr';
+    box.style.cssText='margin-top:14px;padding:10px 12px;border:1px solid #ff6b6b;border-radius:8px;color:#ff6b6b;font-size:12.5px;display:flex;justify-content:space-between;align-items:center;gap:10px';
+    host.parentNode.insertBefore(box, host.nextSibling);
+  }
+  box.innerHTML='<span></span><button type="button" style="background:transparent;border:1px solid #ff6b6b;color:#ff6b6b;border-radius:6px;padding:3px 10px;font:600 11px Archivo;cursor:pointer">Tekrar dene</button>';
+  box.firstChild.textContent=msg;
+  box.lastChild.onclick=function(){if(window.ucTrack)ucTrack('signup_retry',{});doSignup();};
+}
+
+if(window.ucTrack) ucTrack('signup_view',{source:sessionStorage.uc_src||'direct'});
 </script>
 </body>
 </html>

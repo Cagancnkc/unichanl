@@ -7,6 +7,9 @@
 <link rel="icon" type="image/png" href="/favicon.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://www.googletagmanager.com">
+<link rel="preconnect" href="https://www.clarity.ms">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" onload="this.rel='stylesheet'">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@400&family=JetBrains+Mono:wght@400;500;600;700&display=swap"></noscript>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JCH03R81M2"></script>
@@ -18,7 +21,16 @@
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "ye1vi6d8n9");
 </script>
-<script src="/_onboarding.js" defer></script>
+<script>
+window.ucTrack=function(n,p){p=p||{};try{window.clarity&&clarity('event',n)}catch(e){}try{Object.keys(p).length&&window.clarity&&clarity('set',n,JSON.stringify(p))}catch(e){}try{window.gtag&&gtag('event',n,p)}catch(e){}};
+window.ucUtm=function(){var q=new URLSearchParams(location.search),ref=document.referrer||'',s=q.get('utm_source')||'';if(!s){s=/t\.co|twitter\.com|x\.com/i.test(ref)?'twitter':/reddit\.com/i.test(ref)?'reddit':(ref?'referral':'direct')}return{source:s,medium:q.get('utm_medium')||'',campaign:q.get('utm_campaign')||''}};
+window.ucWithUtm=function(u){var q=location.search;return q?u+(u.includes('?')?'&':'?')+q.slice(1):u};
+(function(){try{sessionStorage.setItem('uc_src',ucUtm().source)}catch(e){}})();
+</script>
+<script>
+(function(){var load=function(){var s=document.createElement('script');s.src='/_onboarding.js';s.defer=true;document.head.appendChild(s)};
+if('requestIdleCallback' in window){requestIdleCallback(load,{timeout:2000})}else{setTimeout(load,800)}})();
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
@@ -153,6 +165,17 @@ img,svg{max-width:100%}
 </style>
 </head>
 <body>
+<div id="uc-skel" aria-hidden="true" style="position:fixed;inset:22px 0 0;z-index:5;background:#03090B;padding:24px 20px;pointer-events:none">
+  <div style="max-width:1080px;margin:0 auto">
+    <div style="height:56px;background:#0a1214;border-radius:12px;margin-bottom:20px;animation:ucskel 1.4s ease-in-out infinite"></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">
+      <div style="height:110px;background:#0a1214;border-radius:14px;animation:ucskel 1.4s ease-in-out infinite"></div>
+      <div style="height:110px;background:#0a1214;border-radius:14px;animation:ucskel 1.4s ease-in-out infinite .15s"></div>
+      <div style="height:110px;background:#0a1214;border-radius:14px;animation:ucskel 1.4s ease-in-out infinite .3s"></div>
+    </div>
+  </div>
+</div>
+<style>@keyframes ucskel{0%,100%{opacity:.55}50%{opacity:.85}}</style>
 <div style="display:flex;flex-direction:column;height:100vh;width:100%;overflow:hidden;background:#03090B">
 
 <div role="status" aria-label="3 ay boyunca sınırsız AI, 09.12.2026 tarihine kadar geçerlidir" style="flex:none;height:22px;display:flex;align-items:center;justify-content:center;gap:8px;background:#F2F5F4;color:#03090B;font:600 10px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase">
@@ -298,12 +321,22 @@ async function api(path,opts={}){
 }
 
 let toastTimer=null;
-function toast(msg,type='info'){
+function toast(msg,type='info',action){
   const el=$('#toast');
   el.className='toast '+type+' show';
-  el.textContent=msg;
+  if(action&&action.label){
+    el.innerHTML='';
+    const span=document.createElement('span');span.textContent=msg;el.appendChild(span);
+    const btn=document.createElement('button');
+    btn.textContent=action.label;
+    btn.style.cssText='margin-left:12px;background:transparent;border:1px solid currentColor;color:inherit;border-radius:6px;padding:2px 10px;font:600 11px Archivo;cursor:pointer';
+    btn.onclick=()=>{try{action.fn&&action.fn();}catch(e){}el.classList.remove('show');};
+    el.appendChild(btn);
+  }else{
+    el.textContent=msg;
+  }
   clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>{el.classList.remove('show');},2800);
+  toastTimer=setTimeout(()=>{el.classList.remove('show');},action?5200:2800);
 }
 window.ucToast=toast;
 
@@ -342,7 +375,10 @@ async function showView(name){
   $('#main').scrollTop=0;
   try{await LOADERS[name]();}catch(err){
     console.error('view load',name,err);
-    if(err.message!=='auth')toast(err.message||'Yükleme başarısız','err');
+    if(err.message!=='auth'){
+      if(window.ucTrack) ucTrack('request_error',{view:name,reason:(err.message||'').slice(0,80)});
+      toast(err.message||'Yükleme başarısız','err',{label:'Tekrar dene',fn:()=>{if(window.ucTrack)ucTrack('request_retry',{view:name});showView(name);}});
+    }
   }
 }
 
@@ -354,7 +390,11 @@ window.addEventListener('hashchange',()=>{const n=(location.hash||'').replace(/^
 
 document.addEventListener('click',e=>{
   const t=e.target.closest('[data-nav]');
-  if(t){e.preventDefault();navigateTo(t.dataset.nav);}
+  if(t){
+    e.preventDefault();
+    if(!window.__ucFirst){window.__ucFirst=1;if(window.ucTrack)ucTrack('first_action',{action:'nav',target:t.dataset.nav});}
+    navigateTo(t.dataset.nav);
+  }
 });
 
 $('#hd-refresh').addEventListener('click',()=>{const n=(location.hash||'').replace(/^#\//,'')||'overview';showView(n);});
@@ -1246,6 +1286,7 @@ LOADERS.pricing=async function(){
     if(!Number.isFinite(amt)||amt<5){toast('Minimum $5','err');return;}
     if(amt>1000){toast('Maksimum $1000','err');return;}
     const btn=$('#topup-go');btn.disabled=true;
+    if(window.ucTrack) ucTrack('payment_start',{amount:amt,currency:'USD'});
     location.href=buildPolarCheckoutUrl(amt);
   });
   const tog=$('#ar-tog');
@@ -1320,6 +1361,9 @@ async function refreshPricing(){
   }catch(_){}
   const start=(location.hash||'').replace(/^#\//,'')||'overview';
   await showView(start);
+  try{document.getElementById('uc-skel')&&document.getElementById('uc-skel').remove();}catch(_){}
+  if(window.ucTrack) ucTrack('dashboard_view',{view:start});
+  if(location.search.indexOf('checkout=success')>-1 && window.ucTrack) ucTrack('payment_success',{});
 })();
 </script>
 </body>

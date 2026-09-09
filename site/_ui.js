@@ -1,3 +1,31 @@
+export function track(name, params = {}) {
+  try { if (typeof window !== 'undefined' && window.clarity) window.clarity('event', name); } catch (e) {}
+  try {
+    if (typeof window !== 'undefined' && window.clarity && Object.keys(params).length) {
+      window.clarity('set', name, JSON.stringify(params));
+    }
+  } catch (e) {}
+  try { if (typeof window !== 'undefined' && window.gtag) window.gtag('event', name, params); } catch (e) {}
+}
+
+export function utm() {
+  const q = new URLSearchParams(location.search);
+  const ref = document.referrer || '';
+  let src = q.get('utm_source') || '';
+  if (!src) {
+    if (/t\.co|twitter\.com|x\.com/i.test(ref)) src = 'twitter';
+    else if (/reddit\.com/i.test(ref)) src = 'reddit';
+    else if (ref) src = 'referral';
+    else src = 'direct';
+  }
+  return { source: src, medium: q.get('utm_medium') || '', campaign: q.get('utm_campaign') || '' };
+}
+
+export function withUtm(url) {
+  const q = location.search;
+  return q ? url + (url.includes('?') ? '&' : '?') + q.slice(1) : url;
+}
+
 export const KEY_STORAGE = 'unichanl_key';
 export const getKey = () => localStorage.getItem(KEY_STORAGE);
 export const setKey = (k) => localStorage.setItem(KEY_STORAGE, k);

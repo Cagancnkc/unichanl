@@ -28,6 +28,16 @@
 
   gtag('config', 'G-9FCSTD2HG9');
 </script>
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "ye1vi6d8n9");
+</script>
+<script>
+window.ucTrack=function(n,p){p=p||{};try{window.clarity&&clarity('event',n)}catch(e){}try{Object.keys(p).length&&window.clarity&&clarity('set',n,JSON.stringify(p))}catch(e){}try{window.gtag&&gtag('event',n,p)}catch(e){}};
+</script>
 </head>
 <body>
 <div class="container">
@@ -42,6 +52,7 @@ const textEl = document.querySelector('.text');
 
 function showError(msg) {
   console.error('[callback]', msg);
+  if (window.ucTrack) ucTrack('signup_error', { method: 'google', reason: String(msg||'').slice(0,80) });
   errEl.textContent = 'Hata: ' + msg;
   setTimeout(() => { location.href = '/signup.html'; }, 3000);
 }
@@ -68,6 +79,10 @@ async function exchange(token) {
     console.log('[callback] exchange body', data);
     if (!r.ok || !data.key) return showError(data.error || ('HTTP ' + r.status));
     localStorage.setItem('unichanl_key', data.key);
+    if (window.ucTrack) {
+      ucTrack('login_success', { method: 'google' });
+      ucTrack('signup_success', { method: 'google' });
+    }
     location.href = '/dashboard.html';
   } catch (e) {
     console.error('[callback] fetch failed', e);

@@ -112,6 +112,14 @@
   .ucs > section#product h1{font-size:32px !important}
   #pricing h2{font-size:36px !important}
 }
+@media (max-width:720px){
+  .ucs > section#product{padding-top:56px !important}
+  .ucs > section#product h1{font-size:34px !important;line-height:1.05 !important;margin-bottom:20px !important}
+  .ucs > section#product p{font-size:15px !important;margin-bottom:22px !important}
+  .ucs > section#product a[href="#how"]{display:none !important}
+  .ucs > section#product button.uc-primary-cta{width:100% !important;max-width:340px !important;min-height:54px !important;font-size:16px !important}
+  #uc-src-line{font-size:11px !important;padding:0 10px}
+}
 </style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-9FCSTD2HG9"></script>
@@ -128,6 +136,12 @@
         t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     })(window, document, "clarity", "script", "ye1vi6d8n9");
+</script>
+<script>
+window.ucTrack=function(n,p){p=p||{};try{window.clarity&&clarity('event',n)}catch(e){}try{Object.keys(p).length&&window.clarity&&clarity('set',n,JSON.stringify(p))}catch(e){}try{window.gtag&&gtag('event',n,p)}catch(e){}};
+window.ucUtm=function(){var q=new URLSearchParams(location.search),ref=document.referrer||'',s=q.get('utm_source')||'';if(!s){s=/t\.co|twitter\.com|x\.com/i.test(ref)?'twitter':/reddit\.com/i.test(ref)?'reddit':(ref?'referral':'direct')}return{source:s,medium:q.get('utm_medium')||'',campaign:q.get('utm_campaign')||''}};
+window.ucWithUtm=function(u){var q=location.search;return q?u+(u.includes('?')?'&':'?')+q.slice(1):u};
+(function(){try{sessionStorage.setItem('uc_src',ucUtm().source)}catch(e){}})();
 </script>
 </head>
 <body>
@@ -155,8 +169,8 @@
         <a href="#pricing" style="color:#98A3A3">Fiyatlandırma</a>
       </nav>
       <div style="flex:1"></div>
-      <button data-uc-login onclick="location.href='/signup.html'" style="background:transparent;border:none;cursor:pointer;font:500 13px 'Archivo';color:#98A3A3">Giriş yap</button>
-      <button onclick="location.href='/signup.html'" style="height:38px;padding:0 16px;border-radius:20px;background:#F2F5F4;border:none;color:#03090B;font:600 13px 'Archivo';cursor:pointer">Başlayın</button>
+      <button data-uc-login onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'header_login'});location.href=(window.ucWithUtm?ucWithUtm('/signup.html'):'/signup.html')" style="background:transparent;border:none;cursor:pointer;font:500 13px 'Archivo';color:#98A3A3">Giriş yap</button>
+      <button onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'header'});location.href=(window.ucWithUtm?ucWithUtm('/signup.html'):'/signup.html')" style="height:38px;padding:0 16px;border-radius:20px;background:#F2F5F4;border:none;color:#03090B;font:600 13px 'Archivo';cursor:pointer">Başlayın</button>
       <button type="button" class="uc-hamburger" aria-label="Menüyü aç" aria-controls="uc-mobile-menu" aria-expanded="false" id="uc-hamburger-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
       </button>
@@ -170,14 +184,16 @@
     <a href="#connections">Bağlantılar</a>
     <a href="#pricing">Fiyatlandırma</a>
     <div class="uc-mm-cta">
-      <button class="uc-mm-ghost" onclick="location.href='/signup.html'">Giriş yap</button>
-      <button class="uc-mm-primary" onclick="location.href='/signup.html'">Başlayın</button>
+      <button class="uc-mm-ghost" onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'mobile_menu_login'});location.href=(window.ucWithUtm?ucWithUtm('/signup.html'):'/signup.html')">Giriş yap</button>
+      <button class="uc-mm-primary" onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'mobile_menu'});location.href=(window.ucWithUtm?ucWithUtm('/signup.html'):'/signup.html')">Ücretsiz başla</button>
     </div>
   </div>
   <script>(function(){var btn=document.getElementById('uc-hamburger-btn');var menu=document.getElementById('uc-mobile-menu');if(!btn||!menu)return;function close(){menu.classList.remove('open');btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-label','Menüyü aç')}function open(){menu.classList.add('open');btn.setAttribute('aria-expanded','true');btn.setAttribute('aria-label','Menüyü kapat')}btn.addEventListener('click',function(e){e.stopPropagation();menu.classList.contains('open')?close():open()});menu.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close)});document.addEventListener('click',function(e){if(!menu.contains(e.target)&&e.target!==btn&&!btn.contains(e.target))close()});window.addEventListener('resize',function(){if(window.innerWidth>720)close()})})();</script>
 
   <!-- HERO -->
   <section id="product" style="max-width:1280px;margin:0 auto;padding:100px 32px 0;text-align:center">
+    <div id="uc-src-line" style="display:none;font:600 12px 'JetBrains Mono';letter-spacing:.12em;color:#DFFF00;margin:0 auto 18px;text-align:center"></div>
+    <script>(function(){var s=(sessionStorage.getItem('uc_src'))||(window.ucUtm&&ucUtm().source)||'direct';var m={twitter:"Twitter'dan geldin — 3 ay sınırsız AI seni bekliyor",reddit:"Reddit'ten geldin — kur, 60 saniyede test et",referral:"Hoş geldin — kurulum 60 saniye"};if(m[s]){var el=document.getElementById('uc-src-line');el.textContent=m[s];el.style.display='block'}if(window.ucTrack)ucTrack('landing_view',{source:s,page:location.pathname})})();</script>
     <div style="font:600 11px 'JetBrains Mono';letter-spacing:.18em;color:#F2F5F4;margin-bottom:26px">KAMPANYA · 3 AY BOYUNCA SINIRSIZ AI</div>
     <h1 style="font-family:'Newsreader',serif;font-weight:300;font-size:76px;line-height:1.05;letter-spacing:-.02em;margin:0 auto 26px;max-width:960px;text-wrap:balance;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:.28em;row-gap:14px">
       <span>3 ay boyunca</span>
@@ -194,8 +210,8 @@
     </h1>
     <p style="font-size:17px;line-height:1.6;color:#98A3A3;margin:0 auto 30px;max-width:680px">Kod yazmayı hiç bırakmayın. Unichanl bilgisayarınızda çalışan yerel bir geçittir; sağlayıcı düştüğünde ya da limit dolduğunda isteği <span style="color:#F2F5F4;font-weight:600">saniyeler içinde başka bir modele yönlendirir</span> — siz tek satır bile değiştirmeden.</p>
     <div style="display:flex;gap:12px;align-items:center;justify-content:center;margin-bottom:20px;flex-wrap:wrap">
-      <button onclick="location.href='/signup.html'" style="height:46px;padding:0 24px;border-radius:32px;background:#F2F5F4;border:none;color:#03090B;font:600 14px 'Archivo';cursor:pointer;display:inline-flex;align-items:center;gap:8px">Başlayın <span style="font-size:16px;line-height:1">→</span></button>
-      <a href="#how" style="height:46px;padding:0 24px;border-radius:32px;background:#F2F5F4;border:none;color:#03090B;font:500 14px 'Archivo';display:inline-flex;align-items:center">Nasıl çalıştığını gör</a>
+      <button class="uc-primary-cta" onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'hero',source:sessionStorage.uc_src||'direct'});location.href=(window.ucWithUtm?ucWithUtm('/signup.html'):'/signup.html')" style="height:46px;padding:0 24px;border-radius:32px;background:#F2F5F4;border:none;color:#03090B;font:600 14px 'Archivo';cursor:pointer;display:inline-flex;align-items:center;gap:8px">Ücretsiz başla — 60 sn <span style="font-size:16px;line-height:1">→</span></button>
+      <a href="#how" style="height:46px;padding:0 24px;border-radius:32px;background:transparent;border:1px solid #1C2A2D;color:#F2F5F4;font:500 14px 'Archivo';display:inline-flex;align-items:center">Nasıl çalıştığını gör</a>
     </div>
     <div style="display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;margin:22px 0 16px;font:500 13px 'Archivo';color:#98A3A3">
       <span style="display:inline-flex;align-items:center;gap:9px">
@@ -234,7 +250,7 @@
     </script>
 
     <!-- routing console -->
-    <div style="border:1px solid #1C2A2D;border-radius:12px;background:#050F12;overflow:hidden">
+    <div role="img" aria-label="Unichanl yönlendirici görseli" style="border:1px solid #1C2A2D;border-radius:12px;background:#050F12;overflow:hidden;pointer-events:none;user-select:none">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 20px;border-bottom:1px solid #132023;background:#071114">
         <span style="font:600 11px 'JetBrains Mono';letter-spacing:.14em">UNICHANL GEÇİDİ</span>
         <span style="font:500 10.5px 'JetBrains Mono';letter-spacing:.12em;color:#657172">YEREL · 127.0.0.1:20128</span>
@@ -282,7 +298,7 @@
         <div style="font-size:13px;color:#FBBF24">ayarlanan zaman aşımını</div>
       </div>
     </div>
-    <div style="border:1px solid #132023;border-radius:12px;background:#050F12;padding:36px;display:flex;align-items:center;justify-content:center;gap:26px;flex-wrap:wrap">
+    <div role="img" aria-label="Başarısız istek Unichanl üzerinden yeniden yönlendirilir, oturum sürer" style="border:1px solid #132023;border-radius:12px;background:#050F12;padding:36px;display:flex;align-items:center;justify-content:center;gap:26px;flex-wrap:wrap;pointer-events:none;cursor:default;user-select:none">
       <span style="font:600 12px 'JetBrains Mono';letter-spacing:.14em;color:#F87171">İSTEK BAŞARISIZ</span>
       <span style="color:#3A4A4D">→</span>
       <span style="font:600 12px 'JetBrains Mono';letter-spacing:.14em;color:#F2F5F4">UNICHANL</span>
@@ -290,6 +306,9 @@
       <span style="font:600 12px 'JetBrains Mono';letter-spacing:.14em;color:var(--accent,#DFFF00)">İSTEK YENİDEN YÖNLENDİRİLDİ</span>
       <span style="color:#3A4A4D">→</span>
       <span style="font:600 12px 'JetBrains Mono';letter-spacing:.14em;color:var(--accent,#DFFF00)">OTURUM SÜRÜYOR</span>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <button onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'problem_strip',source:sessionStorage.uc_src||'direct'});location.href=(window.ucWithUtm?ucWithUtm('/signup.html'):'/signup.html')" style="height:44px;padding:0 22px;border-radius:32px;background:#F2F5F4;color:#03090B;border:0;font:600 13.5px 'Archivo';cursor:pointer">Bunu benim için çöz →</button>
     </div>
   </section>
 
@@ -786,7 +805,7 @@
     <h2 style="font-family:'Newsreader',serif;font-weight:300;font-size:88px;line-height:1;letter-spacing:-.03em;margin:0 0 26px">İnşa etmeye devam et.</h2>
     <p style="font-family:'Newsreader',serif;font-size:22px;font-weight:300;line-height:1.5;color:#98A3A3;margin:0 0 36px">Sağlayıcın hata verebilir.<br>Modelin değişebilir.<br>İşin ilerlemeye devam eder.</p>
     <div style="display:flex;gap:12px;justify-content:center">
-      <button onclick="location.href='/signup.html'" style="height:46px;padding:0 26px;border-radius:32px;background:#F2F5F4;border:none;color:#03090B;font:600 14.5px 'Archivo';cursor:pointer">Başlayın</button>
+      <button onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'pricing_footer',source:sessionStorage.uc_src||'direct'});location.href=(window.ucWithUtm?ucWithUtm('/signup.html'):'/signup.html')" style="height:46px;padding:0 26px;border-radius:32px;background:#F2F5F4;border:none;color:#03090B;font:600 14.5px 'Archivo';cursor:pointer">Ücretsiz başla — 60 sn →</button>
       <a href="#product" style="height:46px;padding:0 26px;border-radius:8px;border:1px solid #1C2A2D;color:#C7CFCE;font:500 14.5px 'Archivo';display:flex;align-items:center">Dokümanları gör</a>
     </div>
   </section>
