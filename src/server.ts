@@ -1,11 +1,13 @@
 import 'dotenv/config';
 import { createApp } from './app.js';
 import { prisma } from './db/prisma.js';
+import { ensureSchema } from './db/ensureSchema.js';
 import { redis } from './cache/redis.js';
 import { logger } from './utils/logger.js';
 import { startAutoRechargeScanner } from './services/autoRechargeScanner.js';
 
 async function main(): Promise<void> {
+  await ensureSchema();
   const app = await createApp();
   const port = parseInt(process.env.PORT ?? '3000');
   const host = '0.0.0.0';
