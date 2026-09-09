@@ -8,7 +8,29 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#03090B;color:#F2F5F4;font-family:'Archivo',system-ui,sans-serif}a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}@keyframes ucpulse{0%,100%{opacity:1}50%{opacity:.35}}@keyframes ucdash{to{stroke-dashoffset:-16}}@keyframes uccaret{0%,49%{opacity:1}50%,100%{opacity:0}}</style>
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#03090B;color:#F2F5F4;font-family:'Archivo',system-ui,sans-serif}html,body{overflow-x:hidden;-webkit-text-size-adjust:100%}a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer}img,svg{max-width:100%}@keyframes ucpulse{0%,100%{opacity:1}50%{opacity:.35}}@keyframes ucdash{to{stroke-dashoffset:-16}}@keyframes uccaret{0%,49%{opacity:1}50%,100%{opacity:0}}
+@media (max-width:960px){
+  /* collapse split → single column, form only */
+  body > div > div[style*="grid-template-columns:1fr 1px 1.15fr"]{grid-template-columns:1fr !important;padding-left:20px !important;padding-right:20px !important}
+  /* hide the divider and the demo column */
+  body > div > div[style*="grid-template-columns:1fr 1px 1.15fr"] > div[style*="background:#132023"],
+  body > div > div[style*="grid-template-columns:1fr 1px 1.15fr"] > div:nth-child(3){display:none !important}
+  body > div > div[style*="grid-template-columns:1fr 1px 1.15fr"] > div:first-child{padding:40px 0 !important}
+}
+@media (max-width:480px){
+  body > div > div[style*="grid-template-columns:1fr 1px 1.15fr"]{padding-left:14px !important;padding-right:14px !important}
+  body > div > div[style*="grid-template-columns:1fr 1px 1.15fr"] > div:first-child{padding:28px 0 !important}
+  /* form card padding reduces */
+  body > div > div[style*="grid-template-columns:1fr 1px 1.15fr"] > div:first-child > div[style*="max-width:420px"]{padding:26px 20px !important}
+  h1{font-size:32px !important}
+  [role="status"]{font-size:8.5px !important;letter-spacing:.06em !important;padding:0 8px;text-align:center;line-height:1.15;gap:6px !important}
+  [role="status"] img{width:12px !important;height:12px !important}
+}
+@media (max-width:380px){
+  h1{font-size:28px !important}
+  body > div > div[style*="grid-template-columns:1fr 1px 1.15fr"] > div:first-child > div[style*="max-width:420px"]{padding:22px 16px !important}
+}
+</style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-9FCSTD2HG9"></script>
 <script>
@@ -58,7 +80,7 @@
         </div>
 
         <div style="font-size:12.5px;color:#98A3A3;margin-bottom:8px">E-posta</div>
-        <input id="emailInput" value="" placeholder="siz@sirket.com" style="width:100%;height:44px;padding:0 14px;margin-bottom:16px;background:#0B171A;border:1px solid #1C2A2D;border-radius:8px;color:#F2F5F4;font:400 13.5px 'Archivo';outline:none">
+        <input id="emailInput" type="email" name="email" autocomplete="email" inputmode="email" spellcheck="false" autocapitalize="none" value="" placeholder="siz@sirket.com" style="width:100%;height:48px;padding:0 14px;margin-bottom:16px;background:#0B171A;border:1px solid #1C2A2D;border-radius:8px;color:#F2F5F4;font:400 15px 'Archivo';outline:none">
         <button onclick="doSignup(event)" style="width:100%;height:46px;border-radius:32px;background:#F2F5F4;border:none;color:#03090B;font:600 14px 'Archivo';cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">Hesap oluştur →</button>
         <div style="text-align:center;margin-top:18px;font-size:12.5px;color:#657172">Zaten bir hesabınız var mı? <button onclick="doSignup(event)" style="background:transparent;border:none;cursor:pointer;font:600 12.5px 'Archivo';color:#F2F5F4;text-decoration:underline;padding:0">Giriş yap.</button></div>
       </div>
