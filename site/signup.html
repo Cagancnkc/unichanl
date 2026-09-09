@@ -175,14 +175,27 @@ async function initSupabase(){
   sb=window.supabase.createClient('https://bqycnltbdhconcjdmdml.supabase.co','sb_publishable_0gZpwTUpFhSK3vNtfojT-w_StHriUNP',{auth:{flowType:'implicit'}});
   return sb;
 }
+let _oauthInFlight=false;
 window.oauthGoogle=async function(e){
   if(e) e.preventDefault();
+  if(_oauthInFlight) return;
+  _oauthInFlight=true;
+  const btn=(e&&e.currentTarget)||document.querySelector('[onclick*="oauthGoogle"]');
+  const prevText=btn?btn.textContent:null;
+  if(btn){btn.disabled=true;btn.style.opacity='.6';btn.textContent='Google\'a yönlendiriliyor…';}
   const supabase=await initSupabase();
-  if(!supabase){alert('Supabase hazır değil. Biraz bekle.');return;}
+  if(!supabase){
+    _oauthInFlight=false;
+    if(btn){btn.disabled=false;btn.style.opacity='';if(prevText)btn.textContent=prevText;}
+    showSignupErr('Supabase hazır değil. Biraz bekle.');
+    return;
+  }
   try{
     if(window.ucTrack) ucTrack('signup_start',{method:'google',source:sessionStorage.uc_src||'direct'});
     await supabase.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.origin+'/callback.html'}});
   }catch(err){
+    _oauthInFlight=false;
+    if(btn){btn.disabled=false;btn.style.opacity='';if(prevText)btn.textContent=prevText;}
     if(window.ucTrack) ucTrack('signup_error',{method:'google',reason:(err.message||String(err)).slice(0,80)});
     showSignupErr('Hata: '+(err.message||err));
   }

@@ -21,8 +21,13 @@ import { ruleRoutes } from './api/routes/rules.js';
 import { sessionRoutes } from './api/routes/sessions.js';
 import { onboardingRoutes } from './api/routes/onboarding.js';
 import { generateRequestId } from './utils/id.js';
+import { logger } from './utils/logger.js';
 
 export async function createApp() {
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+    logger.warn('SUPABASE_URL/SUPABASE_ANON_KEY tanımsız — Google girişi çalışmayacak');
+  }
+
   const app = Fastify({
     logger: false,
     genReqId: () => generateRequestId(),

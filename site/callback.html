@@ -50,11 +50,15 @@ window.ucTrack=function(n,p){p=p||{};try{window.clarity&&clarity('event',n)}catc
 const errEl = document.getElementById('err');
 const textEl = document.querySelector('.text');
 
-function showError(msg) {
-  console.error('[callback]', msg);
-  if (window.ucTrack) ucTrack('signup_error', { method: 'google', reason: String(msg||'').slice(0,80) });
-  errEl.textContent = 'Hata: ' + msg;
-  setTimeout(() => { location.href = '/signup.html'; }, 3000);
+function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function showError(msg, code, requestId) {
+  console.error('[callback]', code || '', msg, requestId || '');
+  if (window.ucTrack) ucTrack('signup_error', { method: 'google', code: code || 'unknown', reason: String(msg||'').slice(0,80) });
+  var retryHref = (code === 'OAUTH_TOKEN_INVALID' || code === 'AUTH_UNAVAILABLE') ? '/signup.html' : '/signup.html';
+  var retryLabel = (code === 'OAUTH_TOKEN_INVALID') ? 'Tekrar giriş yap' : 'Kayıt sayfasına dön';
+  errEl.innerHTML = 'Hata: ' + escapeHtml(msg)
+    + (requestId ? '<br><small style="opacity:.6">İstek: ' + escapeHtml(requestId) + '</small>' : '')
+    + '<br><br><a href="' + retryHref + '" style="color:#DFFF00">← ' + retryLabel + '</a>';
 }
 
 const hashParams = new URLSearchParams((location.hash || '').replace(/^#/, ''));
@@ -77,7 +81,13 @@ async function exchange(token) {
     console.log('[callback] exchange status', r.status);
     const data = await r.json().catch(() => ({}));
     console.log('[callback] exchange body', data);
-    if (!r.ok || !data.key) return showError(data.error || ('HTTP ' + r.status));
+    if (!r.ok || !data.key) {
+      const errObj = data && data.error;
+      const msg = (typeof errObj === 'string') ? errObj : (errObj && errObj.message) || ('HTTP ' + r.status);
+      const code = (errObj && typeof errObj === 'object') ? errObj.code : undefined;
+      const rid = (errObj && typeof errObj === 'object') ? errObj.request_id : undefined;
+      return showError(msg, code, rid);
+    }
     localStorage.setItem('unichanl_key', data.key);
     if (window.ucTrack) {
       ucTrack('login_success', { method: 'google' });
@@ -91,11 +101,11 @@ async function exchange(token) {
 }
 
 if (urlError) {
-  showError(decodeURIComponent(urlError));
+  showError(decodeURIComponent(urlError), 'OAUTH_PROVIDER_ERROR');
 } else if (accessToken) {
   exchange(accessToken);
 } else {
-  showError('access_token yok (URL hash boş)');
+  showError('access_token yok (URL hash boş)', 'ACCESS_TOKEN_MISSING');
 }
 </script>
 </body>
