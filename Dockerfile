@@ -57,4 +57,4 @@ EXPOSE 3001
 # Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]
+CMD ["sh", "-c", "npx prisma db execute --file prisma/bootstrap.sql --schema prisma/schema.prisma && npx prisma migrate deploy && node dist/server.js"]
