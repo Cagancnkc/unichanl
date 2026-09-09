@@ -3,6 +3,7 @@ import { createApp } from './app.js';
 import { prisma } from './db/prisma.js';
 import { redis } from './cache/redis.js';
 import { logger } from './utils/logger.js';
+import { startAutoRechargeScanner } from './services/autoRechargeScanner.js';
 
 async function main(): Promise<void> {
   const app = await createApp();
@@ -12,9 +13,12 @@ async function main(): Promise<void> {
   await app.listen({ port, host });
   logger.info({ port, host }, '🚀 AI Gateway sunucusu başlatıldı');
 
+  const scanner = startAutoRechargeScanner();
+
   const shutdown = async (signal: string): Promise<void> => {
     logger.info({ signal }, 'Sunucu kapatılıyor...');
     try {
+      scanner.stop();
       await app.close();
       await prisma.$disconnect();
       await redis.quit();

@@ -1196,8 +1196,21 @@ LOADERS.pricing=async function(){
         </div>
         <div class="card" style="padding:24px 26px">
           <div class="row-split" style="margin-bottom:6px"><div style="font-weight:600;font-size:14px">Otomatik Yenileme</div><button class="togg" id="ar-tog"></button></div>
-          <p style="color:#98A3A3;font-size:12.5px;margin:0 0 12px;line-height:1.5">Bakiye eşiğin altına düşerse, sistem tanımlı tutarda otomatik yükleme başlatılır.</p>
-          <div class="mono" id="ar-info" style="font-size:11.5px;color:#657172">yükleniyor…</div>
+          <p style="color:#98A3A3;font-size:12.5px;margin:0 0 12px;line-height:1.5">Bakiye eşiğin altına düşerse, sistem tanımlı tutarda otomatik yükleme başlatılır (checkout linki e-posta ile gönderilir).</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+            <label style="display:flex;flex-direction:column;gap:4px">
+              <span style="font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em">EŞİK ($)</span>
+              <div style="position:relative"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#657172;font-family:'JetBrains Mono'">$</span><input id="ar-threshold" class="inp" type="number" min="0.5" max="1000" step="0.5" style="padding-left:22px"></div>
+            </label>
+            <label style="display:flex;flex-direction:column;gap:4px">
+              <span style="font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em">YÜKLENECEK ($)</span>
+              <div style="position:relative"><span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#657172;font-family:'JetBrains Mono'">$</span><input id="ar-amount" class="inp" type="number" min="5" max="1000" step="1" style="padding-left:22px"></div>
+            </label>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+            <div class="mono" id="ar-info" style="font-size:11.5px;color:#657172">yükleniyor…</div>
+            <button class="btn" id="ar-save" style="padding:8px 14px;font-size:12px">Kaydet</button>
+          </div>
         </div>
       </div>
 
@@ -1242,6 +1255,19 @@ LOADERS.pricing=async function(){
     try{await api('/api/billing/recharge-settings',{method:'PUT',body:JSON.stringify({autoRechargeEnabled:on})});toast(on?'Otomatik yenileme açık':'Otomatik yenileme kapalı','ok');}
     catch(err){tog.classList.toggle('on',!on);toast(err.message||'Güncellenemedi','err');}
   });
+  $('#ar-save').addEventListener('click',async()=>{
+    const th=parseFloat($('#ar-threshold').value);
+    const am=parseFloat($('#ar-amount').value);
+    if(!Number.isFinite(th)||th<=0||th>1000){toast('Eşik 0-1000 arası olmalı','err');return;}
+    if(!Number.isFinite(am)||am<5||am>1000){toast('Yüklenecek tutar $5-$1000 arası olmalı','err');return;}
+    const btn=$('#ar-save');btn.disabled=true;
+    try{
+      await api('/api/billing/recharge-settings',{method:'PUT',body:JSON.stringify({autoRechargeThreshold:th,autoRechargeAmount:am})});
+      $('#ar-info').textContent='Eşik: $'+th.toFixed(2)+' · Yüklenecek: $'+am.toFixed(2);
+      toast('Ayarlar kaydedildi','ok');
+    }catch(err){toast(err.message||'Kaydedilemedi','err');}
+    finally{btn.disabled=false;}
+  });
 };
 
 async function refreshPricing(){
@@ -1255,6 +1281,8 @@ async function refreshPricing(){
   if(rc){
     $('#ar-tog').classList.toggle('on',!!rc.autoRechargeEnabled);
     $('#ar-info').textContent='Eşik: $'+rc.autoRechargeThreshold+' · Yüklenecek: $'+rc.autoRechargeAmount;
+    const thEl=$('#ar-threshold');if(thEl&&!thEl.value)thEl.value=parseFloat(rc.autoRechargeThreshold).toFixed(2);
+    const amEl=$('#ar-amount');if(amEl&&!amEl.value)amEl.value=parseFloat(rc.autoRechargeAmount).toFixed(2);
   }
   const tx=$('#tx-body');
   const txs=bal?.recentTransactions||[];

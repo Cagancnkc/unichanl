@@ -6,6 +6,7 @@ const POLAR_API_BASE = process.env.POLAR_API_BASE ?? 'https://api.polar.sh';
 export interface PolarCheckoutInput {
   productId: string;
   customerEmail?: string;
+  customerId?: string;
   successUrl?: string;
   metadata?: Record<string, string>;
   amount?: number;
@@ -28,6 +29,7 @@ export async function createCheckoutSession(input: PolarCheckoutInput): Promise<
     products: [input.productId],
   };
   if (input.customerEmail) body.customer_email = input.customerEmail;
+  if (input.customerId) body.customer_id = input.customerId;
   if (input.successUrl) body.success_url = input.successUrl;
   if (input.metadata) body.metadata = input.metadata;
   if (typeof input.amount === 'number') body.amount = input.amount;
@@ -91,6 +93,7 @@ export function productIdToTier(productId: string): UserTier {
 export async function createRechargeSession(opts: {
   userId: string;
   customerEmail: string;
+  customerId?: string;
   amountUsd: number;
   successUrl?: string;
 }): Promise<{ url: string; checkoutId: string }> {
@@ -99,6 +102,7 @@ export async function createRechargeSession(opts: {
   const session = await createCheckoutSession({
     productId,
     customerEmail: opts.customerEmail,
+    customerId: opts.customerId,
     amount: Math.round(opts.amountUsd * 100),
     successUrl: opts.successUrl,
     metadata: { userId: opts.userId, kind: 'credit_topup', amountUsd: String(opts.amountUsd) },

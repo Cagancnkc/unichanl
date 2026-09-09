@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '../prisma.js';
 import { creditRepository } from './creditRepository.js';
 import { WELCOME_CREDIT_USD } from '../../config/pricing.js';
@@ -63,7 +64,32 @@ export const userRepository = {
     });
   },
 
-  async setRechargeSettings(id: string, data: { autoRechargeEnabled?: boolean }) {
-    return prisma.user.update({ where: { id }, data });
+  async setRechargeSettings(
+    id: string,
+    data: { autoRechargeEnabled?: boolean; autoRechargeThreshold?: number; autoRechargeAmount?: number },
+  ) {
+    const update: Prisma.UserUpdateInput = {};
+    if (typeof data.autoRechargeEnabled === 'boolean') update.autoRechargeEnabled = data.autoRechargeEnabled;
+    if (typeof data.autoRechargeThreshold === 'number') update.autoRechargeThreshold = new Prisma.Decimal(data.autoRechargeThreshold);
+    if (typeof data.autoRechargeAmount === 'number') update.autoRechargeAmount = new Prisma.Decimal(data.autoRechargeAmount);
+    return prisma.user.update({ where: { id }, data: update });
+  },
+
+  async listAutoRechargeCandidates() {
+    return prisma.user.findMany({
+      where: { autoRechargeEnabled: true },
+      select: {
+        id: true,
+        email: true,
+        autoRechargeThreshold: true,
+        autoRechargeAmount: true,
+        polarCustomerId: true,
+        lastAutoRechargeAttemptAt: true,
+      },
+    });
+  },
+
+  async markAutoRechargeAttempted(id: string) {
+    return prisma.user.update({ where: { id }, data: { lastAutoRechargeAttemptAt: new Date() } });
   },
 };

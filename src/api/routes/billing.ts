@@ -95,11 +95,17 @@ export async function billingRoutes(app: FastifyInstance): Promise<void> {
   });
 
   app.put('/billing/recharge-settings', async (request: FastifyRequest, reply) => {
-    const body = z.object({ autoRechargeEnabled: z.boolean() }).safeParse(request.body);
+    const body = z
+      .object({
+        autoRechargeEnabled: z.boolean().optional(),
+        autoRechargeThreshold: z.number().positive().max(1000).optional(),
+        autoRechargeAmount: z.number().min(MIN_TOPUP_USD).max(MAX_TOPUP_USD).optional(),
+      })
+      .safeParse(request.body);
     if (!body.success) throw new ValidationError('Geçersiz istek', body.error.flatten());
 
     const user = request.user;
-    await userRepository.setRechargeSettings(user.id, { autoRechargeEnabled: body.data.autoRechargeEnabled });
+    await userRepository.setRechargeSettings(user.id, body.data);
     reply.status(204).send();
   });
 

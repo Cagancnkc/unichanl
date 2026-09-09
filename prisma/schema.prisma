@@ -16,9 +16,10 @@ model User {
   plan             String   @default("free")
   tier             String   @default("free")
   polarCustomerId  String?  @unique
-  autoRechargeEnabled   Boolean  @default(true)
-  autoRechargeThreshold Decimal  @default(1.00) @db.Decimal(8, 2)
-  autoRechargeAmount    Decimal  @default(5.00) @db.Decimal(8, 2)
+  autoRechargeEnabled       Boolean   @default(true)
+  autoRechargeThreshold     Decimal   @default(1.00) @db.Decimal(8, 2)
+  autoRechargeAmount        Decimal   @default(5.00) @db.Decimal(8, 2)
+  lastAutoRechargeAttemptAt DateTime?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
