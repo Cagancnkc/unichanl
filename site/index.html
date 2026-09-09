@@ -57,17 +57,61 @@
   </header>
 
   <!-- HERO -->
-  <section id="product" style="max-width:1280px;margin:0 auto;padding:100px 32px 0">
-    <div style="font:600 11px 'JetBrains Mono';letter-spacing:.18em;color:#657172;margin-bottom:26px">GELİŞTİRİCİ ALTYAPISI / MODEL YÖNLENDİRME</div>
-    <h1 style="font-family:'Newsreader',serif;font-weight:300;font-size:76px;line-height:1.02;letter-spacing:-.02em;margin:0 0 26px;max-width:900px;text-wrap:pretty">Limitinin yenilenmesini bekleme.</h1>
-    <p style="font-size:16.5px;line-height:1.6;color:#98A3A3;margin:0 0 34px;max-width:620px">Unichanl, kodlama isteklerinizi modeller ve sağlayıcılar arasında otomatik olarak yönlendirir; iş akışınızı yeniden başlatmanıza gerek kalmaz.</p>
-    <div style="display:flex;gap:12px;align-items:center;margin-bottom:22px">
-      <button onclick="location.href='/signup.html'" style="height:44px;padding:0 22px;border-radius:8px;background:var(--accent,#DFFF00);border:none;color:#03090B;font:600 14px 'Archivo';cursor:pointer">Başlayın</button>
-      <a href="#how" style="height:44px;padding:0 22px;border-radius:8px;background:transparent;border:1px solid #1C2A2D;color:#C7CFCE;font:500 14px 'Archivo';display:flex;align-items:center">Nasıl çalıştığını gör</a>
+  <section id="product" style="max-width:1280px;margin:0 auto;padding:100px 32px 0;text-align:center">
+    <div style="font:600 11px 'JetBrains Mono';letter-spacing:.18em;color:var(--accent,#DFFF00);margin-bottom:26px">KAMPANYA · 3 AY BOYUNCA SINIRSIZ AI</div>
+    <h1 style="font-family:'Newsreader',serif;font-weight:300;font-size:76px;line-height:1.05;letter-spacing:-.02em;margin:0 auto 26px;max-width:960px;text-wrap:balance;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:.28em;row-gap:14px">
+      <span>3 ay boyunca</span>
+      <span style="position:relative;display:inline-block;padding:0 .06em">
+        <span style="position:absolute;inset:12% -4% 14% -4%;background:rgba(223,255,0,.18);border-radius:6px;z-index:0"></span>
+        <span style="position:relative;z-index:1;color:var(--accent,#DFFF00)">sınırsız</span>
+      </span>
+      <span style="display:inline-flex;align-items:center;gap:16px">
+        <span>ai</span>
+        <span id="uc-provider-chip" aria-hidden="true" style="display:inline-flex;align-items:center;justify-content:center;width:76px;height:76px;border-radius:16px;background:#F2F5F4;box-shadow:0 6px 24px rgba(223,255,0,.18),0 0 0 1px rgba(223,255,0,.35);vertical-align:middle">
+          <img id="uc-provider-img" src="https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/openai.png" alt="" style="width:52px;height:52px;object-fit:contain;transition:opacity .35s ease" onerror="this.style.opacity=0">
+        </span>
+      </span>
+    </h1>
+    <p style="font-size:17px;line-height:1.6;color:#98A3A3;margin:0 auto 30px;max-width:660px">Kod yazmayı hiç bırakmayın. Unichanl ile tek bir OpenAI-uyumlu API üzerinden Claude, GPT, Gemini ve daha fazlasına kesintisiz erişin — <span style="color:#F2F5F4;font-weight:600">istek formatınızı değiştirmeden</span>.</p>
+    <div style="display:flex;gap:12px;align-items:center;justify-content:center;margin-bottom:20px;flex-wrap:wrap">
+      <button onclick="location.href='/signup.html'" style="height:46px;padding:0 24px;border-radius:24px;background:#F2F5F4;border:none;color:#03090B;font:600 14px 'Archivo';cursor:pointer;display:inline-flex;align-items:center;gap:8px">Başlayın <span style="font-size:16px;line-height:1">→</span></button>
+      <a href="#how" style="height:46px;padding:0 24px;border-radius:24px;background:transparent;border:1px solid #2A3B3E;color:#F2F5F4;font:500 14px 'Archivo';display:inline-flex;align-items:center">Nasıl çalıştığını gör</a>
     </div>
-    <div style="display:flex;align-items:center;gap:10px;font:500 10.5px 'JetBrains Mono';letter-spacing:.14em;color:#657172;margin-bottom:56px">
+    <div style="display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;margin:22px 0 16px;font:500 13px 'Archivo';color:#98A3A3">
+      <span style="display:inline-flex;align-items:center;gap:9px">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#DFFF00" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="13" rx="2.2"/><path d="M2.5 10h19"/><path d="M17 14.5h2"/></svg>
+        Minimum 5$ yatırım
+      </span>
+      <span style="display:inline-flex;align-items:center;gap:9px">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#DFFF00" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 12l4-3.5"/><path d="M12 3v2"/><path d="M12 19v2"/></svg>
+        Yatırdığın kadar öde
+      </span>
+      <span style="display:inline-flex;align-items:center;gap:9px">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#DFFF00" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2.2"/><path d="M3 9.5h18"/><path d="M8 3v3.5"/><path d="M16 3v3.5"/><path d="M8.5 14l2.2 2.2L16 12"/></svg>
+        9 Ocak 2027'ye kadar geçerli
+      </span>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;font:500 10.5px 'JetBrains Mono';letter-spacing:.14em;color:#657172;margin-bottom:56px">
       YEREL GEÇİT <span style="color:var(--accent,#DFFF00);animation:ucpulse 2s ease-in-out infinite">●</span> HAZIR
     </div>
+    <script>
+      (function(){
+        var img=document.getElementById('uc-provider-img');
+        if(!img)return;
+        var base='https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/';
+        var slugs=['openai','claude','gemini','grok','deepseek','mistral','meta'];
+        var i=0;
+        try{if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;}catch(e){}
+        setInterval(function(){
+          i=(i+1)%slugs.length;
+          img.style.opacity=0;
+          setTimeout(function(){
+            img.src=base+slugs[i]+'.png';
+            img.style.opacity=1;
+          },320);
+        },1800);
+      })();
+    </script>
 
     <!-- routing console -->
     <div style="border:1px solid #1C2A2D;border-radius:12px;background:#050F12;overflow:hidden">
