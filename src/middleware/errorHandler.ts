@@ -38,6 +38,8 @@ export function errorHandler(
       P2002: { status: 409, code: 'CONFLICT', message: 'Kayıt zaten mevcut' },
       P2025: { status: 404, code: 'NOT_FOUND', message: 'Kayıt bulunamadı' },
       P2003: { status: 400, code: 'FOREIGN_KEY_VIOLATION', message: 'Geçersiz ilişkili kayıt' },
+      P2021: { status: 500, code: 'DB_SCHEMA_MISMATCH', message: 'Veritabanı tablosu eksik — migration deploy et' },
+      P2022: { status: 500, code: 'DB_SCHEMA_MISMATCH', message: 'Veritabanı kolonu eksik — migration deploy et' },
     };
     const mapped = map[error.code];
     if (mapped) {
@@ -46,10 +48,28 @@ export function errorHandler(
         'Prisma known request error',
       );
       reply.status(mapped.status).send({
-        error: { code: mapped.code, message: mapped.message, request_id: request.id },
+        error: {
+          code: mapped.code,
+          message: mapped.message,
+          request_id: request.id,
+          ...(mapped.status >= 500 ? { hint: String(error.message).split('\n').slice(0, 2).join(' ').slice(0, 300) } : {}),
+        },
       });
       return;
     }
+    logger.error(
+      { err: error, requestId: request.id, method: request.method, url: request.url, prismaCode: error.code },
+      'Prisma known request error (unmapped)',
+    );
+    reply.status(500).send({
+      error: {
+        code: 'DB_ERROR',
+        message: 'Veritabanı hatası',
+        request_id: request.id,
+        hint: error.code + ': ' + String(error.message).split('\n').slice(0, 2).join(' ').slice(0, 300),
+      },
+    });
+    return;
   }
 
   if (
