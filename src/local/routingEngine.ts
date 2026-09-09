@@ -53,7 +53,13 @@ function ensureSeeded(): void {
   seeded = true;
 }
 
+let __adapterOverride: InferenceProvider | null = null;
+export function __setAdapterOverrideForTests(a: InferenceProvider | null): void {
+  __adapterOverride = a;
+}
+
 function adapterFor(providerName: ProviderName): InferenceProvider {
+  if (__adapterOverride) return __adapterOverride;
   switch (providerName) {
     case 'nvidia':
       return nvidiaAdapter;

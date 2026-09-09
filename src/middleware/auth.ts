@@ -34,11 +34,13 @@ export async function authMiddleware(request: FastifyRequest, reply: FastifyRepl
   }
 
   let validKey: (typeof candidates)[0] | null = null;
+  let argonThrewCount = 0;
   for (const candidate of candidates) {
     let matches = false;
     try {
       matches = await argon2.verify(candidate.keyHash, rawKey);
     } catch (err) {
+      argonThrewCount++;
       logger.warn(
         { err, requestId: request.id, candidateId: candidate.id },
         'argon2.verify threw for candidate — treating as no match',
@@ -52,6 +54,13 @@ export async function authMiddleware(request: FastifyRequest, reply: FastifyRepl
   }
 
   if (!validKey) {
+    if (candidates.length > 0 && argonThrewCount === candidates.length) {
+      throw new AppError(
+        503,
+        'AUTH_UNAVAILABLE',
+        'Kimlik doğrulama servisi geçici olarak kullanılamıyor',
+      );
+    }
     throw new AuthError('Geçersiz veya devre dışı API anahtarı.');
   }
 
@@ -67,7 +76,21 @@ export async function authMiddleware(request: FastifyRequest, reply: FastifyRepl
     throw new AuthError('API anahtarının süresi dolmuş.');
   }
 
-  const { allowed, remaining, resetAt } = await checkRateLimit(validKey.id, validKey.rateLimit);
+  let allowed: boolean;
+  let remaining: number;
+  let resetAt: number;
+  try {
+    ({ allowed, remaining, resetAt } = await checkRateLimit(validKey.id, validKey.rateLimit));
+  } catch (err) {
+    // Redis down: fail-open — auth başarısıyla ilgili kararı rate limiter ile birleştirme.
+    logger.error(
+      { err, requestId: request.id, apiKeyId: validKey.id },
+      'authMiddleware: rate limiter unavailable — fail-open',
+    );
+    allowed = true;
+    remaining = validKey.rateLimit;
+    resetAt = Date.now() + 60_000;
+  }
 
   reply.header('X-RateLimit-Limit', validKey.rateLimit);
   reply.header('X-RateLimit-Remaining', remaining);

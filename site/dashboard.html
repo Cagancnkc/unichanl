@@ -313,9 +313,13 @@ async function api(path,opts={}){
   const headers={Authorization:'Bearer '+key,...(opts.headers||{})};
   if(opts.body&&!headers['Content-Type'])headers['Content-Type']='application/json';
   const r=await fetch(path,{...opts,headers});
-  if(r.status===401){clearKey();location.replace('/signup.html');throw new Error('auth');}
+  if(r.status===401){clearKey();location.replace('/signup.html?reason=auth');throw new Error('auth');}
   if(r.status===204)return null;
   const data=await r.json().catch(()=>({}));
+  if(r.status===503&&data?.error?.code==='AUTH_UNAVAILABLE'){
+    try{toast('Kimlik doğrulama servisi geçici olarak kullanılamıyor — az sonra tekrar dene','error');}catch(_){}
+    throw new Error('auth_unavailable');
+  }
   if(!r.ok)throw new Error(data?.error?.message||'HTTP '+r.status);
   return data;
 }

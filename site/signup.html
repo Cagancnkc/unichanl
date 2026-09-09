@@ -201,6 +201,12 @@ window.doSignup=async function(e){
   try{
     const r=await fetch('/api/keys/create',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,name:'signup'})});
     const j=await r.json().catch(function(){return{};});
+    if(r.status===409){
+      throw new Error('Bu email zaten kayıtlı. Mevcut API anahtarınla giriş yap veya farklı bir email dene.');
+    }
+    if(r.status===503){
+      throw new Error('Servis geçici olarak kullanılamıyor. Birkaç saniye sonra tekrar dene.');
+    }
     if(!r.ok||!j.key){throw new Error((j.error&&j.error.message)||'Kayıt başarısız');}
     localStorage.setItem('unichanl_key',j.key);
     if(window.ucTrack) ucTrack('signup_success',{method:'email'});
@@ -228,6 +234,20 @@ function showSignupErr(msg){
 }
 
 if(window.ucTrack) ucTrack('signup_view',{source:sessionStorage.uc_src||'direct'});
+
+(function(){
+  try{
+    var params=new URLSearchParams(location.search);
+    if(params.get('reason')==='auth'){
+      var host=document.getElementById('emailInput');
+      if(!host)return;
+      var banner=document.createElement('div');
+      banner.style.cssText='margin-bottom:14px;padding:10px 12px;border:1px solid #f2c94c;border-radius:8px;color:#f2c94c;font-size:12.5px;background:rgba(242,201,76,0.08)';
+      banner.textContent='Oturumun sona erdi ya da anahtarın geçersiz. Kayıt olarak yenisini alabilirsin.';
+      host.parentNode.insertBefore(banner, host);
+    }
+  }catch(_){}
+})();
 </script>
 </body>
 </html>

@@ -2,62 +2,72 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { startGateway } from '../../src/gateway/lifecycle.js';
 import { readLocalApiKey } from '../../src/integrations/local-api-key.js';
-import {
-  __setProviderOverrideForTests,
-} from '../../src/providers/registry.js';
-import {
-  ProviderError,
-  type ChatCompletionChunk,
-  type ChatCompletionRequest,
-  type ChatCompletionResponse,
-  type Provider,
-  type ProviderCallOptions,
-} from '../../src/providers/provider.interface.js';
+import { __setAdapterOverrideForTests } from '../../src/local/routingEngine.js';
+import type { InferenceProvider, CompletionOptions } from '../../src/providers/types.js';
+import type { ChatMessage, ProviderResponse, StreamChunk } from '../../src/types/index.js';
 
-function makeStubProvider(overrides: Partial<Provider> = {}): Provider {
-  return {
-    name: 'stub',
-    isAvailable: async () => ({ ok: true }),
-    chatCompletion: async (_req: ChatCompletionRequest, _opts: ProviderCallOptions): Promise<ChatCompletionResponse> => ({
+function makeStubAdapter(overrides: Partial<InferenceProvider> = {}): InferenceProvider {
+  const defaultComplete = async (
+    model: string,
+    _messages: ChatMessage[],
+    _options: CompletionOptions,
+  ): Promise<ProviderResponse> => ({
+    success: true,
+    latencyMs: 1,
+    data: {
       id: 'chatcmpl_stub',
       object: 'chat.completion',
       created: 1,
-      model: 'unichanl-auto',
+      model,
       choices: [
-        { index: 0, message: { role: 'assistant', content: 'STUB_OK' }, finish_reason: 'stop' },
+        {
+          index: 0,
+          message: { role: 'assistant', content: 'STUB_OK' },
+          finish_reason: 'stop',
+        },
       ],
       usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
-    }),
-    // eslint-disable-next-line require-yield
-    async *streamChatCompletion(): AsyncIterable<ChatCompletionChunk> {
-      yield {
-        id: 'c',
-        object: 'chat.completion.chunk',
-        created: 1,
-        model: 'unichanl-auto',
-        choices: [{ index: 0, delta: { role: 'assistant' }, finish_reason: null }],
-      };
-      yield {
-        id: 'c',
-        object: 'chat.completion.chunk',
-        created: 1,
-        model: 'unichanl-auto',
-        choices: [{ index: 0, delta: { content: 'hello' }, finish_reason: null }],
-      };
-      yield {
-        id: 'c',
-        object: 'chat.completion.chunk',
-        created: 1,
-        model: 'unichanl-auto',
-        choices: [{ index: 0, delta: {}, finish_reason: 'stop' }],
-      };
     },
+  });
+
+  async function* defaultStream(
+    model: string,
+    _messages: ChatMessage[],
+    _options: CompletionOptions,
+  ): AsyncGenerator<StreamChunk, void, unknown> {
+    yield {
+      id: 'c',
+      object: 'chat.completion.chunk',
+      created: 1,
+      model,
+      choices: [{ index: 0, delta: { role: 'assistant' }, finish_reason: null }],
+    };
+    yield {
+      id: 'c',
+      object: 'chat.completion.chunk',
+      created: 1,
+      model,
+      choices: [{ index: 0, delta: { content: 'hello' }, finish_reason: null }],
+    };
+    yield {
+      id: 'c',
+      object: 'chat.completion.chunk',
+      created: 1,
+      model,
+      choices: [{ index: 0, delta: {}, finish_reason: 'stop' }],
+    };
+  }
+
+  return {
+    name: 'stub',
+    complete: defaultComplete,
+    stream: defaultStream,
     ...overrides,
   };
 }
 
 test('/v1/chat/completions: rejects missing auth', async () => {
-  __setProviderOverrideForTests(makeStubProvider());
+  __setAdapterOverrideForTests(makeStubAdapter());
   const gw = await startGateway({ host: '127.0.0.1', port: 0 });
   try {
     const port = (gw.app.server.address() as { port: number }).port;
@@ -72,12 +82,12 @@ test('/v1/chat/completions: rejects missing auth', async () => {
     assert.equal(res.status, 401);
   } finally {
     await gw.stop();
-    __setProviderOverrideForTests(null);
+    __setAdapterOverrideForTests(null);
   }
 });
 
 test('/v1/chat/completions: validates payload', async () => {
-  __setProviderOverrideForTests(makeStubProvider());
+  __setAdapterOverrideForTests(makeStubAdapter());
   const gw = await startGateway({ host: '127.0.0.1', port: 0 });
   try {
     const port = (gw.app.server.address() as { port: number }).port;
@@ -91,12 +101,12 @@ test('/v1/chat/completions: validates payload', async () => {
     assert.equal(res.status, 400);
   } finally {
     await gw.stop();
-    __setProviderOverrideForTests(null);
+    __setAdapterOverrideForTests(null);
   }
 });
 
 test('/v1/chat/completions: non-streaming happy path', async () => {
-  __setProviderOverrideForTests(makeStubProvider());
+  __setAdapterOverrideForTests(makeStubAdapter());
   const gw = await startGateway({ host: '127.0.0.1', port: 0 });
   try {
     const port = (gw.app.server.address() as { port: number }).port;
@@ -111,17 +121,20 @@ test('/v1/chat/completions: non-streaming happy path', async () => {
       }),
     });
     assert.equal(res.status, 200);
-    const body = (await res.json()) as ChatCompletionResponse;
+    const body = (await res.json()) as {
+      object: string;
+      choices: Array<{ message: { content: string } }>;
+    };
     assert.equal(body.object, 'chat.completion');
     assert.equal(body.choices[0]!.message.content, 'STUB_OK');
   } finally {
     await gw.stop();
-    __setProviderOverrideForTests(null);
+    __setAdapterOverrideForTests(null);
   }
 });
 
 test('/v1/chat/completions: streaming emits SSE and terminates with [DONE]', async () => {
-  __setProviderOverrideForTests(makeStubProvider());
+  __setAdapterOverrideForTests(makeStubAdapter());
   const gw = await startGateway({ host: '127.0.0.1', port: 0 });
   try {
     const port = (gw.app.server.address() as { port: number }).port;
@@ -142,16 +155,22 @@ test('/v1/chat/completions: streaming emits SSE and terminates with [DONE]', asy
     assert.match(text, /data: \[DONE\]/);
   } finally {
     await gw.stop();
-    __setProviderOverrideForTests(null);
+    __setAdapterOverrideForTests(null);
   }
 });
 
-test('/v1/chat/completions: maps provider error to normalized HTTP status', async () => {
-  __setProviderOverrideForTests(
-    makeStubProvider({
-      chatCompletion: async () => {
-        throw new ProviderError(429, 'ANTHROPIC_RATE_LIMIT', 'Anthropic rate limit exceeded');
-      },
+test('/v1/chat/completions: maps provider rate-limit error to 429', async () => {
+  __setAdapterOverrideForTests(
+    makeStubAdapter({
+      complete: async (_m, _msgs, _opts) => ({
+        success: false,
+        latencyMs: 1,
+        error: {
+          code: 'rate_limited',
+          message: 'Anthropic rate limit exceeded',
+          retryable: false,
+        },
+      }),
     }),
   );
   const gw = await startGateway({ host: '127.0.0.1', port: 0 });
@@ -168,16 +187,20 @@ test('/v1/chat/completions: maps provider error to normalized HTTP status', asyn
     });
     assert.equal(res.status, 429);
     const body = (await res.json()) as { error: { code: string } };
-    assert.equal(body.error.code, 'ANTHROPIC_RATE_LIMIT');
+    assert.equal(body.error.code, 'rate_limited');
   } finally {
     await gw.stop();
-    __setProviderOverrideForTests(null);
+    __setAdapterOverrideForTests(null);
   }
 });
 
-test('/v1/chat/completions: 503 when provider unavailable', async () => {
-  __setProviderOverrideForTests(
-    makeStubProvider({ isAvailable: async () => ({ ok: false, reason: 'key missing' }) }),
+test('/v1/chat/completions: 503 when routing engine throws', async () => {
+  __setAdapterOverrideForTests(
+    makeStubAdapter({
+      complete: async () => {
+        throw new Error('provider unavailable');
+      },
+    }),
   );
   const gw = await startGateway({ host: '127.0.0.1', port: 0 });
   try {
@@ -194,6 +217,6 @@ test('/v1/chat/completions: 503 when provider unavailable', async () => {
     assert.equal(res.status, 503);
   } finally {
     await gw.stop();
-    __setProviderOverrideForTests(null);
+    __setAdapterOverrideForTests(null);
   }
 });

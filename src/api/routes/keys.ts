@@ -5,7 +5,7 @@ import { userRepository } from '../../db/repositories/userRepository.js';
 import { usageRepository } from '../../db/repositories/usageRepository.js';
 import { ValidationError, NotFoundError } from '../../utils/errors.js';
 
-const createKeySchema = z.object({
+export const createKeySchema = z.object({
   name: z.string().max(100).optional(),
   email: z.string().email().optional(),
 });

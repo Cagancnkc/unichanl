@@ -9,7 +9,8 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { registerRequestTimingHook } from './middleware/requestTiming.js';
 import { healthRoutes } from './api/routes/health.js';
 import { chatRoutes } from './api/routes/chat.js';
-import { keyRoutes } from './api/routes/keys.js';
+import { keyRoutes, createKeySchema } from './api/routes/keys.js';
+import { Prisma } from '@prisma/client';
 import { modelRoutes } from './api/routes/models.js';
 import { usageRoutes } from './api/routes/usage.js';
 import { billingRoutes } from './api/routes/billing.js';
@@ -73,20 +74,35 @@ export async function createApp() {
 
   // Anahtar oluşturma — auth olmadan da çalışır (ilk kurulum)
   app.post('/api/keys/create', async (request, reply) => {
-    const body = request.body as { email?: string; name?: string } | undefined;
-    if (!body?.email) {
-      return reply.status(400).send({ error: { code: 'VALIDATION_ERROR', message: 'E-posta gerekli' } });
+    const parsed = createKeySchema.safeParse(request.body);
+    if (!parsed.success || !parsed.data.email) {
+      return reply.status(400).send({
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Geçerli bir e-posta gerekli',
+          ...(parsed.success ? {} : { details: parsed.error.flatten() }),
+        },
+      });
     }
 
     const { userRepository } = await import('./db/repositories/userRepository.js');
     const { apiKeyRepository } = await import('./db/repositories/apiKeyRepository.js');
 
-    let user = await userRepository.findByEmail(body.email);
+    const email = parsed.data.email;
+    let user = await userRepository.findByEmail(email);
     if (!user) {
-      user = await userRepository.create({ email: body.email });
+      try {
+        user = await userRepository.create({ email });
+      } catch (err) {
+        // Race: another request created the same email between findByEmail and create.
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+          user = await userRepository.findByEmail(email);
+        }
+        if (!user) throw err;
+      }
     }
 
-    const { key, record } = await apiKeyRepository.create(user.id, body.name);
+    const { key, record } = await apiKeyRepository.create(user.id, parsed.data.name);
 
     reply.status(201).send({
       key,
