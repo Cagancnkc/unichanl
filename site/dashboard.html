@@ -566,10 +566,29 @@ LOADERS.models=async function(){
     databricks:'https://logo.clearbit.com/databricks.com',
     amazon:'https://logo.clearbit.com/aws.amazon.com',
     baidu:'https://logo.clearbit.com/baidu.com',
-    zhipu:'https://logo.clearbit.com/zhipuai.cn'
+    zhipu:'https://logo.clearbit.com/zhipuai.cn',
+    minimax:'https://logo.clearbit.com/minimaxi.com',
+    nousresearch:'https://logo.clearbit.com/nousresearch.com',
+    wizardlm:'https://logo.clearbit.com/microsoft.com',
+    openchat:'https://logo.clearbit.com/openchat.team',
+    dolphin:'https://logo.clearbit.com/cognitivecomputations.com',
+    inflection:'https://logo.clearbit.com/inflection.ai',
+    reka:'https://logo.clearbit.com/reka.ai',
+    liquid:'https://logo.clearbit.com/liquid.ai',
+    openrouter:'https://logo.clearbit.com/openrouter.ai',
+    sao10k:'https://logo.clearbit.com/meta.com',
+    airoboros:'https://logo.clearbit.com/meta.com',
+    huggingface:'https://logo.clearbit.com/huggingface.co',
+    together:'https://logo.clearbit.com/together.ai',
+    fireworks:'https://logo.clearbit.com/fireworks.ai',
+    lepton:'https://logo.clearbit.com/lepton.ai',
+    anyscale:'https://logo.clearbit.com/anyscale.com',
+    replicate:'https://logo.clearbit.com/replicate.com',
+    tencent:'https://logo.clearbit.com/tencent.com',
+    alibaba:'https://logo.clearbit.com/alibaba.com'
   };
   // LobeHub icon-slug map (some brand keys differ from the icon file names).
-  const LOBE_SLUG={anthropic:'claude',openai:'openai',meta:'meta',mistral:'mistral',deepseek:'deepseek',qwen:'qwen',nvidia:'nvidia',google:'gemini',xai:'xai',cohere:'cohere',perplexity:'perplexity',microsoft:'microsoft',moonshot:'moonshot','01ai':'01ai',groq:'groq',ai21:'ai21',stability:'stability',databricks:'databricks',amazon:'amazon',baidu:'baidu',zhipu:'zhipu'};
+  const LOBE_SLUG={anthropic:'claude',openai:'openai',meta:'meta',mistral:'mistral',deepseek:'deepseek',qwen:'qwen',nvidia:'nvidia',google:'gemini',xai:'grok',cohere:'cohere',perplexity:'perplexity',microsoft:'microsoft',moonshot:'moonshot','01ai':'yi',groq:'groq',ai21:'ai21',stability:'stability',databricks:'databricks',amazon:'aws',baidu:'baidu',zhipu:'zhipu',minimax:'minimax',nousresearch:'nousresearch',wizardlm:'wizardlm',openchat:'openchat',dolphin:'dolphin',inflection:'inflection',reka:'reka',liquid:'liquid',openrouter:'openrouter',sao10k:'meta',airoboros:'meta',huggingface:'huggingface',together:'together',fireworks:'fireworks',lepton:'lepton',anyscale:'anyscale',replicate:'replicate',tencent:'hunyuan',alibaba:'tongyi'};
   function getBrandFromId(modelId){
     const id=String(modelId||'').toLowerCase();
     if(id.includes('claude')||id.startsWith('anthropic/'))return'anthropic';
@@ -593,6 +612,31 @@ LOADERS.models=async function(){
     if(id.includes('nova-')||id.startsWith('amazon/'))return'amazon';
     if(id.includes('ernie')||id.startsWith('baidu/'))return'baidu';
     if(id.includes('glm-')||id.startsWith('zhipu/')||id.startsWith('thudm/'))return'zhipu';
+    if(id.includes('minimax')||id.startsWith('minimax/'))return'minimax';
+    if(id.includes('hermes')||id.startsWith('nousresearch/')||id.includes('nous-'))return'nousresearch';
+    if(id.includes('wizardlm')||id.includes('wizard-'))return'wizardlm';
+    if(id.includes('openchat'))return'openchat';
+    if(id.includes('dolphin')||id.startsWith('cognitivecomputations/'))return'dolphin';
+    if(id.includes('qwq'))return'qwen';
+    if(id.startsWith('inflection/')||id.includes('/pi-'))return'inflection';
+    if(id.includes('reka')||id.startsWith('rekaai/'))return'reka';
+    if(id.startsWith('sao10k/')||id.includes('/l3-')||id.includes('/l31-')||id.includes('/l3.'))return'meta';
+    if(id.includes('airoboros'))return'meta';
+    if(id.startsWith('liquid/')||id.includes('/lfm-'))return'liquid';
+    if(id.startsWith('openrouter/'))return'openrouter';
+    if(id.startsWith('huggingfaceh4/')||id.includes('zephyr'))return'huggingface';
+    if(id.startsWith('togethercomputer/'))return'together';
+    if(id.startsWith('fireworks/')||id.startsWith('accounts/fireworks/'))return'fireworks';
+    if(id.startsWith('lepton/'))return'lepton';
+    if(id.startsWith('anyscale/'))return'anyscale';
+    if(id.startsWith('replicate/'))return'replicate';
+    if(id.includes('hunyuan')||id.startsWith('tencent/'))return'tencent';
+    if(id.includes('tongyi')||id.startsWith('alibaba/'))return'alibaba';
+    // Prefix fallback: try the vendor before "/" as a brand key
+    if(id.includes('/')){
+      const prefix=id.split('/')[0].replace(/[^a-z0-9]/g,'');
+      if(LOBE_SLUG[prefix]||FAV[prefix])return prefix;
+    }
     return null;
   }
   function getLogo(brand,modelId){
@@ -690,7 +734,7 @@ LOADERS.models=async function(){
       statCard('MEVCUT MODEL',fmtInt(totalCount),'tümü senkronize'),
       statCard('MODEL MARKASI',fmtInt(creatorCount),'benzersiz üretici'),
       statCard('KATEGORİ',fmtInt(Object.keys(tagCounts).length),'tag çeşidi'),
-      statCard('İNDİRİM','-%45','her modelde')
+      statCard('İNDİRİM','%45 indirim','her modelde')
     ].join('');
   }
 
@@ -770,7 +814,7 @@ LOADERS.models=async function(){
         const logoHtml=logoImg(brand,modelIdent,28);
         const discountPill=m.isFree
           ?''
-          :`<span class="pill" style="background:rgba(239,68,68,.12);color:#F87171;border:1px solid rgba(239,68,68,.28)">-${m.discountPercent||45}%</span>`;
+          :`<span class="pill" style="background:rgba(223,255,0,.12);color:#DFFF00;border:1px solid rgba(223,255,0,.32)">%${m.discountPercent||45} indirim</span>`;
         return `<tr>
           <td><div style="display:flex;align-items:center;gap:0.75rem">
             ${logoHtml}
