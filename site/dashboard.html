@@ -746,7 +746,7 @@ LOADERS.models=async function(){
     const chips=[
       `<button type="button" class="pill" data-tag="" style="cursor:pointer;${state.tag===''?activeStyle:mutedStyle}">Hepsi (${fmtInt(totalCount)})</button>`,
       ...entries.map(([t,n])=>{
-        if(t==='free')return `<button type="button" class="pill" data-tag="${esc(t)}" style="cursor:pointer;${yellowStyle}">sınırsız (${fmtInt(n)})</button>`;
+        if(t==='sınırsız')return `<button type="button" class="pill" data-tag="${esc(t)}" style="cursor:pointer;${yellowStyle}">${esc(t)} (${fmtInt(n)})</button>`;
         return `<button type="button" class="pill" data-tag="${esc(t)}" style="cursor:pointer;${state.tag===t?activeStyle:mutedStyle}">${esc(t)} (${fmtInt(n)})</button>`;
       })
     ];

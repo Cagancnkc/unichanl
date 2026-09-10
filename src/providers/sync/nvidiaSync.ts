@@ -19,12 +19,14 @@ interface NvidiaResponse {
 }
 
 function inferTags(id: string): string[] {
-  const tags = new Set<string>(['chat', 'free']);
   const lower = id.toLowerCase();
-  if (/code|coder|codestral/.test(lower)) tags.add('code');
-  if (/nemotron.*70|reason|r1|thinking|deepseek-r1/.test(lower)) tags.add('reasoning');
-  if (/vision|multimodal|vlm/.test(lower)) tags.add('vision');
-  if (/mini|nano|8b|7b|small|nemotron.*mini/.test(lower)) tags.add('fast');
+  let primary = 'general';
+  if (/nemotron.*70|reason|r1|thinking|deepseek-r1/.test(lower)) primary = 'reasoning';
+  else if (/code|coder|codestral/.test(lower)) primary = 'code';
+  else if (/vision|multimodal|vlm/.test(lower)) primary = 'vision';
+  else if (/mini|nano|8b|7b|small|nemotron.*mini/.test(lower)) primary = 'fast';
+
+  const tags = new Set<string>([primary, 'sınırsız']);
   if (/70b|405b|super|large/.test(lower)) tags.add('long-context');
   return Array.from(tags);
 }

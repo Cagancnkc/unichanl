@@ -42,25 +42,25 @@ interface OpenRouterResponse {
 }
 
 function inferTags(m: OpenRouterModel): string[] {
-  const tags = new Set<string>();
   const id = m.id.toLowerCase();
   const name = (m.name ?? '').toLowerCase();
   const desc = (m.description ?? '').toLowerCase();
   const haystack = `${id} ${name} ${desc}`;
-
-  if (/code|coder|codestral/.test(haystack)) tags.add('code');
-  if (/reason|thinking|o1|r1|reflection/.test(haystack)) tags.add('reasoning');
-  if (/vision|multimodal|image/.test(haystack) || m.architecture?.input_modalities?.includes('image')) tags.add('vision');
-  if (/flash|mini|haiku|nano|8b|7b|instant|turbo/.test(haystack)) tags.add('fast');
-
+  const isVisionByModality = m.architecture?.input_modalities?.includes('image') ?? false;
   const inputCost = parseFloat(m.pricing?.prompt ?? '0');
-  if (inputCost > 0 && inputCost < 0.0000005) tags.add('cheap');
-  if (inputCost === 0) tags.add('free');
-
   const ctx = m.context_length ?? 0;
-  if (ctx >= 200_000) tags.add('long-context');
 
-  tags.add('chat');
+  // Exactly one primary category per model (priority order)
+  let primary = 'general';
+  if (/reason|thinking|o1|r1|reflection/.test(haystack)) primary = 'reasoning';
+  else if (/code|coder|codestral/.test(haystack)) primary = 'code';
+  else if (/vision|multimodal|image/.test(haystack) || isVisionByModality) primary = 'vision';
+  else if (/flash|mini|haiku|nano|8b|7b|instant|turbo/.test(haystack)) primary = 'fast';
+
+  const tags = new Set<string>([primary]);
+  if (inputCost === 0) tags.add('sınırsız');
+  else if (inputCost < 0.0000005) tags.add('cheap');
+  if (ctx >= 200_000) tags.add('long-context');
   return Array.from(tags);
 }
 
