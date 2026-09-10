@@ -544,7 +544,7 @@ LOADERS.overview=async function(){
 
 /* ---------- MODELS ---------- */
 LOADERS.models=async function(){
-  const LOBE='https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/color';
+  const LOBE='https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/dark';
   const FAV={
     anthropic:'https://logo.clearbit.com/anthropic.com',
     openai:'https://logo.clearbit.com/openai.com',
@@ -641,9 +641,9 @@ LOADERS.models=async function(){
   }
   function getLogo(brand,modelId){
     const b=brand&&brand!=='other'?brand:getBrandFromId(modelId);
-    if(!b)return{primary:'',fallback:''};
+    if(!b)return{primary:'',mid:'',fallback:''};
     const slug=LOBE_SLUG[b]||b;
-    return{primary:`${LOBE}/${slug}.png`,fallback:FAV[b]||''};
+    return{primary:`${LOBE}/${slug}-color.png`,mid:`${LOBE}/${slug}.png`,fallback:FAV[b]||''};
   }
   function placeholderSvg(modelId){
     const label=String(modelId||'?').replace(/^.+\//,'').charAt(0).toUpperCase();
@@ -651,11 +651,11 @@ LOADERS.models=async function(){
     return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg);
   }
   function logoImg(brand,modelId,size){
-    const {primary,fallback}=getLogo(brand,modelId);
+    const {primary,mid,fallback}=getLogo(brand,modelId);
     const s=size||24;
     const ph=placeholderSvg(modelId);
     if(!primary)return `<img src="${ph}" alt="" width="${s}" height="${s}" style="width:${s}px;height:${s}px;border-radius:6px;object-fit:contain">`;
-    return `<img src="${esc(primary)}" alt="Logo" width="${s}" height="${s}" style="width:${s}px;height:${s}px;border-radius:6px;background:#0F1A1B;padding:3px;object-fit:contain" loading="lazy" data-fb="${esc(fallback)}" data-ph="${esc(ph)}" onerror="var s=this.dataset.step||'0';if(s==='0'&&this.dataset.fb){this.dataset.step='1';this.src=this.dataset.fb;}else{this.dataset.step='2';this.src=this.dataset.ph;this.onerror=null;}">`;
+    return `<img src="${esc(primary)}" alt="Logo" width="${s}" height="${s}" style="width:${s}px;height:${s}px;border-radius:6px;background:#0F1A1B;padding:3px;object-fit:contain" loading="lazy" data-mid="${esc(mid)}" data-fb="${esc(fallback)}" data-ph="${esc(ph)}" onerror="var s=this.dataset.step||'0';if(s==='0'&&this.dataset.mid){this.dataset.step='1';this.src=this.dataset.mid;}else if((s==='0'||s==='1')&&this.dataset.fb){this.dataset.step='2';this.src=this.dataset.fb;}else{this.dataset.step='3';this.src=this.dataset.ph;this.onerror=null;}">`;
   }
   const el=$('#view-models');
   const state={creator:'',tag:'',search:''};
