@@ -86,7 +86,22 @@ window.ucWithUtm=function(u){var q=location.search;return q?u+(u.includes('?')?'
         </div>
 
         <div style="font-size:12.5px;color:#98A3A3;margin-bottom:8px">E-posta</div>
-        <input id="emailInput" type="email" name="email" autocomplete="email" inputmode="email" spellcheck="false" autocapitalize="none" value="" placeholder="siz@sirket.com" style="width:100%;height:48px;padding:0 14px;margin-bottom:16px;background:#0B171A;border:1px solid #1C2A2D;border-radius:8px;color:#F2F5F4;font:400 15px 'Archivo';outline:none">
+        <input id="emailInput" type="email" name="email" autocomplete="email" inputmode="email" spellcheck="false" autocapitalize="none" value="" placeholder="siz@sirket.com" style="width:100%;height:48px;padding:0 14px;margin-bottom:10px;background:#0B171A;border:1px solid #1C2A2D;border-radius:8px;color:#F2F5F4;font:400 15px 'Archivo';outline:none">
+        <p style="font-size:12px;color:#657172;line-height:1.55;margin-bottom:16px">E-posta adresiniz hesap oluşturma ve önemli hizmet bildirimleri amacıyla işlenir. Ayrıntılar için <a href="/gizlilik-politikasi.html" style="color:#98A3A3;text-decoration:underline;text-underline-offset:2px">Gizlilik Politikası</a>'nı inceleyin.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12.5px;color:#98A3A3;line-height:1.55">
+            <input type="checkbox" id="consentTerms" style="margin-top:2px;accent-color:#DFFF00;flex-shrink:0;width:15px;height:15px;cursor:pointer">
+            <span><a href="/kullanici-sozlesmesi.html" style="color:#C7CFCE;text-decoration:underline;text-underline-offset:2px">Kullanıcı Sözleşmesi</a>'ni okudum ve kabul ediyorum. <span style="color:#F87171">*</span></span>
+          </label>
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12.5px;color:#98A3A3;line-height:1.55">
+            <input type="checkbox" id="consentKvkk" style="margin-top:2px;accent-color:#DFFF00;flex-shrink:0;width:15px;height:15px;cursor:pointer">
+            <span><a href="/kvkk-aydinlatma-metni.html" style="color:#C7CFCE;text-decoration:underline;text-underline-offset:2px">KVKK Aydınlatma Metni</a>'ni okudum. <span style="color:#F87171">*</span></span>
+          </label>
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12.5px;color:#657172;line-height:1.55">
+            <input type="checkbox" id="consentMarketing" style="margin-top:2px;accent-color:#DFFF00;flex-shrink:0;width:15px;height:15px;cursor:pointer">
+            <span>Ürün güncellemeleri ve duyurular hakkında e-posta almak istiyorum. (İsteğe bağlı)</span>
+          </label>
+        </div>
         <button onclick="doSignup(event)" style="width:100%;height:46px;border-radius:32px;background:#F2F5F4;border:none;color:#03090B;font:600 14px 'Archivo';cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">Hesap oluştur →</button>
         <div style="text-align:center;margin-top:18px;font-size:12.5px;color:#657172">Zaten bir hesabınız var mı? <button onclick="doSignup(event)" style="background:transparent;border:none;cursor:pointer;font:600 12.5px 'Archivo';color:#F2F5F4;text-decoration:underline;padding:0">Giriş yap.</button></div>
       </div>
@@ -176,8 +191,16 @@ async function initSupabase(){
   return sb;
 }
 let _oauthInFlight=false;
+function checkConsents(){
+  var terms=document.getElementById('consentTerms');
+  var kvkk=document.getElementById('consentKvkk');
+  if(!terms||!terms.checked){showSignupErr('Devam etmek için Kullanıcı Sözleşmesi\'ni kabul etmelisiniz.');return false;}
+  if(!kvkk||!kvkk.checked){showSignupErr('Devam etmek için KVKK Aydınlatma Metni\'ni okuduğunuzu onaylamalısınız.');return false;}
+  return true;
+}
 window.oauthGoogle=async function(e){
   if(e) e.preventDefault();
+  if(!checkConsents()) return;
   if(_oauthInFlight) return;
   _oauthInFlight=true;
   const btn=(e&&e.currentTarget)||document.querySelector('[onclick*="oauthGoogle"]');
@@ -202,6 +225,7 @@ window.oauthGoogle=async function(e){
 };
 window.doSignup=async function(e){
   if(e) e.preventDefault();
+  if(!checkConsents()) return;
   const btn=document.querySelector('[onclick*="doSignup"]');
   const email=document.getElementById('emailInput').value.trim();
   if(!email||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
