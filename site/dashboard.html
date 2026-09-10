@@ -553,28 +553,63 @@ LOADERS.models=async function(){
     deepseek:'https://logo.clearbit.com/deepseek.com',
     qwen:'https://logo.clearbit.com/qwenlm.github.io',
     nvidia:'https://logo.clearbit.com/nvidia.com',
-    gemini:'https://logo.clearbit.com/deepmind.google'
+    gemini:'https://logo.clearbit.com/deepmind.google',
+    xai:'https://logo.clearbit.com/x.ai',
+    cohere:'https://logo.clearbit.com/cohere.com',
+    perplexity:'https://logo.clearbit.com/perplexity.ai',
+    google:'https://logo.clearbit.com/deepmind.google',
+    microsoft:'https://logo.clearbit.com/microsoft.com',
+    moonshot:'https://logo.clearbit.com/moonshot.cn',
+    '01ai':'https://logo.clearbit.com/01.ai',
+    groq:'https://logo.clearbit.com/groq.com',
+    ai21:'https://logo.clearbit.com/ai21.com',
+    stability:'https://logo.clearbit.com/stability.ai',
+    databricks:'https://logo.clearbit.com/databricks.com',
+    amazon:'https://logo.clearbit.com/aws.amazon.com',
+    baidu:'https://logo.clearbit.com/baidu.com',
+    zhipu:'https://logo.clearbit.com/zhipuai.cn'
   };
   function getBrand(modelId){
     const id=String(modelId||'').toLowerCase();
-    if(id.includes('claude'))return'claude';
-    if(id.includes('gpt')||id.includes('/openai/')||id.includes('o1')||id.includes('o3'))return'openai';
-    if(id.includes('gemini'))return'gemini';
+    if(id.includes('claude')||id.startsWith('anthropic/'))return'claude';
+    if(id.includes('gpt')||id.includes('openai/')||id.includes('/o1')||id.includes('/o3')||id.includes('/o4'))return'openai';
+    if(id.includes('grok')||id.startsWith('x-ai/'))return'xai';
+    if(id.includes('gemini')||id.includes('gemma')||id.startsWith('google/'))return'google';
     if(id.includes('deepseek'))return'deepseek';
     if(id.includes('qwen'))return'qwen';
     if(id.includes('mistral')||id.includes('mixtral'))return'mistral';
-    if(id.includes('llama')||id.includes('nemotron'))return'meta';
-    if(id.startsWith('nvidia/'))return'nvidia';
-    return'openai';
+    if(id.includes('nemotron')||id.startsWith('nvidia/'))return'nvidia';
+    if(id.includes('llama')||id.startsWith('meta-llama/')||id.startsWith('meta/'))return'meta';
+    if(id.includes('cohere')||id.includes('command-'))return'cohere';
+    if(id.includes('perplexity')||id.includes('sonar'))return'perplexity';
+    if(id.includes('phi-')||id.startsWith('microsoft/'))return'microsoft';
+    if(id.includes('kimi')||id.includes('moonshot'))return'moonshot';
+    if(id.startsWith('01-ai/')||id.includes('/yi-'))return'01ai';
+    if(id.startsWith('groq/'))return'groq';
+    if(id.startsWith('ai21/')||id.includes('jamba'))return'ai21';
+    if(id.startsWith('stabilityai/')||id.includes('stable-'))return'stability';
+    if(id.startsWith('databricks/')||id.includes('dbrx'))return'databricks';
+    if(id.includes('nova-')||id.startsWith('amazon/'))return'amazon';
+    if(id.includes('ernie')||id.startsWith('baidu/'))return'baidu';
+    if(id.includes('glm-')||id.startsWith('zhipu/')||id.startsWith('thudm/'))return'zhipu';
+    return null;
   }
   function getLogo(modelId){
     const brand=getBrand(modelId);
+    if(!brand)return{primary:'',fallback:''};
     return{primary:`${LOBE}/${brand}.png`,fallback:FAV[brand]||''};
+  }
+  function placeholderSvg(modelId){
+    const label=String(modelId||'?').replace(/^.+\//,'').charAt(0).toUpperCase();
+    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><rect width="28" height="28" rx="6" fill="#132023"/><text x="14" y="19" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="14" font-weight="600" fill="#657172">${label}</text></svg>`;
+    return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg);
   }
   function logoImg(modelId,size){
     const {primary,fallback}=getLogo(modelId);
     const s=size||24;
-    return `<img src="${esc(primary)}" alt="Logo" width="${s}" height="${s}" style="width:${s}px;height:${s}px;border-radius:6px;background:#0F1A1B;padding:3px;object-fit:contain" loading="lazy" onerror="if(this.dataset.f){this.style.display='none'}else{this.dataset.f=1;this.src='${esc(fallback)}'}">`;
+    const ph=placeholderSvg(modelId);
+    if(!primary)return `<img src="${ph}" alt="" width="${s}" height="${s}" style="width:${s}px;height:${s}px;border-radius:6px;object-fit:contain">`;
+    return `<img src="${esc(primary)}" alt="Logo" width="${s}" height="${s}" style="width:${s}px;height:${s}px;border-radius:6px;background:#0F1A1B;padding:3px;object-fit:contain" loading="lazy" data-fb="${esc(fallback)}" data-ph="${esc(ph)}" onerror="var s=this.dataset.step||'0';if(s==='0'&&this.dataset.fb){this.dataset.step='1';this.src=this.dataset.fb;}else{this.dataset.step='2';this.src=this.dataset.ph;this.onerror=null;}">`;
   }
   const el=$('#view-models');
   const state={provider:'',tag:'',search:'',page:1,limit:50};
@@ -609,36 +644,42 @@ LOADERS.models=async function(){
     if(state.search)params.set('search',state.search);
     params.set('page',String(state.page));
     params.set('limit',String(state.limit));
-    params.set('includeDisabled','true');
-    const data=await api('/api/models?'+params.toString());
-    return data;
+    const r=await fetch('/api/public/models?'+params.toString());
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    return await r.json();
   }
 
-  const initial=await fetchModels();
-  let models=initial?.models||[];
-  let totalCount=initial?.total||0;
   const body=$('#models-body');
   const pager=$('#models-pager');
+  let models=[];
+  let totalCount=0;
+  let loadError=false;
+  try{
+    const initial=await fetchModels();
+    models=initial?.models||[];
+    totalCount=initial?.total||0;
+  }catch(err){
+    loadError=true;
+  }
 
   function updateBody(){
+    if(loadError){body.innerHTML='<div class="empty">Katalog yüklenemedi, birazdan tekrar dene.</div>';pager.style.display='none';return;}
     if(!models.length){body.innerHTML='<div class="empty">Filtreye uyan model yok.</div>';pager.style.display='none';return;}
     body.innerHTML=`
       <div style="padding:1.1rem 1.25rem 0.75rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap">
         <div>
           <h2 style="margin:0;color:#F2F5F4;font-size:1.15rem;font-weight:600;letter-spacing:-0.01em">Katalog</h2>
-          <p style="margin:0.25rem 0 0 0;color:#657172;font-size:0.82rem">Fiyatlar 1K token başınadır. Tıklayarak her modeli aç/kapat.</p>
+          <p style="margin:0.25rem 0 0 0;color:#657172;font-size:0.82rem">Fiyatlar 1K token başınadır. Katalog upstream'den saatlik senkronize edilir.</p>
         </div>
         <span class="mono" style="font-size:0.75rem;color:#657172">${models.length} / ${totalCount} model</span>
       </div>
       <table class="tbl">
-      <thead><tr><th>MODEL</th><th>SAĞLAYICI</th><th style="text-align:right">GİRDİ /1K</th><th style="text-align:right">ÇIKTI /1K</th><th style="text-align:right">CONTEXT</th><th>DURUM</th><th style="text-align:center">AKTİF</th></tr></thead>
+      <thead><tr><th>MODEL</th><th>SAĞLAYICI</th><th style="text-align:right">GİRDİ /1K</th><th style="text-align:right">ÇIKTI /1K</th><th style="text-align:right">CONTEXT</th></tr></thead>
       <tbody>${models.map(m=>{
-        const cb=m.circuitState||'closed';
-        const pill=m.enabled===false?'<span class="pill mut">Pasif</span>':cb==='open'?'<span class="pill err">Kapalı</span>':cb==='half-open'?'<span class="pill warn">Test</span>':'<span class="pill ok">Sağlıklı</span>';
         const inPrice=m.inputPricePer1k||0;
         const outPrice=m.outputPricePer1k||0;
         const modelIdent=m.modelName||m.id;
-        const logoHtml=m.logoUrl?`<img src="${esc(m.logoUrl)}" alt="" width="28" height="28" style="width:28px;height:28px;border-radius:6px;background:#0F1A1B;padding:3px;object-fit:contain" loading="lazy" onerror="this.style.display='none'">`:logoImg(modelIdent,28);
+        const logoHtml=m.logoUrl?`<img src="${esc(m.logoUrl)}" alt="" width="28" height="28" style="width:28px;height:28px;border-radius:6px;background:#0F1A1B;padding:3px;object-fit:contain" loading="lazy" data-fb="${esc(logoImg(modelIdent,28))}" onerror="this.outerHTML=this.dataset.fb">`:logoImg(modelIdent,28);
         return `<tr>
           <td><div style="display:flex;align-items:center;gap:0.75rem">
             ${logoHtml}
@@ -647,14 +688,10 @@ LOADERS.models=async function(){
               <span class="mono" style="font-size:11px;color:#657172">${esc(modelIdent)}</span>
             </div>
           </div></td>
-          <td class="mono" style="font-size:12px;color:#98A3A3">${esc(m.provider||'—')}</td>
+          <td class="mono" style="font-size:12px;color:#98A3A3">${esc(m.providerDisplayName||m.provider||'—')}</td>
           <td class="mono" style="text-align:right;color:#C7CFCE">${m.isFree?'<span style="color:#4ADE80">FREE</span>':fmtUsd(inPrice)}</td>
           <td class="mono" style="text-align:right;color:#C7CFCE">${m.isFree?'<span style="color:#4ADE80">FREE</span>':fmtUsd(outPrice)}</td>
           <td class="mono" style="text-align:right;color:#98A3A3">${m.contextWindow?fmtInt(m.contextWindow):'—'}</td>
-          <td>${pill}</td>
-          <td style="text-align:center">
-            <button type="button" class="togg model-toggle${m.enabled?' on':''}" data-model-id="${esc(m.id)}" aria-pressed="${m.enabled?'true':'false'}" title="${m.enabled?'Aktif':'Pasif'}"></button>
-          </td>
         </tr>`;
       }).join('')}</tbody></table>`;
 
@@ -664,59 +701,38 @@ LOADERS.models=async function(){
       pager.innerHTML=`<button type="button" class="btn ghost sm" id="mf-loadmore">Daha fazla yükle (${totalCount-state.page*state.limit} kaldı)</button>`;
       $('#mf-loadmore').addEventListener('click',async()=>{
         state.page++;
-        const more=await fetchModels();
-        models=models.concat(more?.models||[]);
+        try{
+          const more=await fetchModels();
+          models=models.concat(more?.models||[]);
+        }catch(err){toast('Sayfa yüklenemedi','error');state.page--;return;}
         updateBody();
-        wireToggles();
       });
     }else{pager.style.display='none';}
   }
 
-  function wireToggles(){
-    document.querySelectorAll('.model-toggle').forEach(btn=>{
-      if(btn.dataset.wired)return;
-      btn.dataset.wired='1';
-      btn.addEventListener('click',async e=>{
-        const el=e.currentTarget;
-        const modelId=el.dataset.modelId;
-        const enabled=!el.classList.contains('on');
-        el.classList.toggle('on',enabled);
-        el.setAttribute('aria-pressed',enabled?'true':'false');
-        el.title=enabled?'Aktif':'Pasif';
-        try{
-          await api('/api/models/'+encodeURIComponent(modelId)+'/toggle',{
-            method:'PATCH',
-            body:JSON.stringify({enabled})
-          });
-          toast(enabled?'Model aktifleştirildi':'Model devre dışı bırakıldı','info');
-        }catch(err){
-          el.classList.toggle('on',!enabled);
-          el.setAttribute('aria-pressed',!enabled?'true':'false');
-          el.title=!enabled?'Aktif':'Pasif';
-          toast('Değişiklik başarısız oldu','error');
-        }
-      });
-    });
+  async function refresh(){
+    loadError=false;
+    try{
+      const d=await fetchModels();
+      models=d?.models||[];totalCount=d?.total||0;
+    }catch(err){loadError=true;models=[];totalCount=0;}
+    updateBody();
   }
 
   let searchTimer=null;
   $('#mf-search').addEventListener('input',e=>{
     clearTimeout(searchTimer);
-    searchTimer=setTimeout(async()=>{
+    searchTimer=setTimeout(()=>{
       state.search=e.target.value.trim();
       state.page=1;
-      const d=await fetchModels();
-      models=d?.models||[];totalCount=d?.total||0;
-      updateBody();wireToggles();
+      refresh();
     },250);
   });
-  $('#mf-provider').addEventListener('change',async e=>{
+  $('#mf-provider').addEventListener('change',e=>{
     state.provider=e.target.value;state.page=1;
-    const d=await fetchModels();
-    models=d?.models||[];totalCount=d?.total||0;
-    updateBody();wireToggles();
+    refresh();
   });
-  tagsEl.addEventListener('click',async e=>{
+  tagsEl.addEventListener('click',e=>{
     const btn=e.target.closest('[data-tag]');
     if(!btn)return;
     const tag=btn.dataset.tag;
@@ -727,13 +743,10 @@ LOADERS.models=async function(){
       btn.classList.remove('mut');btn.classList.add('ok');
     }
     state.page=1;
-    const d=await fetchModels();
-    models=d?.models||[];totalCount=d?.total||0;
-    updateBody();wireToggles();
+    refresh();
   });
 
   updateBody();
-  wireToggles();
 };
 
 /* ---------- PROVIDERS ---------- */
