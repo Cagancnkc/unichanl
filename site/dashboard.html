@@ -742,9 +742,13 @@ LOADERS.models=async function(){
     const entries=Object.entries(tagCounts).sort((a,b)=>b[1]-a[1]).slice(0,12);
     const activeStyle='background:rgba(74,222,128,.12);color:#4ADE80;border:1px solid rgba(74,222,128,.35)';
     const mutedStyle='background:transparent;color:#98A3A3;border:1px solid #1C2A2D';
+    const yellowStyle='background:rgba(223,255,0,.12);color:#DFFF00;border:1px solid rgba(223,255,0,.35)';
     const chips=[
       `<button type="button" class="pill" data-tag="" style="cursor:pointer;${state.tag===''?activeStyle:mutedStyle}">Hepsi (${fmtInt(totalCount)})</button>`,
-      ...entries.map(([t,n])=>`<button type="button" class="pill" data-tag="${esc(t)}" style="cursor:pointer;${state.tag===t?activeStyle:mutedStyle}">${esc(t)} (${fmtInt(n)})</button>`)
+      ...entries.map(([t,n])=>{
+        if(t==='free')return `<button type="button" class="pill" data-tag="${esc(t)}" style="cursor:pointer;${yellowStyle}">sınırsız (${fmtInt(n)})</button>`;
+        return `<button type="button" class="pill" data-tag="${esc(t)}" style="cursor:pointer;${state.tag===t?activeStyle:mutedStyle}">${esc(t)} (${fmtInt(n)})</button>`;
+      })
     ];
     tagsEl.innerHTML=chips.join('');
   }
@@ -777,7 +781,7 @@ LOADERS.models=async function(){
   }
 
   function priceCell(list,discounted,isFree){
-    if(isFree)return `<div class="mono" style="text-align:right"><span style="color:#4ADE80">FREE</span></div>`;
+    if(isFree)return `<div style="text-align:right"><span class="pill" style="background:rgba(223,255,0,.12);color:#DFFF00;border:1px solid rgba(223,255,0,.32);white-space:nowrap">3 ay boyunca sınırsız</span></div>`;
     return `<div style="text-align:right;line-height:1.2">
       <div class="mono" style="font-size:11px;color:#657172;text-decoration:line-through">${fmtUsd(list)}</div>
       <div class="mono" style="font-size:13px;color:#F2F5F4;font-weight:600">${fmtUsd(discounted)}</div>
