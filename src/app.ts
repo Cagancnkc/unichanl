@@ -1,7 +1,6 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
-import compress from '@fastify/compress';
 import fastifyStatic from '@fastify/static';
 import path from 'node:path';
 import { authMiddleware } from './middleware/auth.js';
@@ -40,8 +39,6 @@ export async function createApp() {
     origin: process.env.ALLOWED_ORIGINS === '*' ? true : (process.env.ALLOWED_ORIGINS ?? '*').split(','),
     methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
   });
-
-  await app.register(compress);
 
   registerRequestTimingHook(app);
   app.setErrorHandler(errorHandler);
