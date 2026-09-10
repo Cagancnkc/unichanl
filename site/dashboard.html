@@ -577,96 +577,105 @@ LOADERS.models=async function(){
     return `<img src="${esc(primary)}" alt="Logo" width="${s}" height="${s}" style="width:${s}px;height:${s}px;border-radius:6px;background:#0F1A1B;padding:3px;object-fit:contain" loading="lazy" onerror="if(this.dataset.f){this.style.display='none'}else{this.dataset.f=1;this.src='${esc(fallback)}'}">`;
   }
   const el=$('#view-models');
+  const state={provider:'',tag:'',search:'',page:1,limit:50};
   el.innerHTML=`
     <div style="max-width:1180px;margin:0 auto">
       <div class="crumb">UNICHANL / KATALOG</div>
       <h1 class="h1">Modeller</h1>
-      <p class="sub">Tek uç nokta arkasında her model. Canlı fiyatları, gecikmeyi ve erişilebilirliği karşılaştırın, ardından herhangi birine yönlendirin.</p>
-      <div id="campaign-section" style="display:none;margin-bottom:2rem"></div>
+      <p class="sub">OpenRouter ve NVIDIA üzerinden 300+ model. Katalog upstream'den saatlik senkronize edilir.</p>
+      <div id="models-filters" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
+        <input id="mf-search" class="inp" placeholder="Model ara (llama, claude, gpt…)" style="flex:1;min-width:220px;max-width:360px">
+        <select id="mf-provider" class="inp" style="width:auto;min-width:150px">
+          <option value="">Tüm sağlayıcılar</option>
+          <option value="openrouter">OpenRouter</option>
+          <option value="nvidia">NVIDIA</option>
+        </select>
+        <div id="mf-tags" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+      </div>
       <div class="card" style="overflow:hidden">
         <div id="models-body"><div class="empty">Yükleniyor…</div></div>
+        <div id="models-pager" style="padding:14px;text-align:center;border-top:1px solid #132023;display:none"></div>
       </div>
     </div>`;
-  const data=await api('/api/models');
-  const models=data?.models||[];
-  const body=$('#models-body');
-  if(!models.length){body.innerHTML='<div class="empty">Katalogda model yok. Backend seed\'i çalıştırın.</div>';return;}
 
-  const campaignModels=models.filter(m=>m.campaignUnlimited);
-  const regularModels=models.filter(m=>!m.campaignUnlimited);
+  const TAGS=['code','reasoning','vision','fast','cheap','free','long-context'];
+  const tagsEl=$('#mf-tags');
+  tagsEl.innerHTML=TAGS.map(t=>`<button type="button" class="pill mut" data-tag="${t}" style="cursor:pointer;background:transparent;border:1px solid #1C2A2D">${t}</button>`).join('');
 
-  if(campaignModels.length){
-    const campEl=$('#campaign-section');
-    campEl.style.display='block';
-    campEl.innerHTML=`
-      <div class="card" style="background:linear-gradient(135deg,#1a2b3d 0%,#1f3d2f 100%);border:1px solid rgba(223,255,0,.25);position:relative;overflow:hidden">
-        <div style="position:absolute;inset:0;background:radial-gradient(circle at 100% 0%,rgba(223,255,0,.08),transparent 50%);pointer-events:none"></div>
-        <div style="padding:1.75rem;position:relative">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;gap:1rem;flex-wrap:wrap">
-            <div>
-              <div style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(223,255,0,.12);border:1px solid rgba(223,255,0,.3);color:#DFFF00;padding:0.25rem 0.7rem;border-radius:99px;font-size:0.7rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:0.75rem">Sınırlı Süreli</div>
-              <h2 style="margin:0;color:#F2F5F4;font-size:1.35rem;font-weight:600;letter-spacing:-0.01em">3 Ay Boyunca Belirli Modeller Sınırsız</h2>
-              <p style="margin:0.4rem 0 0 0;color:#98A3A3;font-size:0.9rem">Aşağıdaki modeller <strong style="color:#DFFF00">$5 / 3 ay</strong> paketi ile token sayacı olmadan kullanılabilir.</p>
-            </div>
-            <span class="pill ok" style="padding:0.4rem 0.8rem;flex-shrink:0">Aktif</span>
-          </div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.85rem;margin-top:1.25rem">
-            ${campaignModels.map(m=>{
-              return `
-                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:0.6rem;padding:0.9rem;display:flex;flex-direction:column;gap:0.7rem;transition:border-color .15s" onmouseover="this.style.borderColor='rgba(223,255,0,.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
-                  <div style="display:flex;align-items:center;gap:0.7rem">
-                    ${logoImg(m.id,36)}
-                    <div style="flex:1;min-width:0">
-                      <div style="color:#F2F5F4;font-size:0.9rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(m.displayName||m.id)}</div>
-                      <div class="mono" style="color:#657172;font-size:0.7rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(m.id)}</div>
-                    </div>
-                  </div>
-                  <div style="display:flex;gap:0.35rem;flex-wrap:wrap">
-                    ${m.tags.slice(0,3).map(t=>`<span style="background:rgba(223,255,0,.08);color:#DFFF00;padding:0.2rem 0.5rem;border-radius:0.3rem;font-size:0.68rem;font-weight:500">${esc(t)}</span>`).join('')}
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        </div>
-      </div>`;
+  async function fetchModels(){
+    const params=new URLSearchParams();
+    if(state.provider)params.set('provider',state.provider);
+    if(state.tag)params.set('tag',state.tag);
+    if(state.search)params.set('search',state.search);
+    params.set('page',String(state.page));
+    params.set('limit',String(state.limit));
+    params.set('includeDisabled','true');
+    const data=await api('/api/models?'+params.toString());
+    return data;
   }
 
-  body.innerHTML=`
-    <div style="padding:1.1rem 1.25rem 0.75rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap">
-      <div>
-        <h2 style="margin:0;color:#F2F5F4;font-size:1.15rem;font-weight:600;letter-spacing:-0.01em">Tüm Modeller</h2>
-        <p style="margin:0.25rem 0 0 0;color:#657172;font-size:0.82rem">Kullanımına göre ücretlendirilir. Her modeli tek tıkla aktif veya pasif hale getirebilirsin.</p>
-      </div>
-      <span class="mono" style="font-size:0.75rem;color:#657172">${regularModels.length} model</span>
-    </div>
-    <table class="tbl">
-    <thead><tr><th>MODEL</th><th>SAĞLAYICI</th><th style="text-align:right">GİRDİ /1K</th><th style="text-align:right">ÇIKTI /1K</th><th style="text-align:right">CONTEXT</th><th>DURUM</th><th style="text-align:center">AKTIF</th></tr></thead>
-    <tbody>${regularModels.map(m=>{
-      const cb=m.circuitState||'closed';
-      const pill=cb==='open'?'<span class="pill err">Kapalı</span>':cb==='half-open'?'<span class="pill warn">Test</span>':'<span class="pill ok">Sağlıklı</span>';
-      const inPrice=m.inputPricePer1k??m.pricing?.inputPer1k??0;
-      const outPrice=m.outputPricePer1k??m.pricing?.outputPer1k??0;
-      return `<tr>
-        <td><div style="display:flex;align-items:center;gap:0.75rem">
-          ${logoImg(m.id,28)}
-          <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
-            <span style="color:#F2F5F4;font-weight:600">${esc(m.displayName||m.id)}</span>
-            <span class="mono" style="font-size:11px;color:#657172">${esc(m.id)}</span>
-          </div>
-        </div></td>
-        <td class="mono" style="font-size:12px;color:#98A3A3">${esc(m.provider||'—')}</td>
-        <td class="mono" style="text-align:right;color:#C7CFCE">${fmtUsd(inPrice)}</td>
-        <td class="mono" style="text-align:right;color:#C7CFCE">${fmtUsd(outPrice)}</td>
-        <td class="mono" style="text-align:right;color:#98A3A3">${m.contextWindow?fmtInt(m.contextWindow):'—'}</td>
-        <td>${pill}</td>
-        <td style="text-align:center">
-          <button type="button" class="togg model-toggle${m.enabled?' on':''}" data-model-id="${esc(m.id)}" aria-pressed="${m.enabled?'true':'false'}" title="${m.enabled?'Aktif':'Pasif'}"></button>
-        </td>
-      </tr>`;
-    }).join('')}</tbody></table>`;
+  const initial=await fetchModels();
+  let models=initial?.models||[];
+  let totalCount=initial?.total||0;
+  const body=$('#models-body');
+  const pager=$('#models-pager');
 
+  function updateBody(){
+    if(!models.length){body.innerHTML='<div class="empty">Filtreye uyan model yok.</div>';pager.style.display='none';return;}
+    body.innerHTML=`
+      <div style="padding:1.1rem 1.25rem 0.75rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+        <div>
+          <h2 style="margin:0;color:#F2F5F4;font-size:1.15rem;font-weight:600;letter-spacing:-0.01em">Katalog</h2>
+          <p style="margin:0.25rem 0 0 0;color:#657172;font-size:0.82rem">Fiyatlar 1K token başınadır. Tıklayarak her modeli aç/kapat.</p>
+        </div>
+        <span class="mono" style="font-size:0.75rem;color:#657172">${models.length} / ${totalCount} model</span>
+      </div>
+      <table class="tbl">
+      <thead><tr><th>MODEL</th><th>SAĞLAYICI</th><th style="text-align:right">GİRDİ /1K</th><th style="text-align:right">ÇIKTI /1K</th><th style="text-align:right">CONTEXT</th><th>DURUM</th><th style="text-align:center">AKTİF</th></tr></thead>
+      <tbody>${models.map(m=>{
+        const cb=m.circuitState||'closed';
+        const pill=m.enabled===false?'<span class="pill mut">Pasif</span>':cb==='open'?'<span class="pill err">Kapalı</span>':cb==='half-open'?'<span class="pill warn">Test</span>':'<span class="pill ok">Sağlıklı</span>';
+        const inPrice=m.inputPricePer1k||0;
+        const outPrice=m.outputPricePer1k||0;
+        const modelIdent=m.modelName||m.id;
+        const logoHtml=m.logoUrl?`<img src="${esc(m.logoUrl)}" alt="" width="28" height="28" style="width:28px;height:28px;border-radius:6px;background:#0F1A1B;padding:3px;object-fit:contain" loading="lazy" onerror="this.style.display='none'">`:logoImg(modelIdent,28);
+        return `<tr>
+          <td><div style="display:flex;align-items:center;gap:0.75rem">
+            ${logoHtml}
+            <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+              <span style="color:#F2F5F4;font-weight:600">${esc(m.displayName||modelIdent)}</span>
+              <span class="mono" style="font-size:11px;color:#657172">${esc(modelIdent)}</span>
+            </div>
+          </div></td>
+          <td class="mono" style="font-size:12px;color:#98A3A3">${esc(m.provider||'—')}</td>
+          <td class="mono" style="text-align:right;color:#C7CFCE">${m.isFree?'<span style="color:#4ADE80">FREE</span>':fmtUsd(inPrice)}</td>
+          <td class="mono" style="text-align:right;color:#C7CFCE">${m.isFree?'<span style="color:#4ADE80">FREE</span>':fmtUsd(outPrice)}</td>
+          <td class="mono" style="text-align:right;color:#98A3A3">${m.contextWindow?fmtInt(m.contextWindow):'—'}</td>
+          <td>${pill}</td>
+          <td style="text-align:center">
+            <button type="button" class="togg model-toggle${m.enabled?' on':''}" data-model-id="${esc(m.id)}" aria-pressed="${m.enabled?'true':'false'}" title="${m.enabled?'Aktif':'Pasif'}"></button>
+          </td>
+        </tr>`;
+      }).join('')}</tbody></table>`;
+
+    const hasMore=state.page*state.limit<totalCount;
+    if(hasMore){
+      pager.style.display='block';
+      pager.innerHTML=`<button type="button" class="btn ghost sm" id="mf-loadmore">Daha fazla yükle (${totalCount-state.page*state.limit} kaldı)</button>`;
+      $('#mf-loadmore').addEventListener('click',async()=>{
+        state.page++;
+        const more=await fetchModels();
+        models=models.concat(more?.models||[]);
+        updateBody();
+        wireToggles();
+      });
+    }else{pager.style.display='none';}
+  }
+
+  function wireToggles(){
     document.querySelectorAll('.model-toggle').forEach(btn=>{
+      if(btn.dataset.wired)return;
+      btn.dataset.wired='1';
       btn.addEventListener('click',async e=>{
         const el=e.currentTarget;
         const modelId=el.dataset.modelId;
@@ -688,6 +697,43 @@ LOADERS.models=async function(){
         }
       });
     });
+  }
+
+  let searchTimer=null;
+  $('#mf-search').addEventListener('input',e=>{
+    clearTimeout(searchTimer);
+    searchTimer=setTimeout(async()=>{
+      state.search=e.target.value.trim();
+      state.page=1;
+      const d=await fetchModels();
+      models=d?.models||[];totalCount=d?.total||0;
+      updateBody();wireToggles();
+    },250);
+  });
+  $('#mf-provider').addEventListener('change',async e=>{
+    state.provider=e.target.value;state.page=1;
+    const d=await fetchModels();
+    models=d?.models||[];totalCount=d?.total||0;
+    updateBody();wireToggles();
+  });
+  tagsEl.addEventListener('click',async e=>{
+    const btn=e.target.closest('[data-tag]');
+    if(!btn)return;
+    const tag=btn.dataset.tag;
+    if(state.tag===tag){state.tag='';btn.classList.remove('ok');btn.classList.add('mut');}
+    else{
+      state.tag=tag;
+      tagsEl.querySelectorAll('[data-tag]').forEach(b=>{b.classList.remove('ok');b.classList.add('mut');});
+      btn.classList.remove('mut');btn.classList.add('ok');
+    }
+    state.page=1;
+    const d=await fetchModels();
+    models=d?.models||[];totalCount=d?.total||0;
+    updateBody();wireToggles();
+  });
+
+  updateBody();
+  wireToggles();
 };
 
 /* ---------- PROVIDERS ---------- */

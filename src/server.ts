@@ -5,6 +5,7 @@ import { ensureSchema } from './db/ensureSchema.js';
 import { redis } from './cache/redis.js';
 import { logger } from './utils/logger.js';
 import { startAutoRechargeScanner } from './services/autoRechargeScanner.js';
+import { startModelSyncScheduler } from './jobs/modelSyncScheduler.js';
 
 async function main(): Promise<void> {
   await ensureSchema();
@@ -16,11 +17,13 @@ async function main(): Promise<void> {
   logger.info({ port, host }, '🚀 AI Gateway sunucusu başlatıldı');
 
   const scanner = startAutoRechargeScanner();
+  const modelSync = startModelSyncScheduler();
 
   const shutdown = async (signal: string): Promise<void> => {
     logger.info({ signal }, 'Sunucu kapatılıyor...');
     try {
       scanner.stop();
+      modelSync.stop();
       await app.close();
       await prisma.$disconnect();
       await redis.quit();

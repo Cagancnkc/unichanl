@@ -26,6 +26,30 @@ const REPAIR_STATEMENTS: Array<{ label: string; sql: string }> = [
     label: 'users.lastAutoRechargeAttemptAt',
     sql: `ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "lastAutoRechargeAttemptAt" TIMESTAMP(3)`,
   },
+  {
+    label: 'models.description',
+    sql: `ALTER TABLE "models" ADD COLUMN IF NOT EXISTS "description" TEXT`,
+  },
+  {
+    label: 'models.logoUrl',
+    sql: `ALTER TABLE "models" ADD COLUMN IF NOT EXISTS "logoUrl" TEXT`,
+  },
+  {
+    label: 'models.syncedAt',
+    sql: `ALTER TABLE "models" ADD COLUMN IF NOT EXISTS "syncedAt" TIMESTAMP(3)`,
+  },
+  {
+    label: 'models.upstreamMetadata',
+    sql: `ALTER TABLE "models" ADD COLUMN IF NOT EXISTS "upstreamMetadata" JSONB`,
+  },
+  {
+    label: 'models.isPublic',
+    sql: `ALTER TABLE "models" ADD COLUMN IF NOT EXISTS "isPublic" BOOLEAN NOT NULL DEFAULT true`,
+  },
+  {
+    label: 'models.providerId_isPublic index',
+    sql: `CREATE INDEX IF NOT EXISTS "models_providerId_isPublic_idx" ON "models"("providerId", "isPublic")`,
+  },
 ];
 
 export async function ensureSchema(): Promise<void> {

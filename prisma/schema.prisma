@@ -151,26 +151,32 @@ model Provider {
 }
 
 model Model {
-  id              String   @id @default(cuid())
-  providerId      String
-  modelName       String   @unique
-  displayName     String
-  capabilityTags  String[]
-  inputCostPer1k  Decimal  @db.Decimal(10, 6)
-  outputCostPer1k Decimal  @db.Decimal(10, 6)
-  contextWindow   Int      @default(128000)
-  priority        Int      @default(5)
-  enabled         Boolean  @default(true)
-  avgLatencyMs    Int      @default(2000)
-  healthStatus    String   @default("healthy")
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id               String    @id @default(cuid())
+  providerId       String
+  modelName        String    @unique
+  displayName      String
+  capabilityTags   String[]
+  inputCostPer1k   Decimal   @db.Decimal(10, 6)
+  outputCostPer1k  Decimal   @db.Decimal(10, 6)
+  contextWindow    Int       @default(128000)
+  priority         Int       @default(5)
+  enabled          Boolean   @default(true)
+  avgLatencyMs     Int       @default(2000)
+  healthStatus     String    @default("healthy")
+  description      String?
+  logoUrl          String?
+  syncedAt         DateTime?
+  upstreamMetadata Json?
+  isPublic         Boolean   @default(true)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   provider     Provider      @relation(fields: [providerId], references: [id])
   usageRecords UsageRecord[]
   routingLogs  RoutingLog[]
 
   @@index([enabled, priority(sort: Desc)])
+  @@index([providerId, isPublic])
   @@map("models")
 }
 

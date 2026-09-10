@@ -20,6 +20,8 @@ import { providerRoutes } from './api/routes/providers.js';
 import { ruleRoutes } from './api/routes/rules.js';
 import { sessionRoutes } from './api/routes/sessions.js';
 import { onboardingRoutes } from './api/routes/onboarding.js';
+import { adminRoutes } from './api/routes/admin.js';
+import { publicModelRoutes } from './api/routes/publicModels.js';
 import { generateRequestId } from './utils/id.js';
 import { logger } from './utils/logger.js';
 
@@ -60,6 +62,7 @@ export async function createApp() {
   await app.register(healthRoutes, { prefix: '/api' });
   await app.register(billingWebhookRoutes, { prefix: '/api' });
   await app.register(authRoutes);
+  await app.register(publicModelRoutes);
 
   await app.register(
     async (protectedApp) => {
@@ -74,6 +77,7 @@ export async function createApp() {
       await protectedApp.register(ruleRoutes, { prefix: '/api' });
       await protectedApp.register(sessionRoutes, { prefix: '/api' });
       await protectedApp.register(onboardingRoutes, { prefix: '/api' });
+      await protectedApp.register(adminRoutes, { prefix: '/api' });
     },
   );
 
