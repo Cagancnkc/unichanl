@@ -633,21 +633,17 @@ LOADERS.models=async function(){
       </div>
     </div>`;
 
-  const TAGS=['code','reasoning','vision','fast','cheap','free','long-context'];
   const tagsEl=$('#mf-tags');
-  tagsEl.innerHTML=TAGS.map(t=>`<button type="button" class="pill mut" data-tag="${t}" style="cursor:pointer;background:transparent;border:1px solid #1C2A2D">${t}</button>`).join('');
-
   const statsEl=$('#models-stats');
   const body=$('#models-body');
   let allModels=[];
   let totalCount=0;
   let creatorCount=0;
-  let loadError=false;
+  let tagCounts={};
+  let loadErrorMsg='';
 
   async function fetchPage(page,limit){
     const params=new URLSearchParams();
-    if(state.tag)params.set('tag',state.tag);
-    if(state.search)params.set('search',state.search);
     params.set('page',String(page));
     params.set('limit',String(limit));
     const r=await fetch('/api/public/models?'+params.toString());
@@ -655,18 +651,28 @@ LOADERS.models=async function(){
     return await r.json();
   }
 
+  function setLoading(loaded,total){
+    body.innerHTML=`<div class="empty">Yükleniyor: ${fmtInt(loaded)} / ${fmtInt(total||'?')}</div>`;
+  }
+
   async function fetchAll(){
     const LIMIT=200;
+    body.innerHTML='<div class="empty">Yükleniyor…</div>';
     const first=await fetchPage(1,LIMIT);
     let items=first?.models||[];
     const total=first?.total||0;
     creatorCount=first?.creatorCount||0;
+    tagCounts=first?.tagCounts||{};
+    setLoading(items.length,total);
     const pages=Math.ceil(total/LIMIT);
     if(pages>1){
-      const rest=await Promise.all(
+      const results=await Promise.all(
         Array.from({length:pages-1},(_,i)=>fetchPage(i+2,LIMIT).then(r=>r?.models||[]).catch(()=>[]))
       );
-      for(const chunk of rest)items=items.concat(chunk);
+      for(const chunk of results){
+        items=items.concat(chunk);
+        setLoading(items.length,total);
+      }
     }
     return {items,total};
   }
@@ -676,15 +682,27 @@ LOADERS.models=async function(){
     allModels=items;
     totalCount=total;
   }catch(err){
-    loadError=true;
+    loadErrorMsg=(err&&err.message)?err.message:'Bilinmeyen hata';
   }
 
   function renderStats(){
     statsEl.innerHTML=[
       statCard('MEVCUT MODEL',fmtInt(totalCount),'tümü senkronize'),
       statCard('MODEL MARKASI',fmtInt(creatorCount),'benzersiz üretici'),
+      statCard('KATEGORİ',fmtInt(Object.keys(tagCounts).length),'tag çeşidi'),
       statCard('İNDİRİM','-%45','her modelde')
     ].join('');
+  }
+
+  function renderTagChips(){
+    const entries=Object.entries(tagCounts).sort((a,b)=>b[1]-a[1]).slice(0,12);
+    const activeStyle='background:rgba(74,222,128,.12);color:#4ADE80;border:1px solid rgba(74,222,128,.35)';
+    const mutedStyle='background:transparent;color:#98A3A3;border:1px solid #1C2A2D';
+    const chips=[
+      `<button type="button" class="pill" data-tag="" style="cursor:pointer;${state.tag===''?activeStyle:mutedStyle}">Hepsi (${fmtInt(totalCount)})</button>`,
+      ...entries.map(([t,n])=>`<button type="button" class="pill" data-tag="${esc(t)}" style="cursor:pointer;${state.tag===t?activeStyle:mutedStyle}">${esc(t)} (${fmtInt(n)})</button>`)
+    ];
+    tagsEl.innerHTML=chips.join('');
   }
 
   function populateCreatorDropdown(){
@@ -723,14 +741,16 @@ LOADERS.models=async function(){
   }
 
   function updateBody(){
-    if(loadError){body.innerHTML='<div class="empty">Katalog yüklenemedi, birazdan tekrar dene.</div>';return;}
-    if(!allModels.length){body.innerHTML='<div class="empty">Henüz model yok.</div>';return;}
+    if(loadErrorMsg){body.innerHTML=`<div class="empty">Katalog yüklenemedi: ${esc(loadErrorMsg)}</div>`;return;}
+    if(!allModels.length){body.innerHTML='<div class="empty">Henüz model yok — senkron çalışmamış olabilir.</div>';return;}
     const rows=filtered();
+    const incomplete=allModels.length!==totalCount;
+    const warnPill=incomplete?`<span class="pill" style="background:rgba(239,68,68,.12);color:#F87171;border:1px solid rgba(239,68,68,.28);margin-left:8px">⚠ eksik yükleme (${fmtInt(allModels.length)}/${fmtInt(totalCount)})</span>`:'';
     if(!rows.length){body.innerHTML='<div class="empty">Filtreye uyan model yok.</div>';return;}
     body.innerHTML=`
       <div style="padding:1.1rem 1.25rem 0.75rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap">
         <div>
-          <h2 style="margin:0;color:#F2F5F4;font-size:1.15rem;font-weight:600;letter-spacing:-0.01em">Katalog</h2>
+          <h2 style="margin:0;color:#F2F5F4;font-size:1.15rem;font-weight:600;letter-spacing:-0.01em">Katalog${warnPill}</h2>
           <p style="margin:0.25rem 0 0 0;color:#657172;font-size:0.82rem">Üstü çizili fiyat = pazar liste fiyatı. Kalın fiyat = %45 indirimli fiyatınız.</p>
         </div>
         <span class="mono" style="font-size:0.75rem;color:#657172">${fmtInt(rows.length)} / ${fmtInt(totalCount)} model</span>
@@ -769,6 +789,7 @@ LOADERS.models=async function(){
   }
 
   renderStats();
+  renderTagChips();
   populateCreatorDropdown();
 
   let searchTimer=null;
@@ -787,12 +808,8 @@ LOADERS.models=async function(){
     const btn=e.target.closest('[data-tag]');
     if(!btn)return;
     const tag=btn.dataset.tag;
-    if(state.tag===tag){state.tag='';btn.classList.remove('ok');btn.classList.add('mut');}
-    else{
-      state.tag=tag;
-      tagsEl.querySelectorAll('[data-tag]').forEach(b=>{b.classList.remove('ok');b.classList.add('mut');});
-      btn.classList.remove('mut');btn.classList.add('ok');
-    }
+    state.tag=(tag!==''&&state.tag===tag)?'':tag;
+    renderTagChips();
     updateBody();
   });
 

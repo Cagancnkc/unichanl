@@ -57,7 +57,14 @@ export async function publicModelRoutes(app: FastifyInstance): Promise<void> {
       ];
     }
 
-    const [total, models, allNames] = await Promise.all([
+    // Global chip sayıları filtre-bağımsız olsun: tag/search uygulanmamış aggregate.
+    const globalWhere: Prisma.ModelWhereInput = {
+      enabled: true,
+      isPublic: true,
+      ...(where.providerId ? { providerId: where.providerId } : {}),
+    };
+
+    const [total, models, allNames, allTags] = await Promise.all([
       prisma.model.count({ where }),
       prisma.model.findMany({
         where,
@@ -67,8 +74,12 @@ export async function publicModelRoutes(app: FastifyInstance): Promise<void> {
         take: limit,
       }),
       prisma.model.findMany({
-        where,
+        where: globalWhere,
         select: { modelName: true, upstreamMetadata: true, provider: { select: { displayName: true } } },
+      }),
+      prisma.model.findMany({
+        where: globalWhere,
+        select: { capabilityTags: true },
       }),
     ]);
 
@@ -76,6 +87,13 @@ export async function publicModelRoutes(app: FastifyInstance): Promise<void> {
     for (const n of allNames) {
       const { brand } = deriveCreator(n.modelName, n.upstreamMetadata, n.provider.displayName);
       brandSet.add(brand);
+    }
+
+    const tagCounts: Record<string, number> = {};
+    for (const row of allTags) {
+      for (const t of row.capabilityTags) {
+        tagCounts[t] = (tagCounts[t] || 0) + 1;
+      }
     }
 
     reply.send({
@@ -112,6 +130,7 @@ export async function publicModelRoutes(app: FastifyInstance): Promise<void> {
       }),
       total,
       creatorCount: brandSet.size,
+      tagCounts,
       page,
       limit,
     });
