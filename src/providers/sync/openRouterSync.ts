@@ -109,7 +109,11 @@ export async function fetchOpenRouterModels(): Promise<UpstreamModel[]> {
       throw new Error('OpenRouter response missing data[]');
     }
 
-    return payload.data.map((m): UpstreamModel => {
+    const VARIANT_SUFFIX = /:(free|batch|extended|nitro|beta)$/;
+
+    return payload.data
+      .filter((m) => !VARIANT_SUFFIX.test(m.id))
+      .map((m): UpstreamModel => {
       // OpenRouter pricing is per-token (as string). Convert to per-1k tokens.
       const inputPerToken = parseFloat(m.pricing?.prompt ?? '0');
       const outputPerToken = parseFloat(m.pricing?.completion ?? '0');
@@ -126,7 +130,7 @@ export async function fetchOpenRouterModels(): Promise<UpstreamModel[]> {
         logoUrl: providerLogo(m.id),
         upstreamMetadata: m as unknown as Record<string, unknown>,
       };
-    });
+      });
   } catch (err) {
     logger.error({ err }, 'fetchOpenRouterModels failed');
     throw err;

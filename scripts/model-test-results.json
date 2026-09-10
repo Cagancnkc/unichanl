@@ -1,0 +1,4082 @@
+[
+  {
+    "modelName": "anthropic/claude-sonnet-4-5",
+    "provider": "anthropic",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1816,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-4o",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1698,
+    "sample": "Pong! How"
+  },
+  {
+    "modelName": "google/gemini-1.5-pro",
+    "provider": "google",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 364,
+    "error": "{\"error\":{\"message\":\"google/gemini-1.5-pro is not a valid model ID\",\"code\":400},\"user_id\":\"user_31RwA9Wo4FV0tZsjKXc52qS2x4v\"}"
+  },
+  {
+    "modelName": "mistralai/mistral-large",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 709,
+    "sample": "Hello! How can"
+  },
+  {
+    "modelName": "anthropic/claude-haiku-3-5",
+    "provider": "anthropic",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 385,
+    "error": "{\"error\":{\"message\":\"anthropic/claude-haiku-3-5 is not a valid model ID\",\"code\":400},\"user_id\":\"user_31RwA9Wo4FV0tZsjKXc52qS2x4v\"}"
+  },
+  {
+    "modelName": "meta-llama/llama-3.1-70b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 458,
+    "sample": "\n\npong"
+  },
+  {
+    "modelName": "openai/gpt-4o-mini",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 949,
+    "sample": "Pong! How"
+  },
+  {
+    "modelName": "google/gemini-1.5-flash",
+    "provider": "google",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 31,
+    "error": "{\"error\":{\"message\":\"google/gemini-1.5-flash is not a valid model ID\",\"code\":400},\"user_id\":\"user_31RwA9Wo4FV0tZsjKXc52qS2x4v\"}"
+  },
+  {
+    "modelName": "nvidia/ai-synthetic-video-detector",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 500,
+    "latencyMs": 348,
+    "error": "{\"type\":\"urn:nvcf-worker-service:problem-details:internal-server-error\",\"title\":\"Internal Server Error\",\"status\":500,\"detail\":\"Internal error while making inference request\"}"
+  },
+  {
+    "modelName": "aion-labs/aion-2.0",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 925,
+    "sample": "Pong! How"
+  },
+  {
+    "modelName": "aion-labs/aion-3.0",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1556,
+    "sample": "pong"
+  },
+  {
+    "modelName": "aion-labs/aion-3.0-mini",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 886,
+    "sample": "ping"
+  },
+  {
+    "modelName": "aion-labs/aion-rp-llama-3.1-8b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 842,
+    "sample": " Pong!\n\nYou"
+  },
+  {
+    "modelName": "amazon/nova-2-lite-v1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 408,
+    "sample": "Hello! It"
+  },
+  {
+    "modelName": "amazon/nova-lite-v1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1421,
+    "sample": "The `ping`"
+  },
+  {
+    "modelName": "amazon/nova-micro-v1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 690,
+    "sample": "It looks like you"
+  },
+  {
+    "modelName": "amazon/nova-premier-v1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 674,
+    "sample": "Pong! It seems"
+  },
+  {
+    "modelName": "amazon/nova-pro-v1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 792,
+    "sample": "\"Ping\" is"
+  },
+  {
+    "modelName": "~anthropic/claude-haiku-latest",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1054,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "~anthropic/claude-sonnet-latest",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1277,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "anthropic/claude-3-haiku",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 533,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "anthropic/claude-fable-5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 3437,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "anthropic/claude-fable-5:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 44,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "anthropic/claude-fable-5.1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 3718,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "anthropic/claude-fable-5.1:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 43,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "~anthropic/claude-fable-latest",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 3907,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "anthropic/claude-haiku-4.5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 740,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "anthropic/claude-haiku-4.5:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 41,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "anthropic/claude-opus-4",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 3317,
+    "sample": "pong"
+  },
+  {
+    "modelName": "anthropic/claude-opus-4.1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 2961,
+    "sample": "pong"
+  },
+  {
+    "modelName": "anthropic/claude-opus-4.1:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 37,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "anthropic/claude-opus-4.5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1557,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "anthropic/claude-opus-4.5:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 34,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "anthropic/claude-opus-4.6",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1339,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "anthropic/claude-opus-4.6:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 38,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "anthropic/claude-opus-4.7",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 881,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "anthropic/claude-opus-4.7:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 36,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "anthropic/claude-opus-4.8",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 943,
+    "sample": "pong "
+  },
+  {
+    "modelName": "anthropic/claude-opus-4.8:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 34,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "~anthropic/claude-opus-latest",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1753,
+    "sample": ""
+  },
+  {
+    "modelName": "anthropic/claude-sonnet-4",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 784,
+    "sample": "pong"
+  },
+  {
+    "modelName": "anthropic/claude-sonnet-4.5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 3173,
+    "sample": "pong"
+  },
+  {
+    "modelName": "anthropic/claude-sonnet-4.5:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 38,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "anthropic/claude-sonnet-4.6",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 830,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "anthropic/claude-sonnet-4.6:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 40,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "anthropic/claude-sonnet-5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1146,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "anthropic/claude-sonnet-5:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 37,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "arcee-ai/trinity-large-thinking",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 245,
+    "sample": ""
+  },
+  {
+    "modelName": "snowflake/arctic-embed-l",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 218,
+    "error": "404 page not found\n"
+  },
+  {
+    "modelName": "openrouter/auto",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 856,
+    "sample": ""
+  },
+  {
+    "modelName": "openrouter/auto-beta",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1068,
+    "sample": ""
+  },
+  {
+    "modelName": "baidu/ernie-4.5-vl-424b-a47b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1956,
+    "sample": "`ping` "
+  },
+  {
+    "modelName": "openrouter/bodybuilder",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 39,
+    "error": "{\"error\":{\"message\":\"No endpoints available for openrouter/bodybuilder\",\"code\":404}}"
+  },
+  {
+    "modelName": "bytedance-seed/seed-1.6",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1523,
+    "sample": ""
+  },
+  {
+    "modelName": "bytedance-seed/seed-1.6-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 406,
+    "sample": ""
+  },
+  {
+    "modelName": "bytedance-seed/seed-2-1-turbo",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 738,
+    "sample": ""
+  },
+  {
+    "modelName": "bytedance-seed/seed-2.0-code",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 529,
+    "sample": ""
+  },
+  {
+    "modelName": "bytedance-seed/seed-2.0-lite",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 942,
+    "sample": ""
+  },
+  {
+    "modelName": "bytedance-seed/seed-2.0-mini",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 566,
+    "sample": ""
+  },
+  {
+    "modelName": "bytedance/ui-tars-1.5-7b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 411,
+    "sample": "\"ping\" 是"
+  },
+  {
+    "modelName": "anthropic/claude-opus-5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1784,
+    "sample": ""
+  },
+  {
+    "modelName": "anthropic/claude-opus-5:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 35,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "google/codegemma-1.1-7b",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 189,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'e2d298c5-204e-4213-b921-9f492cc9011b': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "google/codegemma-7b",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 351,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '7dfc10a8-3cc4-448e-97c1-2213308dc222': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "meta/codellama-70b",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 427,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'f6b06895-d073-4714-8bb2-26c09e9f6597': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "mistralai/codestral-22b-instruct-v0.1",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 354,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '9a10b012-e6df-46fd-83b2-700dcbc75814': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "cohere/command-a",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 279,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "cohere/command-r-08-2024",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 766,
+    "sample": "Pong! I'm"
+  },
+  {
+    "modelName": "cohere/command-r-plus-08-2024",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 343,
+    "sample": "I'm sorry,"
+  },
+  {
+    "modelName": "cohere/command-r7b-12-2024",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 293,
+    "sample": "It looks like"
+  },
+  {
+    "modelName": "cohere/north-mini-code:free",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 257,
+    "sample": ""
+  },
+  {
+    "modelName": "nvidia/cosmos-reason2-8b",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 168,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'e199b43b-6c62-4a63-9379-f60e1a953236': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "databricks/dbrx-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 189,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '3d6c2ff8-8bfc-4d10-8fd0-b7337288e869': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "deepseek-ai/deepseek-coder-6.7b-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 198,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'e503b15c-62b0-4d69-b532-a88f0bfa2656': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "deepseek-ai/deepseek-v4-flash-0731",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 0,
+    "latencyMs": 30011,
+    "error": "timeout 30000ms deepseek-ai/deepseek-v4-flash-0731"
+  },
+  {
+    "modelName": "~deepseek/deepseek-v4-flash-latest",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 259,
+    "sample": ""
+  },
+  {
+    "modelName": "deepseek-ai/deepseek-v4-pro-0813",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 0,
+    "latencyMs": 30003,
+    "error": "timeout 30000ms deepseek-ai/deepseek-v4-pro-0813"
+  },
+  {
+    "modelName": "deepseek/deepseek-chat",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 877,
+    "sample": "The `ping`"
+  },
+  {
+    "modelName": "deepseek/deepseek-chat-v3-0324",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 822,
+    "sample": "The `ping`"
+  },
+  {
+    "modelName": "deepseek/deepseek-chat-v3.1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 266,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "deepseek/deepseek-v3.1-terminus",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1054,
+    "sample": "你好！👋"
+  },
+  {
+    "modelName": "deepseek/deepseek-v3.2",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1106,
+    "sample": "你好！😊"
+  },
+  {
+    "modelName": "deepseek/deepseek-v3.2-exp",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1641,
+    "sample": "Pong! "
+  },
+  {
+    "modelName": "deepseek/deepseek-v4-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 688,
+    "sample": ""
+  },
+  {
+    "modelName": "deepseek/deepseek-v4-flash-0731",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 553,
+    "sample": "pong"
+  },
+  {
+    "modelName": "deepseek/deepseek-v4-flash-0731:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 37,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":2}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "deepseek/deepseek-v4-flash-vision-exp",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 500,
+    "sample": ""
+  },
+  {
+    "modelName": "deepseek/deepseek-v4-flash-vision-exp:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 39,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "deepseek/deepseek-v4-pro",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 609,
+    "sample": ""
+  },
+  {
+    "modelName": "deepseek/deepseek-v4-pro-0813",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1313,
+    "sample": ""
+  },
+  {
+    "modelName": "deepseek/deepseek-v4-pro-0813:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 37,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":2}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "deepseek/deepseek-v4.1-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1149,
+    "sample": ""
+  },
+  {
+    "modelName": "deepseek/deepseek-r1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1031,
+    "sample": ""
+  },
+  {
+    "modelName": "deepseek/deepseek-r1-0528",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 676,
+    "sample": "The `ping"
+  },
+  {
+    "modelName": "deepseek/deepseek-r1-distill-llama-70b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 851,
+    "sample": ""
+  },
+  {
+    "modelName": "google/deplot",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 335,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '784a8ca4-ea7d-4c93-bb46-ec027c3fae47': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "google/diffusiongemma-26b-a4b-it",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 0,
+    "latencyMs": 30012,
+    "error": "timeout 30000ms google/diffusiongemma-26b-a4b-it"
+  },
+  {
+    "modelName": "dots-studio/dots-3-note-preview:free",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 581,
+    "sample": ""
+  },
+  {
+    "modelName": "nvidia/embed-qa-4",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 83,
+    "error": "404 page not found\n"
+  },
+  {
+    "modelName": "openrouter/free",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 964,
+    "sample": ""
+  },
+  {
+    "modelName": "adept/fuyu-8b",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 168,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'e598bfc1-b058-41af-869d-556d3c7e1b48': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "google/gemma-2b",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 323,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '04174188-f742-4069-9e72-d77c2b77d3cb': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "~google/gemini-flash-latest",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1387,
+    "sample": ""
+  },
+  {
+    "modelName": "~google/gemini-pro-latest",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 2054,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-2.5-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 456,
+    "sample": "\"Ping\" is"
+  },
+  {
+    "modelName": "google/gemini-2.5-flash:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 35,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "google/gemini-2.5-flash-lite",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 521,
+    "sample": "\"Ping\" is"
+  },
+  {
+    "modelName": "google/gemini-2.5-flash-lite:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 34,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":2}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "google/gemini-2.5-pro",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1144,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-2.5-pro:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 33,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "google/gemini-2.5-pro-preview-05-06",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 951,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-2.5-pro-preview",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 948,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-3-flash-preview",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 914,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-3-flash-preview:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 36,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "google/gemini-3.1-flash-lite",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 494,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-3.1-flash-lite:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 36,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "google/gemini-3.1-flash-lite-preview",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 502,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-3.1-pro-preview",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1992,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-3.1-pro-preview:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 34,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "google/gemini-3.1-pro-preview-customtools",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 2371,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-3.5-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 761,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-3.5-flash:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 35,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "google/gemini-3.5-flash-lite",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 549,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-3.5-flash-lite:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 39,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "google/gemini-3.6-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 947,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-3.6-flash:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 32,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "google/gemini-3.7-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 935,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-3.7-flash:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 34,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "google/gemini-3.8-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1605,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-3.8-flash:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 34,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "google/gemma-2-27b-it",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 201,
+    "sample": "\n\npong! 👋"
+  },
+  {
+    "modelName": "google/gemma-3-12b-it",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 232,
+    "sample": "Pong! 😉 "
+  },
+  {
+    "modelName": "google/gemma-3-27b-it",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 231,
+    "sample": "Pong! \n\n"
+  },
+  {
+    "modelName": "google/gemma-3-4b-it",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 244,
+    "sample": "Okay, let'"
+  },
+  {
+    "modelName": "google/gemma-4-26b-a4b-it",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 500,
+    "sample": "pong! "
+  },
+  {
+    "modelName": "google/gemma-4-26b-a4b-it:free",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 429,
+    "latencyMs": 285,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"google/gemma-4-26b-a4b-it:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/"
+  },
+  {
+    "modelName": "google/gemma-4-31b-it",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 345,
+    "sample": "Pong! "
+  },
+  {
+    "modelName": "google/gemma-4-31b-it:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 94,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "google/gemma-4-31b-it:free",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 429,
+    "latencyMs": 221,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"google/gemma-4-31b-it:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/inte"
+  },
+  {
+    "modelName": "google/lyria-3-clip-preview",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 884,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\n  \\\"error\\\": {\\n    \\\"code\\\": 400,\\n    \\\"message\\\": \\\"Request contains an invalid argument.\\\",\\n    \\\"status\\\": \\\"INVALID_ARGUMENT\\\"\\n  }\\n}\\n\",\"provider_name\":\"Google AI"
+  },
+  {
+    "modelName": "google/lyria-3-pro-preview",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 1171,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\n  \\\"error\\\": {\\n    \\\"code\\\": 400,\\n    \\\"message\\\": \\\"Request contains an invalid argument.\\\",\\n    \\\"status\\\": \\\"INVALID_ARGUMENT\\\"\\n  }\\n}\\n\",\"provider_name\":\"Google AI"
+  },
+  {
+    "modelName": "google/gemini-2.5-flash-image",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 634,
+    "sample": "pong"
+  },
+  {
+    "modelName": "google/gemini-3.1-flash-image-preview",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 870,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-3.1-flash-image",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 929,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-3.1-flash-lite-image",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 752,
+    "sample": "Pong! How can"
+  },
+  {
+    "modelName": "google/gemini-3-pro-image-preview",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1947,
+    "sample": ""
+  },
+  {
+    "modelName": "google/gemini-3-pro-image",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1884,
+    "sample": ""
+  },
+  {
+    "modelName": "ibm/granite-3.0-3b-a800m-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 317,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '67324577-3f91-4aa6-b750-97468262530d': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "ibm/granite-3.0-8b-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 306,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '5a24a4f0-2d59-46b3-ac65-42307f2633d1': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "ibm/granite-34b-code-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 212,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '4df48b4f-e3c5-4ade-82c7-c06b65e25d18': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "ibm/granite-8b-code-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 160,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'af7b6f03-f615-4c5f-86c6-388bd35cede0': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "ibm-granite/granite-4.0-h-micro",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 310,
+    "sample": "Hello! How can"
+  },
+  {
+    "modelName": "ibm-granite/granite-4.2-8b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 281,
+    "sample": ""
+  },
+  {
+    "modelName": "inception/mercury-2",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 436,
+    "sample": ""
+  },
+  {
+    "modelName": "inception/mercury-2.5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 406,
+    "sample": ""
+  },
+  {
+    "modelName": "inclusionai/ling-3.0-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 761,
+    "sample": ""
+  },
+  {
+    "modelName": "inclusionai/ling-3.0-flash-fin",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 605,
+    "sample": ""
+  },
+  {
+    "modelName": "inclusionai/ling-3.0-flash-fin:free",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 628,
+    "sample": ""
+  },
+  {
+    "modelName": "inclusionai/ling-3.0-flash-sante:free",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 863,
+    "sample": ""
+  },
+  {
+    "modelName": "inclusionai/ling-3.0-flash-vl:free",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 764,
+    "sample": ""
+  },
+  {
+    "modelName": "nvidia/ising-calibration-1.5-31b",
+    "provider": "nvidia",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 420,
+    "sample": "I'm NVIDIA"
+  },
+  {
+    "modelName": "ai21labs/jamba-1.5-large-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 164,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '6497fc2b-7ff8-4019-8946-123dccbfc863': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "microsoft/kosmos-2",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 172,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '6018fed7-f227-48dc-99bc-3fd4264d5037': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "kwaipilot/kat-coder-pro-v2",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 701,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\\"code\\\":400,\\\"msg\\\":\\\"bad request\\\",\\\"request_id\\\":\\\"d02403f9-b7f5-4d31-bedd-4b140d031be9\\\"}\",\"provider_name\":\"AtlasCloud\",\"is_byok\":false}},\"user_id\":\"user_31RwA9Wo4FV0tZs"
+  },
+  {
+    "modelName": "kwaipilot/kat-coder-pro-v2.5",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 708,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\\"code\\\":400,\\\"msg\\\":\\\"bad request\\\",\\\"request_id\\\":\\\"e2050d22-10a1-445e-9316-d72eba66df90\\\"}\",\"provider_name\":\"AtlasCloud\",\"is_byok\":false}},\"user_id\":\"user_31RwA9Wo4FV0tZs"
+  },
+  {
+    "modelName": "liquid/lfm-2.5-2.6b:free",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 448,
+    "sample": ""
+  },
+  {
+    "modelName": "nvidia/llama-3.1-nemoguard-8b-content-safety",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 0,
+    "latencyMs": 30004,
+    "error": "timeout 30000ms nvidia/llama-3.1-nemoguard-8b-content-safety"
+  },
+  {
+    "modelName": "nvidia/llama-3.1-nemoguard-8b-topic-control",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 500,
+    "latencyMs": 127,
+    "error": "{\"error\":\"Error during inference of request chat-2ebeaf8f07a042dbb2c0d5525c530371 -- Encountered an error in forwardAsync function: [TensorRT-LLM][ERROR] CUDA runtime error in cudaMemcpyAsync(dst, src.data(), src.getSizeInBytes(), cudaMemcpyDefault, "
+  },
+  {
+    "modelName": "nvidia/llama-3.1-nemotron-51b-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 304,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '5beba52c-65a9-4f46-8cd9-656689a1b205': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "nvidia/llama-3.1-nemotron-70b-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 161,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '9b96341b-9791-4db9-a00d-4e43aa192a39': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "nvidia/llama-3.1-nemotron-safety-guard-8b-v3",
+    "provider": "nvidia",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 683,
+    "sample": "{\"User Safety\":"
+  },
+  {
+    "modelName": "nvidia/llama-3.1-nemotron-ultra-253b-v1",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 301,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '84bf12ff-edbd-4435-baea-0fa6a7453d2e': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "meta/llama-3.2-11b-vision-instruct",
+    "provider": "nvidia",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 212,
+    "sample": "Pong."
+  },
+  {
+    "modelName": "meta/llama-3.2-90b-vision-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 0,
+    "latencyMs": 30001,
+    "error": "timeout 30000ms meta/llama-3.2-90b-vision-instruct"
+  },
+  {
+    "modelName": "nvidia/llama-3.2-nemoretriever-1b-vlm-embed-v1",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 75,
+    "error": "404 page not found\n"
+  },
+  {
+    "modelName": "nvidia/llama-3.2-nv-embedqa-1b-v1",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 77,
+    "error": "404 page not found\n"
+  },
+  {
+    "modelName": "meta/llama-guard-4-12b",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 0,
+    "latencyMs": 30004,
+    "error": "timeout 30000ms meta/llama-guard-4-12b"
+  },
+  {
+    "modelName": "nvidia/llama-nemotron-embed-vl-1b-v2",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 79,
+    "error": "404 page not found\n"
+  },
+  {
+    "modelName": "meta/llama2-70b",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 165,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '2fddadfb-7e76-4c8a-9b82-f7d3fab94471': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "nvidia/llama3-chatqa-1.5-70b",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 189,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '46594287-38b9-481c-a37f-baa02f2d3ba1': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "anthracite-org/magnum-v4-72b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 509,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "mancer/weaver",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 502,
+    "sample": "\n\nThe ping"
+  },
+  {
+    "modelName": "meituan/longcat-2.0",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 2320,
+    "sample": ""
+  },
+  {
+    "modelName": "meta-llama/llama-3.1-8b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 577,
+    "sample": "Pong! Your"
+  },
+  {
+    "modelName": "meta-llama/llama-3.2-1b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 203,
+    "sample": "It seems like you"
+  },
+  {
+    "modelName": "meta-llama/llama-3.2-3b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 195,
+    "sample": "Pinging the server"
+  },
+  {
+    "modelName": "meta-llama/llama-3.3-70b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 587,
+    "sample": "pong"
+  },
+  {
+    "modelName": "meta-llama/llama-4-maverick",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 602,
+    "sample": "It seems like you're"
+  },
+  {
+    "modelName": "meta-llama/llama-4-scout",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 364,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "meta-llama/llama-guard-4-12b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 432,
+    "sample": "\n\nsafe"
+  },
+  {
+    "modelName": "meta/muse-glimmer-30b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 298,
+    "sample": ""
+  },
+  {
+    "modelName": "meta/muse-glimmer-30b:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 39,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":2}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "meta/muse-spark-1.1",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 403,
+    "latencyMs": 33,
+    "error": "{\"error\":{\"message\":\"This model requires you to complete the following before use: 18+ age confirmation. Confirm at https://openrouter.ai/settings/preferences.\",\"code\":403,\"metadata\":{\"missing_attestation_types\":[\"age_18plus\"],\"routing_funnel\":[{\"ste"
+  },
+  {
+    "modelName": "meta/muse-spark-1.2",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 403,
+    "latencyMs": 36,
+    "error": "{\"error\":{\"message\":\"This model requires you to complete the following before use: 18+ age confirmation. Confirm at https://openrouter.ai/settings/preferences.\",\"code\":403,\"metadata\":{\"missing_attestation_types\":[\"age_18plus\"],\"routing_funnel\":[{\"ste"
+  },
+  {
+    "modelName": "meta/muse-spark-1.2-contributor",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 403,
+    "latencyMs": 34,
+    "error": "{\"error\":{\"message\":\"This model requires you to complete the following before use: 18+ age confirmation. Confirm at https://openrouter.ai/settings/preferences.\",\"code\":403,\"metadata\":{\"missing_attestation_types\":[\"age_18plus\"],\"routing_funnel\":[{\"ste"
+  },
+  {
+    "modelName": "meta/muse-spark-1.3",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 403,
+    "latencyMs": 32,
+    "error": "{\"error\":{\"message\":\"This model requires you to complete the following before use: 18+ age confirmation. Confirm at https://openrouter.ai/settings/preferences.\",\"code\":403,\"metadata\":{\"missing_attestation_types\":[\"age_18plus\"],\"routing_funnel\":[{\"ste"
+  },
+  {
+    "modelName": "meta/muse-spark-1.3-contributor",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 403,
+    "latencyMs": 35,
+    "error": "{\"error\":{\"message\":\"This model requires you to complete the following before use: 18+ age confirmation. Confirm at https://openrouter.ai/settings/preferences.\",\"code\":403,\"metadata\":{\"missing_attestation_types\":[\"age_18plus\"],\"routing_funnel\":[{\"ste"
+  },
+  {
+    "modelName": "microsoft/phi-4",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 594,
+    "sample": "The term \"ping"
+  },
+  {
+    "modelName": "minimax/minimax-m1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1792,
+    "sample": ""
+  },
+  {
+    "modelName": "minimax/minimax-m2",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 422,
+    "sample": ""
+  },
+  {
+    "modelName": "minimax/minimax-m2-her",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 817,
+    "sample": "pong"
+  },
+  {
+    "modelName": "minimax/minimax-m2.1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 2122,
+    "sample": ""
+  },
+  {
+    "modelName": "minimax/minimax-m2.5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 813,
+    "sample": ""
+  },
+  {
+    "modelName": "minimax/minimax-m2.7",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1855,
+    "sample": ""
+  },
+  {
+    "modelName": "minimax/minimax-m3",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 574,
+    "sample": ""
+  },
+  {
+    "modelName": "minimax/minimax-m3:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 47,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "minimax/minimax-01",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1047,
+    "sample": "Pong! How"
+  },
+  {
+    "modelName": "mistralai/mistral-7b-instruct",
+    "provider": "mistral",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 32,
+    "error": "{\"error\":{\"message\":\"No endpoints found for mistralai/mistral-7b-instruct.\",\"code\":404},\"user_id\":\"user_31RwA9Wo4FV0tZsjKXc52qS2x4v\"}"
+  },
+  {
+    "modelName": "mistralai/mistral-7b-instruct-v0.3",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 332,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'cd89bd68-13e3-47a9-861e-9a62e6e14b05': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "mistralai/mistral-large-2-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 322,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '7fadd4de-e22a-48e4-90e9-f02ef14a74b9': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "mistralai/mistral-large-2407",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1439,
+    "sample": "Hello! How can"
+  },
+  {
+    "modelName": "nv-mistralai/mistral-nemo-12b-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 199,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'f8c05193-d2e2-4f0f-bb4d-7ad70070002b': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "nvidia/mistral-nemo-minitron-8b-8k-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 202,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '5aa06dd2-0a02-4a5d-be4c-bf88e956965d': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "mistralai/mistral-nemotron",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 0,
+    "latencyMs": 30012,
+    "error": "timeout 30000ms mistralai/mistral-nemotron"
+  },
+  {
+    "modelName": "mistralai/codestral-2508",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 307,
+    "sample": "The `ping`"
+  },
+  {
+    "modelName": "mistralai/codestral-2508:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 33,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "mistralai/devstral-2512",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 470,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "mistralai/ministral-14b-2512",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 266,
+    "sample": "Ping is a"
+  },
+  {
+    "modelName": "mistralai/ministral-3b-2512",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 273,
+    "sample": "It looks like you"
+  },
+  {
+    "modelName": "mistralai/ministral-8b-2512",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 256,
+    "sample": "**Ping**"
+  },
+  {
+    "modelName": "mistralai/ministral-8b-2512:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 104,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "mistralai/mistral-large-2512",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 347,
+    "sample": "Hello! How can"
+  },
+  {
+    "modelName": "mistralai/mistral-large-2512:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 36,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "mistralai/mistral-medium-3",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 269,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "mistralai/mistral-medium-3.1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 249,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "mistralai/mistral-medium-3.1:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 34,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "mistralai/mistral-medium-3-5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 649,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "mistralai/mistral-medium-3-5:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 31,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "mistralai/mistral-nemo",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 3481,
+    "sample": "Hello! How can"
+  },
+  {
+    "modelName": "mistralai/mistral-small-24b-instruct-2501",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 235,
+    "sample": "Ping is a"
+  },
+  {
+    "modelName": "mistralai/mistral-small-3.1-24b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 175,
+    "sample": "The `ping`"
+  },
+  {
+    "modelName": "mistralai/mistral-small-3.2-24b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 431,
+    "sample": "The `ping`"
+  },
+  {
+    "modelName": "mistralai/mistral-small-2603",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 282,
+    "sample": "Ping is a"
+  },
+  {
+    "modelName": "mistralai/mistral-small-2603:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 32,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "mistralai/mixtral-8x22b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 304,
+    "sample": "Ping is a"
+  },
+  {
+    "modelName": "mistralai/mistral-saba",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 272,
+    "sample": "Ping is a"
+  },
+  {
+    "modelName": "mistralai/voxtral-small-24b-2507",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 406,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\\"object\\\":\\\"error\\\",\\\"message\\\":\\\"top_p must be 1 when using greedy sampling.\\\",\\\"type\\\":\\\"invalid_request_greedy_sampling\\\",\\\"param\\\":null,\\\"code\\\":\\\"3054\\\",\\\"raw_status_c"
+  },
+  {
+    "modelName": "mistralai/mixtral-8x22b-v0.1",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 332,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '39655fc1-9ebc-4b24-963e-6915ea6680de': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "~moonshotai/kimi-latest",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 802,
+    "sample": ""
+  },
+  {
+    "modelName": "moonshotai/kimi-k2",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 970,
+    "sample": "Pong! "
+  },
+  {
+    "modelName": "moonshotai/kimi-k2-0905",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 781,
+    "sample": "Pong! "
+  },
+  {
+    "modelName": "moonshotai/kimi-k2-thinking",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 708,
+    "sample": "Pong! I'm"
+  },
+  {
+    "modelName": "moonshotai/kimi-k2.5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 620,
+    "sample": "Pong! I'm"
+  },
+  {
+    "modelName": "moonshotai/kimi-k2.6",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1158,
+    "sample": ""
+  },
+  {
+    "modelName": "moonshotai/kimi-k2.7-code",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 661,
+    "sample": ""
+  },
+  {
+    "modelName": "moonshotai/kimi-k3",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 778,
+    "sample": ""
+  },
+  {
+    "modelName": "moonshotai/kimi-k3:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 32,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "morph/morph-v3-fast",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 429,
+    "sample": "ping"
+  },
+  {
+    "modelName": "morph/morph-v3-large",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 25030,
+    "sample": "ping"
+  },
+  {
+    "modelName": "gryphe/mythomax-l2-13b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 188,
+    "sample": " Ping is a"
+  },
+  {
+    "modelName": "nvidia/nemotron-3-embed-1b",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 218,
+    "error": "404 page not found\n"
+  },
+  {
+    "modelName": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 503,
+    "latencyMs": 458,
+    "error": "{\"error\":{\"message\":\"ResourceExhausted: Worker local total request limit reached (16/16)\",\"type\":\"Service Unavailable\",\"code\":503}}"
+  },
+  {
+    "modelName": "nvidia/nemotron-3.5-lightning-30b-a3b",
+    "provider": "nvidia",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 2317,
+    "sample": "Here's a thinking"
+  },
+  {
+    "modelName": "nvidia/nemotron-4-340b-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 174,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'b0fcd392-e905-4ab4-8eb9-aeae95c30b37': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "nvidia/nemotron-4-340b-reward",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 300,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'c53ee0e9-bad9-4e09-b365-52c9d6b71254': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "nvidia/nemotron-nano-3-30b-a3b",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 163,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '2b2dcd47-c858-425a-9c04-4cacf2eac993': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "nvidia/nemotron-parse",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 140,
+    "error": "{\"object\":\"error\",\"message\":\"Content cannot be a plain string. The model does not support text input. Content cannot be a plain string. The model does not support text input.\",\"type\":\"BadRequestError\",\"param\":null,\"code\":400}"
+  },
+  {
+    "modelName": "nvidia/neva-22b",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 188,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'bc205f8e-1740-40df-8d32-c4321763498a': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "nex-agi/nex-n2.5-mini:free",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 462,
+    "sample": "pong"
+  },
+  {
+    "modelName": "nex-agi/nex-n2.5-pro:free",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 998,
+    "sample": "P"
+  },
+  {
+    "modelName": "nousresearch/hermes-3-llama-3.1-405b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 254,
+    "sample": "Pong! I"
+  },
+  {
+    "modelName": "nousresearch/hermes-3-llama-3.1-70b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 226,
+    "sample": "  the\n "
+  },
+  {
+    "modelName": "nousresearch/hermes-4-405b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 206,
+    "sample": "pong"
+  },
+  {
+    "modelName": "nvidia/nv-embedqa-mistral-7b-v2",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 79,
+    "error": "404 page not found\n"
+  },
+  {
+    "modelName": "nvidia/nvclip",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 82,
+    "error": "404 page not found\n"
+  },
+  {
+    "modelName": "nvidia/nemotron-3-nano-30b-a3b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 291,
+    "sample": ""
+  },
+  {
+    "modelName": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 325,
+    "sample": ""
+  },
+  {
+    "modelName": "nvidia/nemotron-3-super-120b-a12b",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 429,
+    "latencyMs": 245,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"nvidia/nemotron-3-super-120b-a12b is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settin"
+  },
+  {
+    "modelName": "nvidia/nemotron-3-super-120b-a12b:free",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 415,
+    "sample": "Okay, the user"
+  },
+  {
+    "modelName": "nvidia/nemotron-3-ultra-550b-a55b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 684,
+    "sample": ""
+  },
+  {
+    "modelName": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 6988,
+    "sample": "The user said \""
+  },
+  {
+    "modelName": "nvidia/nemotron-3.5-content-safety",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 232,
+    "sample": ""
+  },
+  {
+    "modelName": "nvidia/nemotron-3.5-content-safety:free",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 204,
+    "sample": ""
+  },
+  {
+    "modelName": "nvidia/nemotron-3.5-lightning",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 225,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "nvidia/nemotron-3.5-lightning:free",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 329,
+    "sample": "Here's a thinking"
+  },
+  {
+    "modelName": "~openai/gpt-latest",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 526,
+    "sample": "pong"
+  },
+  {
+    "modelName": "~openai/gpt-mini-latest",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 377,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-audio",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 454,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"This model requires that either input content or output modality contain audio.\\\",\\n    \\\"type\\\": \\\"invalid_request_error\\\",\\n    \\\"para"
+  },
+  {
+    "modelName": "openai/gpt-audio-mini",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 341,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"This model requires that either input content or output modality contain audio.\\\",\\n    \\\"type\\\": \\\"invalid_request_error\\\",\\n    \\\"para"
+  },
+  {
+    "modelName": "openai/gpt-chat-latest",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 586,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-3.5-turbo",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1472,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "openai/gpt-3.5-turbo:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 35,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-3.5-turbo-0613",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 930,
+    "sample": "pong! How can"
+  },
+  {
+    "modelName": "openai/gpt-3.5-turbo-16k",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1122,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "openai/gpt-3.5-turbo-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1491,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-4",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1390,
+    "sample": "Pong! How"
+  },
+  {
+    "modelName": "openai/gpt-4-turbo",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1191,
+    "sample": "Hello! How can"
+  },
+  {
+    "modelName": "openai/gpt-4-turbo:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 33,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-4-turbo-preview",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 219,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":404,\"metadata\":{\"raw\":\"{\\n    \\\"error\\\": {\\n        \\\"message\\\": \\\"The model `gpt-4-turbo-preview` does not exist or you do not have access to it.\\\",\\n        \\\"type\\\": \\\"invalid_request_error\\\",\\n"
+  },
+  {
+    "modelName": "openai/gpt-4.1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 372,
+    "sample": "Pong! 🏓\n\nHow can I assist you today?"
+  },
+  {
+    "modelName": "openai/gpt-4.1:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 36,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-4.1-mini",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 459,
+    "sample": "pong! How can I assist you today?"
+  },
+  {
+    "modelName": "openai/gpt-4.1-mini:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 31,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-4.1-nano",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 372,
+    "sample": "Hello! How can I assist you today?"
+  },
+  {
+    "modelName": "openai/gpt-4.1-nano:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 38,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-4o-2024-05-13",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 514,
+    "sample": "Hello! How can"
+  },
+  {
+    "modelName": "openai/gpt-4o-2024-08-06",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 951,
+    "sample": "Pong! How"
+  },
+  {
+    "modelName": "openai/gpt-4o-2024-11-20",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 529,
+    "sample": "Pong! How"
+  },
+  {
+    "modelName": "openai/gpt-4o:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 48,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-4o-mini-2024-07-18",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 594,
+    "sample": "Pong! How"
+  },
+  {
+    "modelName": "openai/gpt-4o-mini:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 39,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 396,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/gpt-5:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 38,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5-image",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 383,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Unsupported parameter: 'temperature' is not supported with this model.\\\",\\n    \\\"type\\\": \\\"invalid_request_error\\\",\\n    \\\"param\\\": \\\"te"
+  },
+  {
+    "modelName": "openai/gpt-5-image-mini",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 379,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Unsupported parameter: 'temperature' is not supported with this model.\\\",\\n    \\\"type\\\": \\\"invalid_request_error\\\",\\n    \\\"param\\\": \\\"te"
+  },
+  {
+    "modelName": "openai/gpt-5-mini",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 459,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/gpt-5-mini:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 36,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5-nano",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 602,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/gpt-5-nano:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 34,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5-pro",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 488,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/gpt-5-pro:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 41,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5.1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 379,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-5.1:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 42,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5.1-codex",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 395,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-5.1-codex-max",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 427,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/gpt-5.1-codex-mini",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 456,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/gpt-5.2",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 460,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-5.2:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 38,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5.2-chat",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 35,
+    "error": "{\"error\":{\"message\":\"No endpoints found for openai/gpt-5.2-chat.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1},{\"step\":\"Add BYOK Endpoints\",\"endpoint_count\":0}]}},\"user_id\":\"user_31RwA9Wo4FV0tZsjKXc52qS2x4v"
+  },
+  {
+    "modelName": "openai/gpt-5.2-pro",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 721,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-5.2-pro:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 34,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5.2-codex",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 434,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/gpt-5.3-codex",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 512,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-5.4",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 622,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-5.4:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 36,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5.4-image-2",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 583,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-5.4-mini",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 373,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-5.4-mini:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 30,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5.4-nano",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 454,
+    "sample": "Pong ✅"
+  },
+  {
+    "modelName": "openai/gpt-5.4-nano:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 36,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5.4-pro",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 793,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-5.4-pro:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 31,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5.5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 528,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-5.5:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 33,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5.5-pro",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1979,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/gpt-5.5-pro:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 33,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5.6-luna",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 449,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-5.6-luna:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 37,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5.6-luna-pro",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 576,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-5.6-luna-pro:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 33,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5.6-sol",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 484,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-5.6-sol:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 36,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5.6-sol-pro",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 480,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-5.6-sol-pro:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 38,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5.6-terra",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 680,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-5.6-terra:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 33,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-5.6-terra-pro",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 438,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-5.6-terra-pro:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 31,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-6-astra",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 398,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-6-astra:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 35,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-6-astra-pro",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 414,
+    "sample": "pong"
+  },
+  {
+    "modelName": "openai/gpt-6-astra-pro:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 35,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-oss-120b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 331,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/gpt-oss-120b:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 35,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-oss-20b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 368,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/gpt-oss-20b:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 39,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/gpt-oss-safeguard-20b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 164,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/o1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 386,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/o1-pro",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 5949,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/o3",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 476,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/o3:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 31,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/o3-mini",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 397,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/o3-mini:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 32,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/o3-mini-high",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 376,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/o3-pro",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 387,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/o4-mini",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 542,
+    "sample": ""
+  },
+  {
+    "modelName": "openai/o4-mini:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 35,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "openai/o4-mini-high",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 527,
+    "sample": ""
+  },
+  {
+    "modelName": "openrouter/fusion",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 3670,
+    "sample": ""
+  },
+  {
+    "modelName": "writer/palmyra-creative-122b",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 344,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '00bdd0a7-e38f-4423-9007-c4d8730a3f78': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "writer/palmyra-fin-70b-32k",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 303,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '316490c6-f1ed-41f9-9da8-3fa9e885653b': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "writer/palmyra-med-70b",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 171,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'aab71274-5281-4941-b0b8-20f339d1fc7e': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "writer/palmyra-med-70b-32k",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 197,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'd6faa974-3591-49a4-963d-97221d074b2e': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "openrouter/pareto-code",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 3684,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "perceptron/perceptron-mk1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 825,
+    "sample": "P"
+  },
+  {
+    "modelName": "perplexity/sonar",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 196,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\\"error\\\":{\\\"message\\\":\\\"max_tokens must be at least 16\\\",\\\"type\\\":\\\"invalid_request\\\",\\\"code\\\":400,\\\"param\\\":\\\"max_tokens\\\"}}\\n\",\"provider_name\":\"Perplexity\",\"is_byok\":fals"
+  },
+  {
+    "modelName": "perplexity/sonar-deep-research",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 1172,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\\"error\\\":{\\\"message\\\":\\\"max_tokens must be at least 16 for sonar-deep-research.\\\",\\\"type\\\":\\\"invalid_parameter\\\",\\\"code\\\":400}}\",\"provider_name\":\"Perplexity\",\"is_byok\":fals"
+  },
+  {
+    "modelName": "perplexity/sonar-pro",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 181,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\\"error\\\":{\\\"message\\\":\\\"max_tokens must be at least 16\\\",\\\"type\\\":\\\"invalid_request\\\",\\\"code\\\":400,\\\"param\\\":\\\"max_tokens\\\"}}\\n\",\"provider_name\":\"Perplexity\",\"is_byok\":fals"
+  },
+  {
+    "modelName": "perplexity/sonar-pro-search",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 186,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\\"error\\\":{\\\"message\\\":\\\"max_tokens must be at least 16\\\",\\\"type\\\":\\\"invalid_request\\\",\\\"code\\\":400,\\\"param\\\":\\\"max_tokens\\\"}}\\n\",\"provider_name\":\"Perplexity\",\"is_byok\":fals"
+  },
+  {
+    "modelName": "perplexity/sonar-reasoning-pro",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 181,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\\"error\\\":{\\\"message\\\":\\\"max_tokens must be at least 16\\\",\\\"type\\\":\\\"invalid_request\\\",\\\"code\\\":400,\\\"param\\\":\\\"max_tokens\\\"}}\\n\",\"provider_name\":\"Perplexity\",\"is_byok\":fals"
+  },
+  {
+    "modelName": "microsoft/phi-3-vision-128k-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 165,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '20f2537e-8593-4eb9-ad40-60eee3bbaa55': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "microsoft/phi-3.5-moe-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 191,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'e6cab982-62f4-481e-9a7a-3dedb87dbd01': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "poolside/laguna-s-2.1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 352,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "poolside/laguna-s-2.1:free",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 835,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "poolside/laguna-xs-2.1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 458,
+    "sample": ""
+  },
+  {
+    "modelName": "poolside/laguna-xs-2.1:free",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 429,
+    "latencyMs": 204,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"poolside/laguna-xs-2.1:free is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/int"
+  },
+  {
+    "modelName": "qwen/qwen-plus-2025-07-28",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 567,
+    "sample": "pong! "
+  },
+  {
+    "modelName": "qwen/qwen-plus",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 596,
+    "sample": "Pong! "
+  },
+  {
+    "modelName": "qwen/qwen-2.5-7b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 941,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "qwen/qwen2.5-vl-72b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 606,
+    "sample": "Hello! How can"
+  },
+  {
+    "modelName": "qwen/qwen3-14b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 188,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3-235b-a22b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 597,
+    "sample": "I'm here"
+  },
+  {
+    "modelName": "qwen/qwen3-235b-a22b-2507",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 234,
+    "sample": "Hello! I'm"
+  },
+  {
+    "modelName": "qwen/qwen3-235b-a22b-thinking-2507",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 572,
+    "sample": "Hello! "
+  },
+  {
+    "modelName": "qwen/qwen3-30b-a3b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 533,
+    "sample": "Hello! How"
+  },
+  {
+    "modelName": "qwen/qwen3-30b-a3b-instruct-2507",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 461,
+    "sample": "Pong! "
+  },
+  {
+    "modelName": "qwen/qwen3-30b-a3b-thinking-2507",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 493,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "qwen/qwen3-32b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 258,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3-8b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 790,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "qwen/qwen3-coder-30b-a3b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 782,
+    "sample": "pong\n\nI'm"
+  },
+  {
+    "modelName": "qwen/qwen3-coder",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 533,
+    "sample": "Pong! \n\n"
+  },
+  {
+    "modelName": "qwen/qwen3-coder-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 924,
+    "sample": "pong\n\nI'm"
+  },
+  {
+    "modelName": "qwen/qwen3-coder-next",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1176,
+    "sample": "pong!"
+  },
+  {
+    "modelName": "qwen/qwen3-coder-plus",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 801,
+    "sample": "Pong! "
+  },
+  {
+    "modelName": "qwen/qwen3-max",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1004,
+    "sample": "Pong! "
+  },
+  {
+    "modelName": "qwen/qwen3-max-thinking",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 962,
+    "sample": "Pong! "
+  },
+  {
+    "modelName": "qwen/qwen3-next-80b-a3b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 547,
+    "sample": "Pong! "
+  },
+  {
+    "modelName": "qwen/qwen3-next-80b-a3b-thinking",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 614,
+    "sample": "Pong! "
+  },
+  {
+    "modelName": "qwen/qwen3-vl-235b-a22b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 646,
+    "sample": "pong 🎯"
+  },
+  {
+    "modelName": "qwen/qwen3-vl-235b-a22b-thinking",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 652,
+    "sample": "Hey! I"
+  },
+  {
+    "modelName": "qwen/qwen3-vl-30b-a3b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 243,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "qwen/qwen3-vl-30b-a3b-thinking",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1234,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "qwen/qwen3-vl-32b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 586,
+    "sample": "Hello! 😊"
+  },
+  {
+    "modelName": "qwen/qwen3-vl-8b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 439,
+    "sample": "It seems you’ve"
+  },
+  {
+    "modelName": "qwen/qwen3-vl-8b-thinking",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1386,
+    "sample": "It looks like"
+  },
+  {
+    "modelName": "qwen/qwen3.5-397b-a17b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 248,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3.5-plus-02-15",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 828,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3.5-plus-20260420",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 833,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3.5-122b-a10b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1288,
+    "sample": "Hello! 👋 I"
+  },
+  {
+    "modelName": "qwen/qwen3.5-27b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1028,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3.5-35b-a3b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 714,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3.5-9b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1194,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3.5-9b:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 39,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "qwen/qwen3.5-flash-02-23",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 771,
+    "sample": "Okay, the user"
+  },
+  {
+    "modelName": "qwen/qwen3.6-27b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 266,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3.6-35b-a3b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 820,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3.6-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 476,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3.6-max-preview",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 8810,
+    "sample": "Pong! "
+  },
+  {
+    "modelName": "qwen/qwen3.6-plus",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 835,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3.7-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 764,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3.7-max",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 993,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3.7-plus",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 827,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3.8-2.4t-a95b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1246,
+    "sample": "Pong! How can"
+  },
+  {
+    "modelName": "qwen/qwen3.8-2.4t-a95b:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 53,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "qwen/qwen3.8-27b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 2584,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3.8-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 4013,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen3.8-max-0902",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1203,
+    "sample": ""
+  },
+  {
+    "modelName": "qwen/qwen-2.5-72b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 554,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "qwen/qwen-2.5-coder-32b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 362,
+    "sample": "Pong! How"
+  },
+  {
+    "modelName": "google/recurrentgemma-2b",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 314,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '2f495340-a99f-4b4b-89bd-1beb003dd896': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "rekaai/reka-edge",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 392,
+    "sample": "Hello! How can"
+  },
+  {
+    "modelName": "rekaai/reka-flash-3",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 427,
+    "sample": ""
+  },
+  {
+    "modelName": "relace/relace-apply-3",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 55,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\\"error\\\":{\\\"message\\\":\\\"Expected <code>...</code> and <update>...</update> tags.\\\",\\\"type\\\":\\\"invalid_request_error\\\",\\\"param\\\":null,\\\"code\\\":null}}\",\"provider_name\":\"Relac"
+  },
+  {
+    "modelName": "relace/relace-search",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 975,
+    "sample": "pong\n\nI'm"
+  },
+  {
+    "modelName": "undi95/remm-slerp-l2-13b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1004,
+    "sample": " Ping is a"
+  },
+  {
+    "modelName": "nvidia/riva-translate-4b-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 191,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function 'f35337fa-b4dd-4996-bcba-5476ee01171d': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "nvidia/riva-translate-4b-instruct-v1.1",
+    "provider": "nvidia",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 271,
+    "sample": "ping"
+  },
+  {
+    "modelName": "nvidia/riva-translate-4b-instruct-v2",
+    "provider": "nvidia",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 280,
+    "sample": "ping"
+  },
+  {
+    "modelName": "sakana/fugu-ultra",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 400,
+    "latencyMs": 700,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":400,\"metadata\":{\"raw\":\"{\\\"error\\\":{\\\"message\\\":\\\"max_output_tokens must be greater than or equal to 16\\\",\\\"type\\\":\\\"invalid_request_error\\\",\\\"param\\\":\\\"max_output_tokens\\\",\\\"code\\\":null,\\\"request_i"
+  },
+  {
+    "modelName": "sakana/sakana-namazu",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 104,
+    "error": "{\"error\":{\"message\":\"0 endpoints out of 1 requested are available matching your guardrail restrictions and data policy. We removed them for the following reasons (an endpoint may have matched multiple reasons):\\nPaid model training violation (account"
+  },
+  {
+    "modelName": "sao10k/l3-lunaris-8b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 423,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "sao10k/l3.1-euryale-70b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 331,
+    "sample": "pong"
+  },
+  {
+    "modelName": "sao10k/l3.3-euryale-70b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1838,
+    "sample": "pong"
+  },
+  {
+    "modelName": "aisingapore/sea-lion-7b-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 261,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '02f84bf4-c1a1-489b-a9de-ac3e8dcdec14': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "x-ai/grok-4.20",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 299,
+    "sample": "**Pong!"
+  },
+  {
+    "modelName": "x-ai/grok-4.20-multi-agent",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 303,
+    "sample": "pong\n\n\nThe team (Leo, Hans, Enrico) all "
+  },
+  {
+    "modelName": "x-ai/grok-4.3",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 431,
+    "sample": "Pong! "
+  },
+  {
+    "modelName": "x-ai/grok-4.3:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 34,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "x-ai/grok-4.5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 6927,
+    "sample": "pong\n\nHow can"
+  },
+  {
+    "modelName": "x-ai/grok-4.6",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 320,
+    "sample": "Pong! How"
+  },
+  {
+    "modelName": "x-ai/grok-build-0.1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 324,
+    "sample": "Pong! "
+  },
+  {
+    "modelName": "bigcode/starcoder2-15b",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 228,
+    "error": "404 page not found\n"
+  },
+  {
+    "modelName": "stepfun/step-3.5-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1130,
+    "sample": ""
+  },
+  {
+    "modelName": "stepfun/step-3.7-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 2734,
+    "sample": ""
+  },
+  {
+    "modelName": "tencent/hunyuan-a13b-instruct",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1185,
+    "sample": "The"
+  },
+  {
+    "modelName": "tencent/hy-mt2-1.8b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1231,
+    "sample": "I don't have"
+  },
+  {
+    "modelName": "tencent/hy-mt2-30b-a3b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 825,
+    "sample": "Pong."
+  },
+  {
+    "modelName": "tencent/hy-mt2-7b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 943,
+    "sample": "I see you typed"
+  },
+  {
+    "modelName": "tencent/hy3",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1361,
+    "sample": ""
+  },
+  {
+    "modelName": "tencent/hy3-preview",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1752,
+    "sample": ""
+  },
+  {
+    "modelName": "tencent/hy4-preview",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1221,
+    "sample": ""
+  },
+  {
+    "modelName": "thedrummer/cydonia-24b-v4.1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 463,
+    "sample": "Ping is a"
+  },
+  {
+    "modelName": "thedrummer/skyfall-36b-v2",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 399,
+    "sample": "It seems like you"
+  },
+  {
+    "modelName": "thedrummer/unslopnemo-12b",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 188,
+    "sample": " Hello! How can"
+  },
+  {
+    "modelName": "thinkingmachines/inkling",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 265,
+    "sample": ""
+  },
+  {
+    "modelName": "thinkingmachines/inkling:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 39,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "thinkingmachines/inkling:free",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 403,
+    "latencyMs": 36,
+    "error": "{\"error\":{\"message\":\"thinkingmachines/inkling:free is only available on agentic harnesses. Try plugging it into a coding agent or productivity app listed on https://openrouter.ai/apps\",\"code\":403,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoin"
+  },
+  {
+    "modelName": "thinkingmachines/inkling-small",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1077,
+    "sample": ""
+  },
+  {
+    "modelName": "thinkingmachines/inkling-small:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 42,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "thinkingmachines/inkling-small:free",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 403,
+    "latencyMs": 41,
+    "error": "{\"error\":{\"message\":\"thinkingmachines/inkling-small:free is only available on agentic harnesses. Try plugging it into a coding agent or productivity app listed on https://openrouter.ai/apps\",\"code\":403,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial E"
+  },
+  {
+    "modelName": "upstage/solar-pro-3",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 2052,
+    "sample": "Pong!"
+  },
+  {
+    "modelName": "upstage/solar-pro4",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1370,
+    "sample": "Hello! I'm"
+  },
+  {
+    "modelName": "cognitivecomputations/dolphin-mistral-24b-venice-edition",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 483,
+    "sample": "Ping is a"
+  },
+  {
+    "modelName": "nvidia/vila",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 369,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '1c8df143-2303-419b-8b28-b4dd82cfe113': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "microsoft/wizardlm-2-8x22b",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 429,
+    "latencyMs": 269,
+    "error": "{\"error\":{\"message\":\"Provider returned error\",\"code\":429,\"metadata\":{\"raw\":\"microsoft/wizardlm-2-8x22b is temporarily rate-limited upstream. Please retry shortly, or add your own key to accumulate your rate limits: https://openrouter.ai/settings/inte"
+  },
+  {
+    "modelName": "writer/palmyra-x5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 642,
+    "sample": "pong 🏓"
+  },
+  {
+    "modelName": "~x-ai/grok-latest",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 249,
+    "sample": "Pong. What's"
+  },
+  {
+    "modelName": "xiaomi/mimo-v2.5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 3073,
+    "sample": ""
+  },
+  {
+    "modelName": "xiaomi/mimo-v2.5-pro",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1955,
+    "sample": ""
+  },
+  {
+    "modelName": "01-ai/yi-large",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 182,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '23bd454d-b225-49a3-8118-582a62fc51b8': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  },
+  {
+    "modelName": "z-ai/glm-4.5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 7580,
+    "sample": "Pong! How can I help you today?"
+  },
+  {
+    "modelName": "z-ai/glm-4.5-air",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1282,
+    "sample": "Here's a simulated `ping"
+  },
+  {
+    "modelName": "z-ai/glm-4.5v",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1103,
+    "sample": ""
+  },
+  {
+    "modelName": "z-ai/glm-4.6",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 1039,
+    "sample": "Pong! How can I help you today?"
+  },
+  {
+    "modelName": "z-ai/glm-4.6v",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 835,
+    "sample": ""
+  },
+  {
+    "modelName": "z-ai/glm-4.7",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 906,
+    "sample": ""
+  },
+  {
+    "modelName": "z-ai/glm-4.7-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 694,
+    "sample": ""
+  },
+  {
+    "modelName": "z-ai/glm-5",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 4181,
+    "sample": ""
+  },
+  {
+    "modelName": "z-ai/glm-5-turbo",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 3660,
+    "sample": ""
+  },
+  {
+    "modelName": "z-ai/glm-5.1",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 247,
+    "sample": ""
+  },
+  {
+    "modelName": "z-ai/glm-5.2",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 872,
+    "sample": ""
+  },
+  {
+    "modelName": "z-ai/glm-5.2:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 44,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "z-ai/glm-5.3",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 302,
+    "sample": ""
+  },
+  {
+    "modelName": "z-ai/glm-5.3:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 40,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":1}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "z-ai/glm-5.3-flash",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 10228,
+    "sample": ""
+  },
+  {
+    "modelName": "z-ai/glm-5.3-flash:batch",
+    "provider": "openrouter",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 42,
+    "error": "{\"error\":{\"message\":\"This model is only available through the Batch API. Use the /api/beta/batches endpoint instead.\",\"code\":404,\"metadata\":{\"routing_funnel\":[{\"step\":\"Initial Endpoints\",\"endpoint_count\":2}],\"failed_routing_step\":\"Filter Batch-Only E"
+  },
+  {
+    "modelName": "z-ai/glm-5v-turbo",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 960,
+    "sample": ""
+  },
+  {
+    "modelName": "~z-ai/glm-flash-latest",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 6971,
+    "sample": ""
+  },
+  {
+    "modelName": "~z-ai/glm-latest",
+    "provider": "openrouter",
+    "ok": true,
+    "status": 200,
+    "latencyMs": 362,
+    "sample": "pong"
+  },
+  {
+    "modelName": "zyphra/zamba2-7b-instruct",
+    "provider": "nvidia",
+    "ok": false,
+    "status": 404,
+    "latencyMs": 345,
+    "error": "{\"status\":404,\"title\":\"Not Found\",\"detail\":\"Function '8378ffb2-51b0-4140-9684-dda1889373e6': Not found for account 'GfuvsBYPt4HUT721PWqS0UPxGqkOsfCPzedWNbC8nt8'\"}"
+  }
+]
