@@ -1,6 +1,11 @@
 import type { FastifyInstance } from 'fastify';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../../db/prisma.js';
+import { deriveCreator } from '../../providers/creatorMap.js';
+
+const MARKUP = 1.95;
+const DISCOUNT_PERCENT = 45;
+const LIST_MULTIPLIER = MARKUP / (1 - DISCOUNT_PERCENT / 100); // 1.95 / 0.55
 
 export async function publicModelRoutes(app: FastifyInstance): Promise<void> {
   // OpenAI-compatible /v1/models endpoint — no auth required, matches OpenAI SDK expectations.
@@ -41,7 +46,7 @@ export async function publicModelRoutes(app: FastifyInstance): Promise<void> {
 
     if (q.provider) {
       const provider = await prisma.provider.findUnique({ where: { name: q.provider } });
-      if (!provider) return reply.send({ models: [], total: 0, page, limit });
+      if (!provider) return reply.send({ models: [], total: 0, creatorCount: 0, page, limit });
       where.providerId = provider.id;
     }
     if (q.tag) where.capabilityTags = { has: q.tag };
@@ -52,7 +57,7 @@ export async function publicModelRoutes(app: FastifyInstance): Promise<void> {
       ];
     }
 
-    const [total, models] = await Promise.all([
+    const [total, models, allNames] = await Promise.all([
       prisma.model.count({ where }),
       prisma.model.findMany({
         where,
@@ -61,24 +66,52 @@ export async function publicModelRoutes(app: FastifyInstance): Promise<void> {
         skip: (page - 1) * limit,
         take: limit,
       }),
+      prisma.model.findMany({
+        where,
+        select: { modelName: true, upstreamMetadata: true, provider: { select: { displayName: true } } },
+      }),
     ]);
 
+    const brandSet = new Set<string>();
+    for (const n of allNames) {
+      const { brand } = deriveCreator(n.modelName, n.upstreamMetadata, n.provider.displayName);
+      brandSet.add(brand);
+    }
+
     reply.send({
-      models: models.map((m) => ({
-        id: m.id,
-        modelName: m.modelName,
-        displayName: m.displayName,
-        description: m.description,
-        logoUrl: m.logoUrl,
-        provider: m.provider.name,
-        providerDisplayName: m.provider.displayName,
-        contextWindow: m.contextWindow,
-        inputPricePer1k: Number(m.inputCostPer1k),
-        outputPricePer1k: Number(m.outputCostPer1k),
-        tags: m.capabilityTags,
-        isFree: Number(m.inputCostPer1k) === 0 && Number(m.outputCostPer1k) === 0,
-      })),
+      models: models.map((m) => {
+        const { brand, displayName: creatorDisplayName } = deriveCreator(
+          m.modelName,
+          m.upstreamMetadata,
+          m.provider.displayName,
+        );
+        const inCost = Number(m.inputCostPer1k);
+        const outCost = Number(m.outputCostPer1k);
+        const isFree = inCost === 0 && outCost === 0;
+        return {
+          id: m.id,
+          modelName: m.modelName,
+          displayName: m.displayName,
+          description: m.description,
+          logoUrl: m.logoUrl,
+          provider: m.provider.name,
+          providerDisplayName: m.provider.displayName,
+          creatorBrand: brand,
+          creatorDisplayName,
+          contextWindow: m.contextWindow,
+          inputPricePer1k: inCost,
+          outputPricePer1k: outCost,
+          listInputPricePer1k: isFree ? 0 : inCost * LIST_MULTIPLIER,
+          listOutputPricePer1k: isFree ? 0 : outCost * LIST_MULTIPLIER,
+          discountedInputPricePer1k: isFree ? 0 : inCost * MARKUP,
+          discountedOutputPricePer1k: isFree ? 0 : outCost * MARKUP,
+          discountPercent: isFree ? 0 : DISCOUNT_PERCENT,
+          tags: m.capabilityTags,
+          isFree,
+        };
+      }),
       total,
+      creatorCount: brandSet.size,
       page,
       limit,
     });

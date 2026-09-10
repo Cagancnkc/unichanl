@@ -544,20 +544,19 @@ LOADERS.overview=async function(){
 
 /* ---------- MODELS ---------- */
 LOADERS.models=async function(){
-  const LOBE='https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/dark';
+  const LOBE='https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/color';
   const FAV={
-    claude:'https://logo.clearbit.com/anthropic.com',
+    anthropic:'https://logo.clearbit.com/anthropic.com',
     openai:'https://logo.clearbit.com/openai.com',
     meta:'https://logo.clearbit.com/meta.com',
     mistral:'https://logo.clearbit.com/mistral.ai',
     deepseek:'https://logo.clearbit.com/deepseek.com',
     qwen:'https://logo.clearbit.com/qwenlm.github.io',
     nvidia:'https://logo.clearbit.com/nvidia.com',
-    gemini:'https://logo.clearbit.com/deepmind.google',
+    google:'https://logo.clearbit.com/deepmind.google',
     xai:'https://logo.clearbit.com/x.ai',
     cohere:'https://logo.clearbit.com/cohere.com',
     perplexity:'https://logo.clearbit.com/perplexity.ai',
-    google:'https://logo.clearbit.com/deepmind.google',
     microsoft:'https://logo.clearbit.com/microsoft.com',
     moonshot:'https://logo.clearbit.com/moonshot.cn',
     '01ai':'https://logo.clearbit.com/01.ai',
@@ -569,9 +568,11 @@ LOADERS.models=async function(){
     baidu:'https://logo.clearbit.com/baidu.com',
     zhipu:'https://logo.clearbit.com/zhipuai.cn'
   };
-  function getBrand(modelId){
+  // LobeHub icon-slug map (some brand keys differ from the icon file names).
+  const LOBE_SLUG={anthropic:'claude',openai:'openai',meta:'meta',mistral:'mistral',deepseek:'deepseek',qwen:'qwen',nvidia:'nvidia',google:'gemini',xai:'xai',cohere:'cohere',perplexity:'perplexity',microsoft:'microsoft',moonshot:'moonshot','01ai':'01ai',groq:'groq',ai21:'ai21',stability:'stability',databricks:'databricks',amazon:'amazon',baidu:'baidu',zhipu:'zhipu'};
+  function getBrandFromId(modelId){
     const id=String(modelId||'').toLowerCase();
-    if(id.includes('claude')||id.startsWith('anthropic/'))return'claude';
+    if(id.includes('claude')||id.startsWith('anthropic/'))return'anthropic';
     if(id.includes('gpt')||id.includes('openai/')||id.includes('/o1')||id.includes('/o3')||id.includes('/o4'))return'openai';
     if(id.includes('grok')||id.startsWith('x-ai/'))return'xai';
     if(id.includes('gemini')||id.includes('gemma')||id.startsWith('google/'))return'google';
@@ -594,42 +595,41 @@ LOADERS.models=async function(){
     if(id.includes('glm-')||id.startsWith('zhipu/')||id.startsWith('thudm/'))return'zhipu';
     return null;
   }
-  function getLogo(modelId){
-    const brand=getBrand(modelId);
-    if(!brand)return{primary:'',fallback:''};
-    return{primary:`${LOBE}/${brand}.png`,fallback:FAV[brand]||''};
+  function getLogo(brand,modelId){
+    const b=brand&&brand!=='other'?brand:getBrandFromId(modelId);
+    if(!b)return{primary:'',fallback:''};
+    const slug=LOBE_SLUG[b]||b;
+    return{primary:`${LOBE}/${slug}.png`,fallback:FAV[b]||''};
   }
   function placeholderSvg(modelId){
     const label=String(modelId||'?').replace(/^.+\//,'').charAt(0).toUpperCase();
     const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28"><rect width="28" height="28" rx="6" fill="#132023"/><text x="14" y="19" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="14" font-weight="600" fill="#657172">${label}</text></svg>`;
     return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg);
   }
-  function logoImg(modelId,size){
-    const {primary,fallback}=getLogo(modelId);
+  function logoImg(brand,modelId,size){
+    const {primary,fallback}=getLogo(brand,modelId);
     const s=size||24;
     const ph=placeholderSvg(modelId);
     if(!primary)return `<img src="${ph}" alt="" width="${s}" height="${s}" style="width:${s}px;height:${s}px;border-radius:6px;object-fit:contain">`;
     return `<img src="${esc(primary)}" alt="Logo" width="${s}" height="${s}" style="width:${s}px;height:${s}px;border-radius:6px;background:#0F1A1B;padding:3px;object-fit:contain" loading="lazy" data-fb="${esc(fallback)}" data-ph="${esc(ph)}" onerror="var s=this.dataset.step||'0';if(s==='0'&&this.dataset.fb){this.dataset.step='1';this.src=this.dataset.fb;}else{this.dataset.step='2';this.src=this.dataset.ph;this.onerror=null;}">`;
   }
   const el=$('#view-models');
-  const state={provider:'',tag:'',search:'',page:1,limit:50};
+  const state={creator:'',tag:'',search:''};
   el.innerHTML=`
     <div style="max-width:1180px;margin:0 auto">
       <div class="crumb">UNICHANL / KATALOG</div>
       <h1 class="h1">Modeller</h1>
-      <p class="sub">OpenRouter ve NVIDIA üzerinden 300+ model. Katalog upstream'den saatlik senkronize edilir.</p>
+      <p class="sub">Sistemdeki tüm modeller. Fiyatlar 1K token başınadır ve katalog upstream'den saatlik senkronize edilir.</p>
+      <div id="models-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:24px"></div>
       <div id="models-filters" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
         <input id="mf-search" class="inp" placeholder="Model ara (llama, claude, gpt…)" style="flex:1;min-width:220px;max-width:360px">
-        <select id="mf-provider" class="inp" style="width:auto;min-width:150px">
-          <option value="">Tüm sağlayıcılar</option>
-          <option value="openrouter">OpenRouter</option>
-          <option value="nvidia">NVIDIA</option>
+        <select id="mf-creator" class="inp" style="width:auto;min-width:180px">
+          <option value="">Tüm markalar</option>
         </select>
         <div id="mf-tags" style="display:flex;gap:6px;flex-wrap:wrap"></div>
       </div>
       <div class="card" style="overflow:hidden">
         <div id="models-body"><div class="empty">Yükleniyor…</div></div>
-        <div id="models-pager" style="padding:14px;text-align:center;border-top:1px solid #132023;display:none"></div>
       </div>
     </div>`;
 
@@ -637,49 +637,120 @@ LOADERS.models=async function(){
   const tagsEl=$('#mf-tags');
   tagsEl.innerHTML=TAGS.map(t=>`<button type="button" class="pill mut" data-tag="${t}" style="cursor:pointer;background:transparent;border:1px solid #1C2A2D">${t}</button>`).join('');
 
-  async function fetchModels(){
+  const statsEl=$('#models-stats');
+  const body=$('#models-body');
+  let allModels=[];
+  let totalCount=0;
+  let creatorCount=0;
+  let loadError=false;
+
+  async function fetchPage(page,limit){
     const params=new URLSearchParams();
-    if(state.provider)params.set('provider',state.provider);
     if(state.tag)params.set('tag',state.tag);
     if(state.search)params.set('search',state.search);
-    params.set('page',String(state.page));
-    params.set('limit',String(state.limit));
+    params.set('page',String(page));
+    params.set('limit',String(limit));
     const r=await fetch('/api/public/models?'+params.toString());
     if(!r.ok)throw new Error('HTTP '+r.status);
     return await r.json();
   }
 
-  const body=$('#models-body');
-  const pager=$('#models-pager');
-  let models=[];
-  let totalCount=0;
-  let loadError=false;
+  async function fetchAll(){
+    const LIMIT=200;
+    const first=await fetchPage(1,LIMIT);
+    let items=first?.models||[];
+    const total=first?.total||0;
+    creatorCount=first?.creatorCount||0;
+    const pages=Math.ceil(total/LIMIT);
+    if(pages>1){
+      const rest=await Promise.all(
+        Array.from({length:pages-1},(_,i)=>fetchPage(i+2,LIMIT).then(r=>r?.models||[]).catch(()=>[]))
+      );
+      for(const chunk of rest)items=items.concat(chunk);
+    }
+    return {items,total};
+  }
+
   try{
-    const initial=await fetchModels();
-    models=initial?.models||[];
-    totalCount=initial?.total||0;
+    const {items,total}=await fetchAll();
+    allModels=items;
+    totalCount=total;
   }catch(err){
     loadError=true;
   }
 
+  function renderStats(){
+    statsEl.innerHTML=[
+      statCard('MEVCUT MODEL',fmtInt(totalCount),'tümü senkronize'),
+      statCard('MODEL MARKASI',fmtInt(creatorCount),'benzersiz üretici'),
+      statCard('İNDİRİM','-%45','her modelde')
+    ].join('');
+  }
+
+  function populateCreatorDropdown(){
+    const sel=$('#mf-creator');
+    const seen=new Map();
+    for(const m of allModels){
+      const b=m.creatorBrand||'other';
+      if(!seen.has(b))seen.set(b,m.creatorDisplayName||b);
+    }
+    const opts=[...seen.entries()].sort((a,b)=>a[1].localeCompare(b[1]));
+    const cur=state.creator;
+    sel.innerHTML='<option value="">Tüm markalar</option>'+
+      opts.map(([k,v])=>`<option value="${esc(k)}"${k===cur?' selected':''}>${esc(v)}</option>`).join('');
+  }
+
+  function filtered(){
+    return allModels.filter(m=>{
+      if(state.creator && (m.creatorBrand||'other')!==state.creator)return false;
+      if(state.tag && !(m.tags||[]).includes(state.tag))return false;
+      if(state.search){
+        const q=state.search.toLowerCase();
+        const a=(m.modelName||'').toLowerCase();
+        const b=(m.displayName||'').toLowerCase();
+        if(!a.includes(q)&&!b.includes(q))return false;
+      }
+      return true;
+    });
+  }
+
+  function priceCell(list,discounted,isFree){
+    if(isFree)return `<div class="mono" style="text-align:right"><span style="color:#4ADE80">FREE</span></div>`;
+    return `<div style="text-align:right;line-height:1.2">
+      <div class="mono" style="font-size:11px;color:#657172;text-decoration:line-through">${fmtUsd(list)}</div>
+      <div class="mono" style="font-size:13px;color:#F2F5F4;font-weight:600">${fmtUsd(discounted)}</div>
+    </div>`;
+  }
+
   function updateBody(){
-    if(loadError){body.innerHTML='<div class="empty">Katalog yüklenemedi, birazdan tekrar dene.</div>';pager.style.display='none';return;}
-    if(!models.length){body.innerHTML='<div class="empty">Filtreye uyan model yok.</div>';pager.style.display='none';return;}
+    if(loadError){body.innerHTML='<div class="empty">Katalog yüklenemedi, birazdan tekrar dene.</div>';return;}
+    if(!allModels.length){body.innerHTML='<div class="empty">Henüz model yok.</div>';return;}
+    const rows=filtered();
+    if(!rows.length){body.innerHTML='<div class="empty">Filtreye uyan model yok.</div>';return;}
     body.innerHTML=`
       <div style="padding:1.1rem 1.25rem 0.75rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap">
         <div>
           <h2 style="margin:0;color:#F2F5F4;font-size:1.15rem;font-weight:600;letter-spacing:-0.01em">Katalog</h2>
-          <p style="margin:0.25rem 0 0 0;color:#657172;font-size:0.82rem">Fiyatlar 1K token başınadır. Katalog upstream'den saatlik senkronize edilir.</p>
+          <p style="margin:0.25rem 0 0 0;color:#657172;font-size:0.82rem">Üstü çizili fiyat = pazar liste fiyatı. Kalın fiyat = %45 indirimli fiyatınız.</p>
         </div>
-        <span class="mono" style="font-size:0.75rem;color:#657172">${models.length} / ${totalCount} model</span>
+        <span class="mono" style="font-size:0.75rem;color:#657172">${fmtInt(rows.length)} / ${fmtInt(totalCount)} model</span>
       </div>
       <table class="tbl">
-      <thead><tr><th>MODEL</th><th>SAĞLAYICI</th><th style="text-align:right">GİRDİ /1K</th><th style="text-align:right">ÇIKTI /1K</th><th style="text-align:right">CONTEXT</th></tr></thead>
-      <tbody>${models.map(m=>{
-        const inPrice=m.inputPricePer1k||0;
-        const outPrice=m.outputPricePer1k||0;
+      <thead><tr>
+        <th>MODEL</th>
+        <th>İNDİRİM</th>
+        <th style="text-align:right">GİRDİ /1K</th>
+        <th style="text-align:right">ÇIKTI /1K</th>
+        <th style="text-align:right">CONTEXT</th>
+        <th>MARKA</th>
+      </tr></thead>
+      <tbody>${rows.map(m=>{
         const modelIdent=m.modelName||m.id;
-        const logoHtml=m.logoUrl?`<img src="${esc(m.logoUrl)}" alt="" width="28" height="28" style="width:28px;height:28px;border-radius:6px;background:#0F1A1B;padding:3px;object-fit:contain" loading="lazy" data-fb="${esc(logoImg(modelIdent,28))}" onerror="this.outerHTML=this.dataset.fb">`:logoImg(modelIdent,28);
+        const brand=m.creatorBrand||'other';
+        const logoHtml=logoImg(brand,modelIdent,28);
+        const discountPill=m.isFree
+          ?''
+          :`<span class="pill" style="background:rgba(239,68,68,.12);color:#F87171;border:1px solid rgba(239,68,68,.28)">-${m.discountPercent||45}%</span>`;
         return `<tr>
           <td><div style="display:flex;align-items:center;gap:0.75rem">
             ${logoHtml}
@@ -688,49 +759,29 @@ LOADERS.models=async function(){
               <span class="mono" style="font-size:11px;color:#657172">${esc(modelIdent)}</span>
             </div>
           </div></td>
-          <td class="mono" style="font-size:12px;color:#98A3A3">${esc(m.providerDisplayName||m.provider||'—')}</td>
-          <td class="mono" style="text-align:right;color:#C7CFCE">${m.isFree?'<span style="color:#4ADE80">FREE</span>':fmtUsd(inPrice)}</td>
-          <td class="mono" style="text-align:right;color:#C7CFCE">${m.isFree?'<span style="color:#4ADE80">FREE</span>':fmtUsd(outPrice)}</td>
+          <td>${discountPill}</td>
+          <td>${priceCell(m.listInputPricePer1k||0,m.discountedInputPricePer1k||0,m.isFree)}</td>
+          <td>${priceCell(m.listOutputPricePer1k||0,m.discountedOutputPricePer1k||0,m.isFree)}</td>
           <td class="mono" style="text-align:right;color:#98A3A3">${m.contextWindow?fmtInt(m.contextWindow):'—'}</td>
+          <td class="mono" style="font-size:12px;color:#C7CFCE">${esc(m.creatorDisplayName||'—')}</td>
         </tr>`;
       }).join('')}</tbody></table>`;
-
-    const hasMore=state.page*state.limit<totalCount;
-    if(hasMore){
-      pager.style.display='block';
-      pager.innerHTML=`<button type="button" class="btn ghost sm" id="mf-loadmore">Daha fazla yükle (${totalCount-state.page*state.limit} kaldı)</button>`;
-      $('#mf-loadmore').addEventListener('click',async()=>{
-        state.page++;
-        try{
-          const more=await fetchModels();
-          models=models.concat(more?.models||[]);
-        }catch(err){toast('Sayfa yüklenemedi','error');state.page--;return;}
-        updateBody();
-      });
-    }else{pager.style.display='none';}
   }
 
-  async function refresh(){
-    loadError=false;
-    try{
-      const d=await fetchModels();
-      models=d?.models||[];totalCount=d?.total||0;
-    }catch(err){loadError=true;models=[];totalCount=0;}
-    updateBody();
-  }
+  renderStats();
+  populateCreatorDropdown();
 
   let searchTimer=null;
   $('#mf-search').addEventListener('input',e=>{
     clearTimeout(searchTimer);
     searchTimer=setTimeout(()=>{
       state.search=e.target.value.trim();
-      state.page=1;
-      refresh();
-    },250);
+      updateBody();
+    },200);
   });
-  $('#mf-provider').addEventListener('change',e=>{
-    state.provider=e.target.value;state.page=1;
-    refresh();
+  $('#mf-creator').addEventListener('change',e=>{
+    state.creator=e.target.value;
+    updateBody();
   });
   tagsEl.addEventListener('click',e=>{
     const btn=e.target.closest('[data-tag]');
@@ -742,8 +793,7 @@ LOADERS.models=async function(){
       tagsEl.querySelectorAll('[data-tag]').forEach(b=>{b.classList.remove('ok');b.classList.add('mut');});
       btn.classList.remove('mut');btn.classList.add('ok');
     }
-    state.page=1;
-    refresh();
+    updateBody();
   });
 
   updateBody();
