@@ -202,9 +202,6 @@ img,svg{max-width:100%}
       <button class="nav-btn" data-nav="models"><span class="bar"></span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2 3 7l9 5 9-5-9-5Z"/><path d="M3 12l9 5 9-5"/><path d="M3 17l9 5 9-5"/></svg>Modeller
       </button>
-      <button class="nav-btn" data-nav="providers"><span class="bar"></span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01"/></svg>Sağlayıcılar
-      </button>
       <button class="nav-btn" data-nav="routing"><span class="bar"></span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M6 8.5v3.5a4 4 0 0 0 4 4h5.5"/></svg>Yönlendirme
       </button>
@@ -313,7 +310,6 @@ img,svg{max-width:100%}
     <main class="uc-scroll" id="main" style="flex:1;overflow-y:auto;padding:34px 40px 60px">
       <div id="view-overview" class="view hidden"></div>
       <div id="view-models" class="view hidden"></div>
-      <div id="view-providers" class="view hidden"></div>
       <div id="view-routing" class="view hidden"></div>
       <div id="view-requests" class="view hidden"></div>
       <div id="view-usage" class="view hidden"></div>
@@ -394,7 +390,7 @@ function modal(html,{onClose,onMount}={}){
   return close;
 }
 
-const VIEWS=['overview','models','providers','routing','requests','usage','apikeys','settings','integrations','pricing'];
+const VIEWS=['overview','models','routing','requests','usage','apikeys','settings','integrations','pricing'];
 const POLAR_CHECKOUT_URL='https://buy.polar.sh/polar_cl_KPLbu6b1dABR2LXgvmEu2jeALNSSn5HnuujYD4BudFI';
 function buildPolarCheckoutUrl(amountUsd){
   const params=new URLSearchParams();
@@ -950,41 +946,6 @@ LOADERS.models=async function(){
   updateBody();
 };
 
-/* ---------- PROVIDERS ---------- */
-LOADERS.providers=async function(){
-  function relTime(iso){if(!iso)return'—';const s=Math.floor((Date.now()-new Date(iso))/1000);if(s<60)return`${s}s önce`;if(s<3600)return`${Math.floor(s/60)}dk önce`;return`${Math.floor(s/3600)}sa önce`;}
-  const el=$('#view-providers');
-  el.innerHTML=`
-    <div style="max-width:1180px;margin:0 auto">
-      <div class="crumb">UNICHANL / ALTYAPI</div>
-      <h1 class="h1">Sağlayıcılar</h1>
-      <p class="sub">Trafik yönlendirilen sağlayıcıların canlı durumu, gecikmesi ve hata oranı.</p>
-      <div id="prov-body"><div class="empty">Yükleniyor…</div></div>
-    </div>`;
-  const data=await api('/api/providers');
-  const providers=data?.providers||[];
-  const b=$('#prov-body');
-  if(!providers.length){b.innerHTML='<div class="empty">Kayıtlı sağlayıcı yok.</div>';return;}
-  b.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px">${providers.map(p=>{
-    const status=p.health?.status;
-    const pill=status==='healthy'?'<span class="pill ok">Sağlıklı</span>':status==='degraded'?'<span class="pill" style="background:#3a2e1a;color:#e5a84b;border:1px solid #5a4a2a">Düşük</span>':status==='error'?'<span class="pill err">Hata</span>':p.enabled?'<span class="pill" style="background:#2a3535;color:#8a9b9b">Bilinmiyor</span>':'<span class="pill err">Kapalı</span>';
-    return `<div class="card" style="padding:20px 22px">
-      <div class="row-split" style="margin-bottom:14px">
-        <div style="display:flex;flex-direction:column;gap:2px"><span style="font-weight:600;font-size:15px">${esc(p.displayName||p.name||p.id)}</span><span class="mono" style="font-size:11px;color:#657172">${esc(p.id||p.name||'—')}</span></div>
-        ${pill}
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px">
-        <div><div style="font:600 10px 'JetBrains Mono';color:#4C5758;letter-spacing:.1em;margin-bottom:4px">MODEL SAYISI</div><div class="mono" style="font-size:14px;color:#F2F5F4">${fmtInt(p.modelCount||0)}</div></div>
-        <div><div style="font:600 10px 'JetBrains Mono';color:#4C5758;letter-spacing:.1em;margin-bottom:4px">ORTALAMA GECİKME</div><div class="mono" style="font-size:14px;color:#F2F5F4">${p.health?.latencyMs?fmtInt(p.health.latencyMs)+' ms':'—'}</div></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px">
-        <div><div style="font:600 10px 'JetBrains Mono';color:#4C5758;letter-spacing:.1em;margin-bottom:4px">HATA ORANI</div><div class="mono" style="font-size:14px;color:#F2F5F4">${p.health?.errorRate!==null&&p.health?.errorRate!==undefined?(p.health.errorRate*100).toFixed(1)+'%':'—'}</div></div>
-        <div><div style="font:600 10px 'JetBrains Mono';color:#4C5758;letter-spacing:.1em;margin-bottom:4px">SON KONTROL</div><div class="mono" style="font-size:14px;color:#F2F5F4">${relTime(p.health?.checkedAt)}</div></div>
-      </div>
-      <div style="padding-top:12px;border-top:1px solid #2a3535"><div style="font-size:11px;color:#8a9b9b;word-break:break-all">${esc(p.baseUrl)}</div></div>
-    </div>`;
-  }).join('')}</div>`;
-};
 
 /* ---------- ROUTING ---------- */
 const RULE_STRATEGIES=[
