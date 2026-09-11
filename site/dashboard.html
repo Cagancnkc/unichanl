@@ -967,7 +967,7 @@ LOADERS.providers=async function(){
   if(!providers.length){b.innerHTML='<div class="empty">Kayıtlı sağlayıcı yok.</div>';return;}
   b.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px">${providers.map(p=>{
     const status=p.health?.status;
-    const pill=status==='healthy'?'<span class="pill ok">Sağlıklı</span>':status==='error'?'<span class="pill err">Hata</span>':p.enabled?'<span class="pill" style="background:#2a3535;color:#8a9b9b">Bilinmiyor</span>':'<span class="pill err">Kapalı</span>';
+    const pill=status==='healthy'?'<span class="pill ok">Sağlıklı</span>':status==='degraded'?'<span class="pill" style="background:#3a2e1a;color:#e5a84b;border:1px solid #5a4a2a">Düşük</span>':status==='error'?'<span class="pill err">Hata</span>':p.enabled?'<span class="pill" style="background:#2a3535;color:#8a9b9b">Bilinmiyor</span>':'<span class="pill err">Kapalı</span>';
     return `<div class="card" style="padding:20px 22px">
       <div class="row-split" style="margin-bottom:14px">
         <div style="display:flex;flex-direction:column;gap:2px"><span style="font-weight:600;font-size:15px">${esc(p.displayName||p.name||p.id)}</span><span class="mono" style="font-size:11px;color:#657172">${esc(p.id||p.name||'—')}</span></div>
