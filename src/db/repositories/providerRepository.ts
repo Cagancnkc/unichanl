@@ -18,12 +18,14 @@ export const providerRepository = {
     const providers = await this.listActive();
     return providers.map((p) => {
       const latest = p.providerHealth[0];
+      const _p = p as any;
       return {
         id: p.id,
         name: p.name,
         displayName: p.displayName,
         baseUrl: p.baseUrl,
         enabled: p.enabled,
+        modelCount: _p._count?.models || 0,
         health: latest
           ? {
               status: latest.status,

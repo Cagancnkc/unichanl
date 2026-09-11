@@ -952,6 +952,7 @@ LOADERS.models=async function(){
 
 /* ---------- PROVIDERS ---------- */
 LOADERS.providers=async function(){
+  function relTime(iso){if(!iso)return'—';const s=Math.floor((Date.now()-new Date(iso))/1000);if(s<60)return`${s}s önce`;if(s<3600)return`${Math.floor(s/60)}dk önce`;return`${Math.floor(s/3600)}sa önce`;}
   const el=$('#view-providers');
   el.innerHTML=`
     <div style="max-width:1180px;margin:0 auto">
@@ -965,17 +966,22 @@ LOADERS.providers=async function(){
   const b=$('#prov-body');
   if(!providers.length){b.innerHTML='<div class="empty">Kayıtlı sağlayıcı yok.</div>';return;}
   b.innerHTML=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px">${providers.map(p=>{
-    const isUp=p.enabled!==false;
-    const pill=isUp?'<span class="pill ok">Sağlıklı</span>':'<span class="pill err">Kapalı</span>';
+    const status=p.health?.status;
+    const pill=status==='healthy'?'<span class="pill ok">Sağlıklı</span>':status==='error'?'<span class="pill err">Hata</span>':p.enabled?'<span class="pill" style="background:#2a3535;color:#8a9b9b">Bilinmiyor</span>':'<span class="pill err">Kapalı</span>';
     return `<div class="card" style="padding:20px 22px">
       <div class="row-split" style="margin-bottom:14px">
         <div style="display:flex;flex-direction:column;gap:2px"><span style="font-weight:600;font-size:15px">${esc(p.displayName||p.name||p.id)}</span><span class="mono" style="font-size:11px;color:#657172">${esc(p.id||p.name||'—')}</span></div>
         ${pill}
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-        <div><div style="font:600 10px 'JetBrains Mono';color:#4C5758;letter-spacing:.1em;margin-bottom:4px">MODEL SAYISI</div><div class="mono" style="font-size:14px;color:#F2F5F4">${fmtInt(p.modelCount||p._count?.models||0)}</div></div>
-        <div><div style="font:600 10px 'JetBrains Mono';color:#4C5758;letter-spacing:.1em;margin-bottom:4px">ÖNCELİK</div><div class="mono" style="font-size:14px;color:#F2F5F4">${p.priority??'—'}</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px">
+        <div><div style="font:600 10px 'JetBrains Mono';color:#4C5758;letter-spacing:.1em;margin-bottom:4px">MODEL SAYISI</div><div class="mono" style="font-size:14px;color:#F2F5F4">${fmtInt(p.modelCount||0)}</div></div>
+        <div><div style="font:600 10px 'JetBrains Mono';color:#4C5758;letter-spacing:.1em;margin-bottom:4px">ORTALAMA GECİKME</div><div class="mono" style="font-size:14px;color:#F2F5F4">${p.health?.latencyMs?fmtInt(p.health.latencyMs)+' ms':'—'}</div></div>
       </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px">
+        <div><div style="font:600 10px 'JetBrains Mono';color:#4C5758;letter-spacing:.1em;margin-bottom:4px">HATA ORANI</div><div class="mono" style="font-size:14px;color:#F2F5F4">${p.health?.errorRate!==null&&p.health?.errorRate!==undefined?(p.health.errorRate*100).toFixed(1)+'%':'—'}</div></div>
+        <div><div style="font:600 10px 'JetBrains Mono';color:#4C5758;letter-spacing:.1em;margin-bottom:4px">SON KONTROL</div><div class="mono" style="font-size:14px;color:#F2F5F4">${relTime(p.health?.checkedAt)}</div></div>
+      </div>
+      <div style="padding-top:12px;border-top:1px solid #2a3535"><div style="font-size:11px;color:#8a9b9b;word-break:break-all">${esc(p.baseUrl)}</div></div>
     </div>`;
   }).join('')}</div>`;
 };
