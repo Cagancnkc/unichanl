@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard.html
+Disallow: /callback.html
+Disallow: /signup.html
+
+Sitemap: https://unichanl.com/sitemap.xml
