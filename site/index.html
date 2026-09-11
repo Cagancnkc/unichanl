@@ -195,9 +195,15 @@ window.ucWithUtm=function(u){var q=location.search;return q?u+(u.includes('?')?'
     <div id="uc-src-line" style="display:none;font:600 12px 'JetBrains Mono';letter-spacing:.12em;color:#DFFF00;margin:0 auto 18px;text-align:center"></div>
     <script>(function(){var s=(sessionStorage.getItem('uc_src'))||(window.ucUtm&&ucUtm().source)||'direct';var m={twitter:"Twitter'dan geldin — kur, 60 saniyede test et",reddit:"Reddit'ten geldin — kur, 60 saniyede test et",referral:"Hoş geldin — kurulum 60 saniye"};if(m[s]){var el=document.getElementById('uc-src-line');el.textContent=m[s];el.style.display='block'}if(window.ucTrack)ucTrack('landing_view',{source:s,page:location.pathname})})();</script>
     <div style="font:600 11px 'JetBrains Mono';letter-spacing:.18em;color:#657172;margin-bottom:26px">GELİŞTİRİCİ ALTYAPISI / MODEL YÖNLENDİRME</div>
-    <h1 style="font-family:'Newsreader',serif;font-weight:300;font-size:76px;line-height:1.05;letter-spacing:-.02em;margin:0 auto 26px;max-width:960px;text-wrap:balance">
-      Limitinin yenilenmesini bekleme.
+    <h1 style="font-family:'Newsreader',serif;font-weight:300;font-size:76px;line-height:1.05;letter-spacing:-.02em;margin:0 auto 26px;max-width:1040px;text-wrap:balance;display:flex;align-items:center;justify-content:center;gap:22px;flex-wrap:wrap">
+      <span>Tüm modellerde</span>
+      <span id="uc-provider-chip" style="display:inline-flex;align-items:center;gap:14px;padding:6px 22px 6px 18px;border-radius:60px;background:rgba(223,255,0,.10);border:1px solid rgba(223,255,0,.35)">
+        <img id="uc-provider-img" alt="" aria-hidden="true" style="width:44px;height:44px;object-fit:contain;transition:opacity .3s ease;opacity:1">
+        <span style="font-family:'Archivo',sans-serif;font-weight:700;font-size:64px;color:#DFFF00;letter-spacing:-.01em;line-height:1">%45</span>
+      </span>
+      <span>indirim</span>
     </h1>
+    <script>(function(){var logos=['openai','claude','gemini','mistral','grok','deepseek','perplexity','meta','qwen','cohere'];var el=document.getElementById('uc-provider-img');if(!el)return;var base='https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/';var i=0;el.src=base+logos[0]+'.png';setInterval(function(){el.style.opacity='0';setTimeout(function(){i=(i+1)%logos.length;el.src=base+logos[i]+'.png';el.style.opacity='1'},320)},2000)})();</script>
     <p style="font-size:17px;line-height:1.6;color:#98A3A3;margin:0 auto 30px;max-width:680px">Kod yazmayı hiç bırakmayın. Unichanl bilgisayarınızda çalışan yerel bir geçittir; sağlayıcı düştüğünde ya da limit dolduğunda isteği <span style="color:#F2F5F4;font-weight:600">saniyeler içinde başka bir modele yönlendirir</span> — siz tek satır bile değiştirmeden.</p>
     <div style="display:flex;gap:12px;align-items:center;justify-content:center;margin-bottom:20px;flex-wrap:wrap">
       <button class="uc-primary-cta" onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'hero',source:sessionStorage.uc_src||'direct'});location.href=(window.ucWithUtm?ucWithUtm('/signup.html'):'/signup.html')" style="height:46px;padding:0 24px;border-radius:32px;background:#F2F5F4;border:none;color:#03090B;font:600 14px 'Archivo';cursor:pointer;display:inline-flex;align-items:center;gap:8px">Ücretsiz başla — 60 sn <span style="font-size:16px;line-height:1">→</span></button>
