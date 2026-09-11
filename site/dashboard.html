@@ -266,9 +266,48 @@ img,svg{max-width:100%}
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
       </button>
       <div style="width:1px;height:24px;background:#1C2A2D;margin:0 2px"></div>
-      <button class="btn" id="hd-newkey">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Yeni anahtar
-      </button>
+
+      <!-- Credits Widget -->
+      <div id="credits-widget" style="position:relative">
+        <button id="credits-pill" style="display:flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:9px;background:#071114;border:1px solid #1C2A2D;color:#F2F5F4;font:500 13px 'Archivo',sans-serif;cursor:pointer;transition:border-color .15s,background-color .15s">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="#DFFF00" style="flex-shrink:0">
+            <circle cx="2" cy="2" r="1.5"/><circle cx="7" cy="2" r="1.5"/><circle cx="12" cy="2" r="1.5"/>
+            <circle cx="2" cy="7" r="1.5"/><circle cx="7" cy="7" r="1.5"/><circle cx="12" cy="7" r="1.5"/>
+            <circle cx="2" cy="12" r="1.5"/><circle cx="7" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/>
+          </svg>
+          <span style="color:#98A3A3;font-size:12px;white-space:nowrap">Credits:</span>
+          <span id="credits-pill-val" style="color:#DFFF00;font:600 13px 'JetBrains Mono',monospace;white-space:nowrap">$0.00</span>
+          <svg id="credits-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#657172" stroke-width="2.2" stroke-linecap="round" style="transition:transform .2s;flex-shrink:0;margin-left:2px"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+
+        <!-- Dropdown Panel -->
+        <div id="credits-drop" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:280px;background:#071114;border:1px solid #1C2A2D;border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.6);z-index:9999;overflow:hidden">
+          <!-- Header -->
+          <div style="padding:18px 18px 12px">
+            <div style="font:500 11px 'JetBrains Mono',monospace;color:#657172;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Mevcut bakiye</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <div id="credits-drop-val" style="font:700 28px 'JetBrains Mono',monospace;color:#F2F5F4">$0.00</div>
+              <span id="credits-status-badge" style="display:none;font:600 10px 'JetBrains Mono',monospace;color:#F87171;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:6px;padding:4px 8px;white-space:nowrap">Kredi yok</span>
+            </div>
+            <div id="credits-drop-sub" style="font:400 12px 'Archivo',sans-serif;color:#657172;margin-top:8px;line-height:1.4">Üretmeye devam etmek için kredi ekle.</div>
+          </div>
+
+          <!-- Divider -->
+          <div style="height:1px;background:#132023"></div>
+
+          <!-- Buttons -->
+          <div style="padding:14px 18px;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;gap:8px">
+              <button onclick="navigateTo('pricing');window.closeCredits()" style="flex:1;height:36px;border-radius:8px;background:#DFFF00;color:#03090B;font:600 13px 'Archivo',sans-serif;border:none;cursor:pointer;transition:opacity .15s" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Kredi Satın Al</button>
+              <button onclick="navigateTo('pricing');window.closeCredits()" style="flex:1;height:36px;border-radius:8px;background:transparent;color:#F2F5F4;font:600 13px 'Archivo',sans-serif;border:1px solid #1C2A2D;cursor:pointer;transition:border-color .15s,background-color .15s" onmouseover="this.style.background='rgba(223,255,0,.05)';this.style.borderColor='#DFFF00'" onmouseout="this.style.background='transparent';this.style.borderColor='#1C2A2D'">Kodu Kullan</button>
+            </div>
+            <button onclick="navigateTo('pricing');window.closeCredits()" style="width:100%;height:36px;border-radius:8px;background:transparent;color:#98A3A3;font:500 12px 'Archivo',sans-serif;border:1px solid #132023;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:border-color .15s,color .15s" onmouseover="this.style.borderColor='#1C2A2D';this.style.color='#B8C2C2'" onmouseout="this.style.borderColor='#132023';this.style.color='#98A3A3'">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>
+              Faturalandırmaya Git
+            </button>
+          </div>
+        </div>
+      </div>
     </header>
 
     <main class="uc-scroll" id="main" style="flex:1;overflow-y:auto;padding:34px 40px 60px">
@@ -402,7 +441,53 @@ document.addEventListener('click',e=>{
 });
 
 $('#hd-refresh').addEventListener('click',()=>{const n=(location.hash||'').replace(/^#\//,'')||'overview';showView(n);});
-$('#hd-newkey').addEventListener('click',()=>{navigateTo('apikeys');setTimeout(openCreateKeyModal,120);});
+
+/* Credits Widget */
+(function(){
+  const pill=$('#credits-pill');
+  const drop=$('#credits-drop');
+  const chevron=$('#credits-chevron');
+  let open=false;
+
+  window.closeCredits=()=>{
+    open=false;
+    drop.style.display='none';
+    chevron.style.transform='';
+    pill.style.borderColor='#1C2A2D';
+  };
+
+  pill.addEventListener('click',e=>{
+    e.stopPropagation();
+    open=!open;
+    drop.style.display=open?'block':'none';
+    chevron.style.transform=open?'rotate(180deg)':'';
+    pill.style.borderColor=open?'#DFFF00':'#1C2A2D';
+  });
+
+  document.addEventListener('click',e=>{
+    if(open&&!$('#credits-widget').contains(e.target))window.closeCredits();
+  });
+
+  pill.addEventListener('mouseenter',()=>{if(!open)pill.style.borderColor='#2E3F42';});
+  pill.addEventListener('mouseleave',()=>{if(!open)pill.style.borderColor='#1C2A2D';});
+})();
+
+/* Update Credits Pill */
+window.updateCreditsPill=(balanceUsd)=>{
+  const v=parseFloat(balanceUsd||0);
+  const fmt='$'+v.toFixed(2);
+  $('#credits-pill-val').textContent=fmt;
+  $('#credits-drop-val').textContent=fmt;
+  const badge=$('#credits-status-badge');
+  const sub=$('#credits-drop-sub');
+  if(v<=0){
+    badge.style.display='inline-block';
+    sub.textContent='Üretmeye devam etmek için kredi ekle.';
+  }else{
+    badge.style.display='none';
+    sub.textContent='Kredi bakiyeniz aktif.';
+  }
+};
 
 /* ============ VIEW LOADERS ============ */
 const LOADERS={};
@@ -491,6 +576,7 @@ LOADERS.overview=async function(){
   const successPct=recent.length?Math.round((successCount/recent.length)*1000)/10:null;
   const avgLat=usage?.analytics?.avgLatency||0;
   const balance=bal?.balanceUsd||'0';
+  window.updateCreditsPill(balance);
 
   stats.innerHTML=[
     statCard('İSTEK',fmtInt(totalReq),totalTok?fmtInt(totalTok)+' token':'son 30 gün'),
@@ -1495,6 +1581,7 @@ async function refreshPricing(){
     api('/api/billing/recharge-settings').catch(()=>null),
     api('/api/billing/subscription').catch(()=>null),
   ]);
+  window.updateCreditsPill(bal?.balanceUsd||0);
   $('#bal-val').textContent=fmtUsd(bal?.balanceUsd||0);
   $('#bal-sub').textContent=bal?'kullanıma hazır':'—';
   if(rc){
