@@ -178,9 +178,9 @@ img,svg{max-width:100%}
 <style>@keyframes ucskel{0%,100%{opacity:.55}50%{opacity:.85}}</style>
 <div style="display:flex;flex-direction:column;height:100vh;width:100%;overflow:hidden;background:#03090B">
 
-<div role="status" aria-label="3 ay boyunca sınırsız AI, 09.12.2026 tarihine kadar geçerlidir" style="flex:none;height:22px;display:flex;align-items:center;justify-content:center;gap:8px;background:#F2F5F4;color:#03090B;font:600 10px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase">
+<div role="status" aria-label="AI modellerinde %45'e varan indirim" style="flex:none;height:22px;display:flex;align-items:center;justify-content:center;gap:8px;background:#F2F5F4;color:#03090B;font:600 10px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase">
   <span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#03090B;animation:ucpulse 2s ease-in-out infinite"></span>
-  3 Ay Boyunca Sınırsız AI · 09.12.2026 Tarihine Kadar Geçerlidir
+  AI Modellerinde %45'e Varan İndirim
   <img class="ucbanner-logo" alt="" aria-hidden="true" style="width:14px;height:14px;object-fit:contain;transition:opacity .3s ease;opacity:1">
 </div>
 <script>(function(){var logos=['openai','claude','gemini','mistral','grok','deepseek','perplexity','meta','qwen','cohere'];var els=document.querySelectorAll('.ucbanner-logo');if(!els.length)return;var base='https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/';var i=0;els.forEach(function(el){el.src=base+logos[0]+'.png'});setInterval(function(){els.forEach(function(el){el.style.opacity='0'});setTimeout(function(){i=(i+1)%logos.length;els.forEach(function(el){el.src=base+logos[i]+'.png';el.style.opacity='1'})},320)},2000)})();</script>
@@ -781,7 +781,7 @@ LOADERS.models=async function(){
   }
 
   function priceCell(list,discounted,isFree){
-    if(isFree)return `<div style="text-align:right"><span class="pill" style="background:rgba(223,255,0,.12);color:#DFFF00;border:1px solid rgba(223,255,0,.32);white-space:nowrap">3 ay boyunca sınırsız</span></div>`;
+    if(isFree)return `<div style="text-align:right"><span class="pill" style="background:rgba(223,255,0,.12);color:#DFFF00;border:1px solid rgba(223,255,0,.32);white-space:nowrap">sınırsız</span></div>`;
     return `<div style="text-align:right;line-height:1.2">
       <div class="mono" style="font-size:11px;color:#657172;text-decoration:line-through">${fmtUsd(list)}</div>
       <div class="mono" style="font-size:13px;color:#F2F5F4;font-weight:600">${fmtUsd(discounted)}</div>
