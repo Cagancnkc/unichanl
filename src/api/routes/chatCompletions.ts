@@ -11,6 +11,7 @@ import { modelRepository } from '../../db/repositories/modelRepository.js';
 import { creditRepository } from '../../db/repositories/creditRepository.js';
 import { computeCost } from '../../local/costTracker.js';
 import { MARKUP_MULTIPLIER } from '../../config/pricing.js';
+import { withUserContext } from '../../db/withUser.js';
 
 const SSE_DONE = 'data: [DONE]\n\n';
 
@@ -55,7 +56,9 @@ export async function chatCompletionsRoutes(app: FastifyInstance): Promise<void>
     }
 
     if (authedUser) {
-      const balance = await creditRepository.getBalance(authedUser.id);
+      const balance = await withUserContext(authedUser.id, (tx) =>
+        creditRepository.getBalance(authedUser.id, tx),
+      );
       if (balance.lte(0)) {
         return reply.status(402).send({
           error: {
@@ -155,23 +158,28 @@ export async function chatCompletionsRoutes(app: FastifyInstance): Promise<void>
     if (authedUser) {
       const cost = computeCost(routed.chosen, routed.response.data.usage);
       const chargeUsd = cost.totalUsd * MARKUP_MULTIPLIER;
-      persistUsage({
-        requestId,
-        user: authedUser,
-        modelName: routed.chosen.id,
-        provider: routed.chosen.providerName,
-        usage: routed.response.data.usage,
-        totalCostUsd: cost.totalUsd,
-        latencyMs: routed.response.latencyMs,
-        strategy: routed.strategy,
-        wasFailover: routed.attempts.length > 1,
-        httpStatus: 200,
-      }).catch((err) => logger.warn({ requestId, err }, 'usage persistence failed'));
+      withUserContext(authedUser.id, (tx) =>
+        persistUsage(
+          {
+            requestId,
+            user: authedUser,
+            modelName: routed.chosen.id,
+            provider: routed.chosen.providerName,
+            usage: routed.response.data.usage,
+            totalCostUsd: cost.totalUsd,
+            latencyMs: routed.response.latencyMs,
+            strategy: routed.strategy,
+            wasFailover: routed.attempts.length > 1,
+            httpStatus: 200,
+          },
+          tx,
+        ),
+      ).catch((err) => logger.warn({ requestId, err }, 'usage persistence failed'));
 
       if (chargeUsd > 0) {
-        creditRepository
-          .debit(authedUser.id, chargeUsd, requestId)
-          .catch((err) => logger.warn({ requestId, err, userId: authedUser.id }, 'credit debit failed'));
+        withUserContext(authedUser.id, (tx) =>
+          creditRepository.debit(authedUser.id, chargeUsd, requestId, tx),
+        ).catch((err) => logger.warn({ requestId, err, userId: authedUser.id }, 'credit debit failed'));
       }
     }
 
@@ -192,21 +200,24 @@ interface PersistUsageInput {
   httpStatus: number;
 }
 
-async function persistUsage(input: PersistUsageInput): Promise<void> {
-  const model = await modelRepository.findByName(input.modelName);
+async function persistUsage(input: PersistUsageInput, tx?: any): Promise<void> {
+  const model = await modelRepository.findByName(input.modelName, tx);
   if (!model) return;
-  await usageRepository.record({
-    requestId: input.requestId,
-    userId: input.user.id,
-    apiKeyId: input.user.apiKeyId,
-    modelId: model.id,
-    provider: input.provider,
-    inputTokens: input.usage?.prompt_tokens ?? 0,
-    outputTokens: input.usage?.completion_tokens ?? 0,
-    totalCostUsd: input.totalCostUsd,
-    latencyMs: input.latencyMs,
-    routingStrategy: input.strategy,
-    wasFailover: input.wasFailover,
-    httpStatus: input.httpStatus,
-  });
+  await usageRepository.record(
+    {
+      requestId: input.requestId,
+      userId: input.user.id,
+      apiKeyId: input.user.apiKeyId,
+      modelId: model.id,
+      provider: input.provider,
+      inputTokens: input.usage?.prompt_tokens ?? 0,
+      outputTokens: input.usage?.completion_tokens ?? 0,
+      totalCostUsd: input.totalCostUsd,
+      latencyMs: input.latencyMs,
+      routingStrategy: input.strategy,
+      wasFailover: input.wasFailover,
+      httpStatus: input.httpStatus,
+    },
+    tx,
+  );
 }
