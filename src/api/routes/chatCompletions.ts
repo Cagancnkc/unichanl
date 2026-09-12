@@ -149,14 +149,18 @@ export async function chatCompletionsRoutes(app: FastifyInstance): Promise<void>
       .header('X-Routing-Reason', routed.reason)
       .header('X-Routing-Attempts', String(routed.attempts.length));
 
-    if (!routed.response.success || !routed.response.data) {
+    if (!routed.response.success) {
       const code = routed.response.error?.code ?? 'upstream_error';
       const status = code === 'rate_limited' ? 429 : code === 'timeout' ? 504 : 502;
       return sendError(reply, status, code, routed.response.error?.message ?? 'Upstream failure');
     }
 
+    if (!routed.response.data) {
+      return sendError(reply, 502, 'upstream_error', 'No response data from upstream');
+    }
+
     if (authedUser) {
-      const cost = computeCost(routed.chosen, routed.response.data.usage);
+      const cost = computeCost(routed.chosen, routed.response.data!.usage);
       const chargeUsd = cost.totalUsd * MARKUP_MULTIPLIER;
       withUserContext(authedUser.id, (tx) =>
         persistUsage(
@@ -165,7 +169,7 @@ export async function chatCompletionsRoutes(app: FastifyInstance): Promise<void>
             user: authedUser,
             modelName: routed.chosen.id,
             provider: routed.chosen.providerName,
-            usage: routed.response.data.usage,
+            usage: routed.response.data!.usage,
             totalCostUsd: cost.totalUsd,
             latencyMs: routed.response.latencyMs,
             strategy: routed.strategy,
@@ -183,7 +187,7 @@ export async function chatCompletionsRoutes(app: FastifyInstance): Promise<void>
       }
     }
 
-    return reply.status(200).send(routed.response.data);
+    return reply.status(200).send(routed.response.data!);
   });
 }
 
