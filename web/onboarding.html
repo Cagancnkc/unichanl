@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Unichanl — Kurulum</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --bg-2: #111113;
+    --fg: #ededed;
+    --fg-dim: #8a8a92;
+    --line: #1e1e22;
+    --line-2: #2a2a30;
+    --accent: #7c5cff;
+    --accent-2: #b4a3ff;
+    --ok: #4ade80;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  body { min-height: 100vh; display: flex; flex-direction: column; }
+  .progress { position: fixed; top: 0; left: 0; right: 0; height: 2px; background: var(--line); z-index: 10; }
+  .progress > span { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .5s cubic-bezier(.2,.7,.2,1); }
+  .stepbadge { position: fixed; top: 18px; left: 24px; font-size: 12px; color: var(--fg-dim); letter-spacing: .04em; z-index: 10; }
+  .localbadge { position: fixed; bottom: 18px; right: 24px; font-size: 11px; color: var(--fg-dim); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; z-index: 10; }
+  main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 96px 24px 96px; }
+  .screen { width: 100%; max-width: 560px; display: none; }
+  .screen.active { display: block; animation: fade .35s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  h1 { font-size: 32px; line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 14px; font-weight: 600; }
+  .sub { color: var(--fg-dim); font-size: 15px; line-height: 1.55; margin: 0 0 32px; }
+  .rationale { color: var(--fg-dim); font-size: 13px; line-height: 1.5; margin: -20px 0 24px; padding-left: 10px; border-left: 2px solid var(--line-2); }
+  .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .opt { display: block; padding: 16px 18px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; cursor: pointer; transition: border-color .15s, background .15s; position: relative; }
+  .opt:hover { border-color: var(--line-2); }
+  .opt.selected { border-color: var(--accent); background: rgba(124,92,255,.06); }
+  .opt .t { font-size: 15px; font-weight: 500; }
+  .opt .d { font-size: 13px; color: var(--fg-dim); margin-top: 4px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+  .chip { padding: 9px 14px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 999px; font-size: 13px; cursor: pointer; user-select: none; transition: all .15s; }
+  .chip:hover { border-color: var(--line-2); }
+  .chip.selected { border-color: var(--accent); background: rgba(124,92,255,.08); color: var(--fg); }
+  .chip.disabled { opacity: .35; pointer-events: none; }
+  .budget-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; cursor: pointer; margin-bottom: 8px; }
+  .budget-row.selected { border-color: var(--accent); background: rgba(124,92,255,.06); }
+  .budget-row .l { font-size: 14px; }
+  .budget-row .r { font-size: 12px; color: var(--fg-dim); font-family: ui-monospace, monospace; }
+  .savings { margin: 16px 0 24px; padding: 14px 16px; background: var(--bg-2); border: 1px dashed var(--line-2); border-radius: 10px; font-size: 13px; color: var(--fg-dim); min-height: 46px; display: flex; align-items: center; gap: 12px; }
+  .savings strong { color: var(--fg); font-family: ui-monospace, monospace; font-size: 15px; }
+  .savings.empty { opacity: .55; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 28px; }
+  .grid2 .opt { padding: 18px; }
+  .cta { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; background: var(--fg); color: #000; border: 0; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity .15s, transform .1s; font-family: inherit; }
+  .cta:hover:not(:disabled) { opacity: .9; }
+  .cta:active { transform: translateY(1px); }
+  .cta:disabled { opacity: .3; cursor: not-allowed; }
+  .cta.primary { background: var(--accent); color: #fff; }
+  .cta.primary:hover:not(:disabled) { background: var(--accent-2); color: #000; }
+  .micro { font-size: 12px; color: var(--fg-dim); margin-top: 14px; }
+  .synth { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; line-height: 1.9; margin: 32px 0; }
+  .synth .row { display: flex; align-items: center; gap: 10px; opacity: 0; transform: translateX(-4px); transition: opacity .3s, transform .3s; }
+  .synth .row.show { opacity: 1; transform: none; }
+  .synth .icon { width: 14px; display: inline-block; text-align: center; }
+  .synth .row.done .icon { color: var(--ok); }
+  .synth .row.pending .icon { color: var(--accent); animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .synth .final { color: var(--fg); font-weight: 600; padding-left: 24px; }
+  .synth-bar { height: 1px; background: var(--line); margin-bottom: 20px; position: relative; overflow: hidden; }
+  .synth-bar > span { position: absolute; inset: 0; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width .3s linear; }
+  .cta-wrap { min-height: 44px; }
+  .cta-reveal { opacity: 0; pointer-events: none; transition: opacity .5s; }
+  .cta-reveal.show { opacity: 1; pointer-events: auto; }
+</style>
+</head>
+<body>
+
+<div class="progress"><span id="pbar"></span></div>
+<div class="stepbadge" id="stepbadge">1. adım / 7</div>
+<div class="localbadge">127.0.0.1:20128</div>
+
+<main>
+
+  <!-- SCREEN 1 -->
+  <section class="screen active" data-step="1">
+    <h1>90 saniye. Sonra kendi routing planın hazır.</h1>
+    <p class="sub">5 kısa soru soracağız. Cevaplarına göre sana özel model sırası, fallback zinciri ve maliyet politikası üreteceğiz. Kredi kartı yok, hesap yok.</p>
+    <button class="cta primary" onclick="goto(2)">Başlayalım →</button>
+    <p class="micro">Cevapların cihazından çıkmıyor. Plan yerelde üretiliyor.</p>
+  </section>
+
+  <!-- SCREEN 2 -->
+  <section class="screen" data-step="2">
+    <h1>Unichanl'ı en çok nerede kullanacaksın?</h1>
+    <p class="sub">Bu cevaba göre varsayılan model sıralamanı ve context window önceliğini belirliyoruz.</p>
+    <div class="options" id="q1">
+      <label class="opt" data-val="code"><div class="t">Kod yazma & refactor</div><div class="d">Claude Sonnet · GPT-5 Codex öncelikli</div></label>
+      <label class="opt" data-val="docs"><div class="t">Uzun döküman & analiz</div><div class="d">Gemini 2.5 Pro · Claude Opus öncelikli</div></label>
+      <label class="opt" data-val="chat"><div class="t">Hızlı sohbet & prototipleme</div><div class="d">Haiku · GPT-5 mini öncelikli</div></label>
+      <label class="opt" data-val="agent"><div class="t">Ajans / otomasyon (arka plan job)</div><div class="d">Maliyet-optimize sıralama</div></label>
+    </div>
+    <button class="cta primary" id="cta2" disabled onclick="goto(3)">Devam →</button>
+    <p class="micro">Sıralama sonradan değişebilir. Şimdi verdiğin cevap ilk 7 gün için varsayılan.</p>
+  </section>
+
+  <!-- SCREEN 3 -->
+  <section class="screen" data-step="3">
+    <h1>Şu an hangi sağlayıcılara ödeme yapıyorsun?</h1>
+    <p class="sub">Bu cevaba göre fallback zincirini yalnızca sende çalışan modellerden kuruyoruz — hayali model önermiyoruz.</p>
+    <div class="chips" id="q2">
+      <div class="chip" data-val="anthropic">Anthropic</div>
+      <div class="chip" data-val="openai">OpenAI</div>
+      <div class="chip" data-val="google">Google</div>
+      <div class="chip" data-val="groq">Groq</div>
+      <div class="chip" data-val="together">Together</div>
+      <div class="chip" data-val="local">Local (Ollama / LM Studio)</div>
+      <div class="chip" data-val="none">Henüz hiçbiri</div>
+    </div>
+    <button class="cta primary" id="cta3" disabled onclick="goto(4)">Devam →</button>
+    <p class="micro">"Henüz hiçbiri" seçersen, sana ücretsiz katmanı en cömert olanı öneriyoruz.</p>
+  </section>
+
+  <!-- SCREEN 4 -->
+  <section class="screen" data-step="4">
+    <h1>Aylık AI harcaman aşağı yukarı ne kadar?</h1>
+    <p class="sub">Bu cevaba göre maliyet politikanı seçiyoruz: agresif tasarruf, dengeli ya da kaliteyi asla feda etme.</p>
+    <div id="q3">
+      <div class="budget-row" data-val="lt20" data-amount="15"><span class="l">&lt; $20 · Agresif tasarruf</span><span class="r">küçük → gerekirse büyük</span></div>
+      <div class="budget-row" data-val="20_100" data-amount="60"><span class="l">$20 – $100 · Dengeli</span><span class="r">göreve göre otomatik</span></div>
+      <div class="budget-row" data-val="100_500" data-amount="300"><span class="l">$100 – $500 · Kalite öncelikli</span><span class="r">büyük model varsayılan</span></div>
+      <div class="budget-row" data-val="gt500" data-amount="800"><span class="l">&gt; $500 · Enterprise</span><span class="r">paralel çağrı + en iyi cevap</span></div>
+    </div>
+    <div class="savings empty" id="savings">Bir bütçe seç, tahmini tasarrufunu göstereyim.</div>
+    <button class="cta primary" id="cta4" disabled onclick="goto(5)">Devam →</button>
+  </section>
+
+  <!-- SCREEN 5 -->
+  <section class="screen" data-step="5">
+    <h1>Son 30 günde seni en çok ne yavaşlattı?</h1>
+    <p class="sub">Bu cevaba göre yedek zincirinin <em>tetikleyici koşullarını</em> belirliyoruz — hangi hata anında hangi modele atlayacağını.</p>
+    <div class="options" id="q4">
+      <label class="opt" data-val="ratelimit"><div class="t">Rate limit / kota hatası</div><div class="d">429 tetikli fallback öncelikli · ~180ms geçiş</div></label>
+      <label class="opt" data-val="timeout"><div class="t">Timeout / yavaş cevap</div><div class="d">8sn üstü tetikli fallback</div></label>
+      <label class="opt" data-val="quality"><div class="t">Model "bilmiyorum" diyor</div><div class="d">Cevap kalitesi tetikli çift-model karşılaştırma</div></label>
+      <label class="opt" data-val="outage"><div class="t">Sağlayıcı çöktü / 5xx</div><div class="d">Çoklu-sağlayıcı circuit breaker sıkı mod</div></label>
+    </div>
+    <button class="cta primary" id="cta5" disabled onclick="goto(6)">Devam →</button>
+    <p class="micro">Birden fazlası doğruysa en sık olanı seç. Diğerleri de arka planda çalışıyor olacak.</p>
+  </section>
+
+  <!-- SCREEN 6 -->
+  <section class="screen" data-step="6">
+    <h1>Bunu en çok nereden kullanacaksın?</h1>
+    <p class="sub">Bu cevaba göre sana özel client binding + config snippet üretiyoruz. Kopyala-yapıştır, çalışsın.</p>
+    <div class="grid2" id="q5">
+      <label class="opt" data-val="claude-code"><div class="t">Claude Code / Codex CLI</div><div class="d">ANTHROPIC_BASE_URL binding</div></label>
+      <label class="opt" data-val="ide"><div class="t">Cursor / Zed / IDE</div><div class="d">OpenAI-uyumlu endpoint</div></label>
+      <label class="opt" data-val="sdk"><div class="t">Kendi kodum (Python / TS SDK)</div><div class="d">Drop-in SDK wrapper</div></label>
+      <label class="opt" data-val="automation"><div class="t">n8n / Zapier / arka plan</div><div class="d">REST webhook modu</div></label>
+    </div>
+    <button class="cta primary" id="cta6" disabled onclick="goto(7)">Planımı Oluştur →</button>
+    <p class="micro">Birden fazla seçmek istersen sonra ayarlardan ekleyebilirsin. Şimdi ana kullanımı seç.</p>
+  </section>
+
+  <!-- SCREEN 7 -->
+  <section class="screen" data-step="7">
+    <h1>Senin routing planın yazılıyor.</h1>
+    <div class="synth-bar"><span id="synthbar"></span></div>
+    <div class="synth" id="synth"></div>
+    <div class="cta-wrap">
+      <button class="cta primary cta-reveal" id="cta7" onclick="onDone()">Planımı Gör →</button>
+    </div>
+    <p class="micro">Bu ekran fake değil. Router config gerçekten üretiliyor.</p>
+  </section>
+
+</main>
+
+<script>
+(() => {
+  const STORAGE_KEY = "unichanl.onboarding";
+  const TOTAL_STEPS = 7;
+
+  const state = loadState() || {
+    sessionId: crypto.randomUUID(),
+    step: 1,
+    answers: {},
+    plan: null,
+  };
+
+  function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  function loadState() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch { return null; }
+  }
+
+  function setProgress(step) {
+    const pct = ((step - 1) / (TOTAL_STEPS - 1)) * 100;
+    document.getElementById("pbar").style.width = pct + "%";
+    document.getElementById("stepbadge").textContent = `${step}. adım / ${TOTAL_STEPS}`;
+  }
+
+  window.goto = function (step) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    const target = document.querySelector(`.screen[data-step="${step}"]`);
+    if (!target) return;
+    target.classList.add("active");
+    state.step = step;
+    save();
+    setProgress(step);
+    window.scrollTo({ top: 0, behavior: "instant" });
+    if (step === 7) runSynthesis();
+  };
+
+  // Q1 — primary use (single card)
+  document.querySelectorAll("#q1 .opt").forEach(el => {
+    el.addEventListener("click", () => {
+      document.querySelectorAll("#q1 .opt").forEach(x => x.classList.remove("selected"));
+      el.classList.add("selected");
+      state.answers.primaryUse = el.dataset.val;
+      document.getElementById("cta2").disabled = false;
+      save();
+    });
+  });
+
+  // Q2 — providers (multi chip, with "none" exclusive)
+  document.querySelectorAll("#q2 .chip").forEach(el => {
+    el.addEventListener("click", () => {
+      const val = el.dataset.val;
+      state.answers.providers = state.answers.providers || [];
+      if (val === "none") {
+        const isSel = el.classList.contains("selected");
+        document.querySelectorAll("#q2 .chip").forEach(c => c.classList.remove("selected"));
+        document.querySelectorAll("#q2 .chip").forEach(c => c.classList.toggle("disabled", !isSel && c.dataset.val !== "none"));
+        if (!isSel) {
+          el.classList.add("selected");
+          state.answers.providers = ["none"];
+        } else {
+          state.answers.providers = [];
+        }
+      } else {
+        document.querySelector('#q2 .chip[data-val="none"]').classList.remove("selected");
+        document.querySelectorAll("#q2 .chip").forEach(c => c.classList.remove("disabled"));
+        el.classList.toggle("selected");
+        state.answers.providers = Array.from(document.querySelectorAll("#q2 .chip.selected")).map(c => c.dataset.val);
+      }
+      document.getElementById("cta3").disabled = state.answers.providers.length === 0;
+      save();
+    });
+  });
+
+  // Q3 — budget (with animated savings)
+  const SAVINGS = { lt20: 45, "20_100": 34, "100_500": 22, gt500: 18 };
+  document.querySelectorAll("#q3 .budget-row").forEach(el => {
+    el.addEventListener("click", () => {
+      document.querySelectorAll("#q3 .budget-row").forEach(x => x.classList.remove("selected"));
+      el.classList.add("selected");
+      const val = el.dataset.val;
+      const amount = Number(el.dataset.amount);
+      state.answers.budget = val;
+      const pct = SAVINGS[val];
+      const savedAmount = Math.round(amount * (pct / 100));
+      const newAmount = amount - savedAmount;
+      const sav = document.getElementById("savings");
+      sav.classList.remove("empty");
+      animateSavings(sav, amount, newAmount, pct);
+      document.getElementById("cta4").disabled = false;
+      save();
+    });
+  });
+
+  function animateSavings(el, from, to, pct) {
+    const dur = 700; const t0 = performance.now();
+    function frame(t) {
+      const p = Math.min(1, (t - t0) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const cur = Math.round(from - (from - to) * eased);
+      el.innerHTML = `Tahmini aylık: <strong>$${from} → $${cur}</strong> · ~%${pct} düşüş`;
+      if (p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // Q4 — pain point
+  document.querySelectorAll("#q4 .opt").forEach(el => {
+    el.addEventListener("click", () => {
+      document.querySelectorAll("#q4 .opt").forEach(x => x.classList.remove("selected"));
+      el.classList.add("selected");
+      state.answers.painPoint = el.dataset.val;
+      document.getElementById("cta5").disabled = false;
+      save();
+    });
+  });
+
+  // Q5 — surface
+  document.querySelectorAll("#q5 .opt").forEach(el => {
+    el.addEventListener("click", () => {
+      document.querySelectorAll("#q5 .opt").forEach(x => x.classList.remove("selected"));
+      el.classList.add("selected");
+      state.answers.surface = el.dataset.val;
+      document.getElementById("cta6").disabled = false;
+      save();
+    });
+  });
+
+  // ---------- Plan builder (pure) ----------
+  const MODEL_PRESETS = {
+    code:  ["claude-sonnet-4.5", "gpt-5-codex", "gemini-2.5-pro"],
+    docs:  ["gemini-2.5-pro", "claude-opus-4", "claude-sonnet-4.5"],
+    chat:  ["claude-haiku-4.5", "gpt-5-mini", "gemini-2.5-flash"],
+    agent: ["gemini-2.5-flash", "claude-haiku-4.5", "gpt-5-mini", "claude-sonnet-4.5"],
+  };
+  const PROVIDER_OF = {
+    "claude-sonnet-4.5": "anthropic",
+    "claude-opus-4": "anthropic",
+    "claude-haiku-4.5": "anthropic",
+    "gpt-5-codex": "openai",
+    "gpt-5-mini": "openai",
+    "gemini-2.5-pro": "google",
+    "gemini-2.5-flash": "google",
+  };
+  const BUDGET_MAP = {
+    lt20:      { policy: "aggressive", savings: 45, label: "Agresif tasarruf" },
+    "20_100":  { policy: "balanced",   savings: 34, label: "Dengeli" },
+    "100_500": { policy: "quality",    savings: 22, label: "Kalite öncelikli" },
+    gt500:     { policy: "enterprise", savings: 18, label: "Enterprise" },
+  };
+  const PAIN_MAP = {
+    ratelimit: { trigger: "http_429",    threshold: "1 hata → geçiş" },
+    timeout:   { trigger: "latency",     threshold: "8000ms" },
+    quality:   { trigger: "dual_check",  threshold: "2 model karşılaştırma" },
+    outage:    { trigger: "http_5xx",    threshold: "strict circuit breaker" },
+  };
+  const SURFACE_LABEL = {
+    "claude-code": "Claude Code / Codex CLI",
+    "ide":         "Cursor / Zed / IDE",
+    "sdk":         "Python / TS SDK",
+    "automation":  "n8n / Zapier / webhook",
+  };
+  function snippetFor(surface) {
+    switch (surface) {
+      case "claude-code":
+        return `export ANTHROPIC_BASE_URL="http://127.0.0.1:20128"\nexport ANTHROPIC_API_KEY="unichanl-local"`;
+      case "ide":
+        return `OPENAI_BASE_URL=http://127.0.0.1:20128/v1\nOPENAI_API_KEY=unichanl-local`;
+      case "sdk":
+        return `import { Unichanl } from "unichanl";\nconst ai = new Unichanl({ base: "http://127.0.0.1:20128" });`;
+      case "automation":
+        return `curl -X POST http://127.0.0.1:20128/v1/chat/completions \\\n  -H "content-type: application/json" \\\n  -d '{"messages":[{"role":"user","content":"..."}]}'`;
+    }
+  }
+
+  function buildPlan(a) {
+    const preset = MODEL_PRESETS[a.primaryUse] || MODEL_PRESETS.code;
+    const providers = (a.providers || []).filter(p => p !== "none");
+    let modelOrder = preset;
+    if (providers.length > 0) {
+      const filtered = preset.filter(m => providers.includes(PROVIDER_OF[m]) || PROVIDER_OF[m] === undefined);
+      modelOrder = filtered.length > 0 ? filtered : preset;
+    }
+    const budget = BUDGET_MAP[a.budget] || BUDGET_MAP["20_100"];
+    const pain = PAIN_MAP[a.painPoint] || PAIN_MAP.ratelimit;
+    return {
+      sessionId: state.sessionId,
+      primaryUse: a.primaryUse,
+      providers: a.providers || [],
+      modelOrder,
+      fallbackChain: modelOrder.slice(1),
+      costPolicy: budget.policy,
+      costLabel: budget.label,
+      savingsPct: budget.savings,
+      trigger: pain.trigger,
+      threshold: pain.threshold,
+      surface: a.surface,
+      surfaceLabel: SURFACE_LABEL[a.surface],
+      snippet: snippetFor(a.surface),
+      builtAt: new Date().toISOString(),
+    };
+  }
+
+  // ---------- Synthesis (Screen 7, labor illusion) ----------
+  async function runSynthesis() {
+    const plan = buildPlan(state.answers);
+    state.plan = plan; save();
+
+    const rows = [
+      `Birincil kullanım: ${labelPrimary(plan.primaryUse)}`,
+      `Aktif sağlayıcılar: ${(plan.providers.length ? plan.providers : ["önerilecek"]).join(", ")}`,
+      `Maliyet politikası: ${plan.costLabel} — hedef ~%${plan.savingsPct} düşüş`,
+      `Fallback tetikleyicisi: ${plan.trigger} — ${plan.threshold}`,
+      `Bağlantı yüzeyi: ${plan.surfaceLabel} — snippet hazırlanıyor…`,
+      `Model sırası çözümleniyor: ${plan.modelOrder.join(" → ")}`,
+      `Circuit breaker kalibrasyonu…`,
+      `Yerel gateway 127.0.0.1:20128 için imzalanıyor…`,
+    ];
+    const container = document.getElementById("synth");
+    container.innerHTML = "";
+    rows.forEach((text, i) => {
+      const div = document.createElement("div");
+      div.className = "row";
+      div.innerHTML = `<span class="icon">·</span><span class="txt">${text}</span>`;
+      container.appendChild(div);
+    });
+    const finalRow = document.createElement("div");
+    finalRow.className = "row final";
+    finalRow.innerHTML = `<span class="icon">✓</span><span>Planın hazır.</span>`;
+    container.appendChild(finalRow);
+
+    const bar = document.getElementById("synthbar");
+    const total = 6800; // min 6.8s labor illusion
+    const perRow = total / rows.length;
+    const rowEls = container.querySelectorAll(".row:not(.final)");
+    const t0 = performance.now();
+
+    function tickBar() {
+      const p = Math.min(1, (performance.now() - t0) / total);
+      bar.style.width = (p * 100) + "%";
+      if (p < 1) requestAnimationFrame(tickBar);
+    }
+    requestAnimationFrame(tickBar);
+
+    for (let i = 0; i < rowEls.length; i++) {
+      const el = rowEls[i];
+      el.classList.add("show", "pending");
+      el.querySelector(".icon").textContent = "◐";
+      await sleep(perRow * 0.75);
+      el.classList.remove("pending");
+      el.classList.add("done");
+      el.querySelector(".icon").textContent = "✓";
+      await sleep(perRow * 0.25);
+    }
+    finalRow.classList.add("show");
+    document.getElementById("cta7").classList.add("show");
+  }
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+  function labelPrimary(v) {
+    return { code: "Kod & refactor", docs: "Uzun döküman", chat: "Sohbet & prototip", agent: "Ajans / otomasyon" }[v] || v;
+  }
+
+  window.onDone = function () {
+    // Ekran 8 kapsam dışı — şimdilik planı konsola bas
+    console.log("Unichanl plan:", state.plan);
+    alert("Plan hazır. (Ekran 8 — Plan Reveal bir sonraki iterasyonda.)");
+  };
+
+  setProgress(1);
+})();
+</script>
+</body>
+</html>

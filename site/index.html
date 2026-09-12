@@ -199,7 +199,7 @@ window.ucWithUtm=function(u){var q=location.search;return q?u+(u.includes('?')?'
     <a href="#pricing">Fiyatlandırma</a>
     <div class="uc-mm-cta">
       <button class="uc-mm-ghost" onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'mobile_menu_login'});location.href=(window.ucWithUtm?ucWithUtm('/signup.html'):'/signup.html')">Giriş yap</button>
-      <button class="uc-mm-primary" onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'mobile_menu'});location.href=(window.ucWithUtm?ucWithUtm('/signup.html'):'/signup.html')">Ücretsiz başla</button>
+      <button class="uc-mm-primary" onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'mobile_menu'});location.href=(window.ucWithUtm?ucWithUtm('/onboarding.html'):'/onboarding.html')">Ücretsiz başla</button>
     </div>
   </div>
   <script>(function(){var btn=document.getElementById('uc-hamburger-btn');var menu=document.getElementById('uc-mobile-menu');if(!btn||!menu)return;function close(){menu.classList.remove('open');btn.setAttribute('aria-expanded','false');btn.setAttribute('aria-label','Menüyü aç')}function open(){menu.classList.add('open');btn.setAttribute('aria-expanded','true');btn.setAttribute('aria-label','Menüyü kapat')}btn.addEventListener('click',function(e){e.stopPropagation();menu.classList.contains('open')?close():open()});menu.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close)});document.addEventListener('click',function(e){if(!menu.contains(e.target)&&e.target!==btn&&!btn.contains(e.target))close()});window.addEventListener('resize',function(){if(window.innerWidth>720)close()})})();</script>
@@ -220,7 +220,7 @@ window.ucWithUtm=function(u){var q=location.search;return q?u+(u.includes('?')?'
     <script>(function(){var logos=['openai','claude','gemini','mistral','grok','deepseek','perplexity','meta','qwen','cohere'];var el=document.getElementById('uc-provider-img');if(!el)return;var base='https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/light/';var i=0;el.src=base+logos[0]+'.png';setInterval(function(){el.style.opacity='0';setTimeout(function(){i=(i+1)%logos.length;el.src=base+logos[i]+'.png';el.style.opacity='1'},320)},2000)})();</script>
     <p style="font-size:17px;line-height:1.6;color:#98A3A3;margin:0 auto 30px;max-width:680px">Kod yazmayı hiç bırakmayın. Unichanl bilgisayarınızda çalışan yerel bir geçittir; sağlayıcı düştüğünde ya da limit dolduğunda isteği <span style="color:#F2F5F4;font-weight:600">saniyeler içinde başka bir modele yönlendirir</span> — siz tek satır bile değiştirmeden.</p>
     <div style="display:flex;gap:12px;align-items:center;justify-content:center;margin-bottom:20px;flex-wrap:wrap">
-      <button class="uc-primary-cta" onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'hero',source:sessionStorage.uc_src||'direct'});location.href=(window.ucWithUtm?ucWithUtm('/signup.html'):'/signup.html')" style="height:46px;padding:0 24px;border-radius:32px;background:#F2F5F4;border:none;color:#03090B;font:600 14px 'Archivo';cursor:pointer;display:inline-flex;align-items:center;gap:8px">Ücretsiz başla — 60 sn <span style="font-size:16px;line-height:1">→</span></button>
+      <button class="uc-primary-cta" onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'hero',source:sessionStorage.uc_src||'direct'});location.href=(window.ucWithUtm?ucWithUtm('/onboarding.html'):'/onboarding.html')" style="height:46px;padding:0 24px;border-radius:32px;background:#F2F5F4;border:none;color:#03090B;font:600 14px 'Archivo';cursor:pointer;display:inline-flex;align-items:center;gap:8px">Ücretsiz başla — 60 sn <span style="font-size:16px;line-height:1">→</span></button>
       <a href="#how" style="height:46px;padding:0 24px;border-radius:32px;background:transparent;border:1px solid #1C2A2D;color:#F2F5F4;font:500 14px 'Archivo';display:inline-flex;align-items:center">Nasıl çalıştığını gör</a>
     </div>
     <div style="display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;margin:22px 0 16px;font:500 13px 'Archivo';color:#98A3A3">
@@ -295,7 +295,7 @@ window.ucWithUtm=function(u){var q=location.search;return q?u+(u.includes('?')?'
       <span style="font:600 12px 'JetBrains Mono';letter-spacing:.14em;color:var(--accent,#DFFF00)">OTURUM SÜRÜYOR</span>
     </div>
     <div style="text-align:center;margin-top:20px">
-      <button onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'problem_strip',source:sessionStorage.uc_src||'direct'});location.href=(window.ucWithUtm?ucWithUtm('/signup.html'):'/signup.html')" style="height:44px;padding:0 22px;border-radius:32px;background:#F2F5F4;color:#03090B;border:0;font:600 13.5px 'Archivo';cursor:pointer">Bunu benim için çöz →</button>
+      <button onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'problem_strip',source:sessionStorage.uc_src||'direct'});location.href=(window.ucWithUtm?ucWithUtm('/onboarding.html'):'/onboarding.html')" style="height:44px;padding:0 22px;border-radius:32px;background:#F2F5F4;color:#03090B;border:0;font:600 13.5px 'Archivo';cursor:pointer">Bunu benim için çöz →</button>
     </div>
   </section>
 
@@ -792,7 +792,7 @@ window.ucWithUtm=function(u){var q=location.search;return q?u+(u.includes('?')?'
     <h2 style="font-family:'Newsreader',serif;font-weight:300;font-size:88px;line-height:1;letter-spacing:-.03em;margin:0 0 26px">İnşa etmeye devam et.</h2>
     <p style="font-family:'Newsreader',serif;font-size:22px;font-weight:300;line-height:1.5;color:#98A3A3;margin:0 0 36px">Sağlayıcın hata verebilir.<br>Modelin değişebilir.<br>İşin ilerlemeye devam eder.</p>
     <div style="display:flex;gap:12px;justify-content:center">
-      <button onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'pricing_footer',source:sessionStorage.uc_src||'direct'});location.href=(window.ucWithUtm?ucWithUtm('/signup.html'):'/signup.html')" style="height:46px;padding:0 26px;border-radius:32px;background:#F2F5F4;border:none;color:#03090B;font:600 14.5px 'Archivo';cursor:pointer">Ücretsiz başla — 60 sn →</button>
+      <button onclick="window.ucTrack&&ucTrack('primary_cta_click',{loc:'pricing_footer',source:sessionStorage.uc_src||'direct'});location.href=(window.ucWithUtm?ucWithUtm('/onboarding.html'):'/onboarding.html')" style="height:46px;padding:0 26px;border-radius:32px;background:#F2F5F4;border:none;color:#03090B;font:600 14.5px 'Archivo';cursor:pointer">Ücretsiz başla — 60 sn →</button>
       <a href="#product" style="height:46px;padding:0 26px;border-radius:8px;border:1px solid #1C2A2D;color:#C7CFCE;font:500 14.5px 'Archivo';display:flex;align-items:center">Dokümanları gör</a>
     </div>
   </section>
