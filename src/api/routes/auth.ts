@@ -62,7 +62,13 @@ export async function authRoutes(app: FastifyInstance) {
       throw new AppError(401, 'OAUTH_NO_EMAIL', 'Google hesabınızdan email alınamadı');
     }
 
-    let user = await prisma.user.findUnique({ where: { email } });
+    let user;
+    try {
+      user = await prisma.user.findUnique({ where: { email } });
+    } catch (err) {
+      logger.error({ err, requestId: req.id, step: 'user.findUnique', email }, 'OAuth: user lookup failed');
+      throw err;
+    }
     if (!user) {
       try {
         user = await prisma.user.create({
@@ -72,24 +78,32 @@ export async function authRoutes(app: FastifyInstance) {
         if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
           user = await prisma.user.findUnique({ where: { email } });
         }
-        if (!user) throw err;
+        if (!user) {
+          logger.error({ err, requestId: req.id, step: 'user.create', email }, 'OAuth: user create failed');
+          throw err;
+        }
       }
     }
 
     const raw = 'tkg_' + nanoid(40);
     const hash = await argon2.hash(raw);
 
-    await prisma.apiKey.updateMany({
-      where: { userId: user.id, enabled: true },
-      data: { enabled: false },
-    });
-    await prisma.apiKey.create({
-      data: {
-        userId: user.id,
-        keyHash: hash,
-        keyPrefix: raw.slice(0, 8),
-      },
-    });
+    try {
+      await prisma.apiKey.updateMany({
+        where: { userId: user.id, enabled: true },
+        data: { enabled: false },
+      });
+      await prisma.apiKey.create({
+        data: {
+          userId: user.id,
+          keyHash: hash,
+          keyPrefix: raw.slice(0, 8),
+        },
+      });
+    } catch (err) {
+      logger.error({ err, requestId: req.id, step: 'apiKey.create', userId: user.id }, 'OAuth: api key provisioning failed');
+      throw err;
+    }
 
     logger.info(
       { requestId: req.id, userId: user.id, email },

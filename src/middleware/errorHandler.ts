@@ -85,6 +85,7 @@ export function errorHandler(
         code: 'DATABASE_UNAVAILABLE',
         message: 'Veritabanı geçici olarak kullanılamıyor',
         request_id: request.id,
+        hint: (error as Error).name + ': ' + String((error as Error).message || '').split('\n').slice(0, 3).join(' ').slice(0, 400),
       },
     });
     return;
