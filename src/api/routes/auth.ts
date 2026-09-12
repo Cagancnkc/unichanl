@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid';
 import argon2 from 'argon2';
 import { AppError } from '../../utils/errors.js';
 import { logger } from '../../utils/logger.js';
+import { withUserContext } from '../../db/withUser.js';
 
 export async function authRoutes(app: FastifyInstance) {
   app.post('/api/auth/google', async (req: FastifyRequest, reply: FastifyReply) => {
@@ -76,20 +77,21 @@ export async function authRoutes(app: FastifyInstance) {
       }
     }
 
-    await prisma.apiKey.updateMany({
-      where: { userId: user.id, enabled: true },
-      data: { enabled: false },
-    });
-
     const raw = 'tkg_' + nanoid(40);
     const hash = await argon2.hash(raw);
 
-    await prisma.apiKey.create({
-      data: {
-        userId: user.id,
-        keyHash: hash,
-        keyPrefix: raw.slice(0, 8),
-      },
+    await withUserContext(user.id, async (tx) => {
+      await tx.apiKey.updateMany({
+        where: { userId: user.id, enabled: true },
+        data: { enabled: false },
+      });
+      await tx.apiKey.create({
+        data: {
+          userId: user.id,
+          keyHash: hash,
+          keyPrefix: raw.slice(0, 8),
+        },
+      });
     });
 
     logger.info(
