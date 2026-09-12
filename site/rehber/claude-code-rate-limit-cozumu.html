@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="/favicon.png?v=2">
+<title>Claude Code Rate Limit Çözümü: Yerel Gateway ile</title>
+<meta name="description" content="Claude Code rate limit hatası çözümü: Unichanl yerel gateway ile 2+ Anthropic anahtarı havuzlama. Adım adım rehber.">
+<link rel="canonical" href="https://unichanl.com/rehber/claude-code-rate-limit-cozumu.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Claude Code Rate Limit Çözümü">
+<meta property="og:description" content="429 Too Many Requests hatası çözümü: Unichanl ile anahtarları havuzla.">
+<meta property="og:url" content="https://unichanl.com/rehber/claude-code-rate-limit-cozumu.html">
+<meta property="og:image" content="https://unichanl.com/favicon.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Ana Sayfa","item":"https://unichanl.com/"},{"@type":"ListItem","position":2,"name":"Rehber","item":"https://unichanl.com/rehber/"},{"@type":"ListItem","position":3,"name":"Claude Code Rate Limit Çözümü","item":"https://unichanl.com/rehber/claude-code-rate-limit-cozumu.html"}]},{"@type":"TechArticle","headline":"Claude Code Rate Limit Çözümü: Yerel Gateway ile","description":"Claude Code'da 429 rate limit hatası ve çözümü.","author":{"@type":"Organization","name":"Unichanl"},"publisher":{"@type":"Organization","name":"Unichanl"},"datePublished":"2026-09-12","dateModified":"2026-09-12","inLanguage":"tr-TR"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#03090B;color:#F2F5F4;font-family:'Archivo',system-ui,sans-serif;line-height:1.6}a{color:#7FD1AE;text-decoration:none}a:hover{text-decoration:underline}.wrap{max-width:820px;margin:0 auto;padding:60px 24px 100px}header.nav{border-bottom:1px solid #132023;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto}header.nav a.brand{font-weight:700;font-size:18px;color:#F2F5F4}header.nav nav a{margin-left:22px;color:#C7CFCE;font-size:14px}h1{font-family:'Newsreader',serif;font-weight:400;font-size:44px;line-height:1.1;letter-spacing:-.02em;margin-bottom:12px}h2{font-family:'Newsreader',serif;font-weight:400;font-size:28px;margin:44px 0 14px}h3{font-size:18px;font-weight:600;margin:22px 0 8px}.meta{color:#7A8A87;font-size:13px;margin-bottom:26px}code{background:#071114;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',mono;font-size:13px;color:#7FD1AE}pre{background:#071114;border:1px solid #132023;border-radius:8px;padding:14px 16px;overflow-x:auto;margin:12px 0;color:#C7CFCE;line-height:1.5;font-family:'JetBrains Mono',mono;font-size:13px}.tldr{background:#071114;border:1px solid #132023;border-radius:12px;padding:20px 22px;margin:20px 0 30px;font-size:15px;color:#C7CFCE}.tldr strong{color:#F2F5F4}.step{background:#071114;border-left:3px solid #7FD1AE;padding:14px 16px;margin:16px 0;border-radius:4px}.cta{display:inline-block;background:#F2F5F4;color:#03090B;padding:14px 28px;border-radius:24px;font-weight:600;margin-top:20px}footer{border-top:1px solid #132023;padding:30px 24px;text-align:center;color:#7A8A87;font-size:13px;max-width:1200px;margin:0 auto}.crumb{color:#7A8A87;font-size:13px;margin-bottom:16px}.crumb a{color:#7A8A87}</style>
+</head>
+<body>
+<header class="nav"><a href="/" class="brand">Unichanl</a><nav><a href="/landing.html">Ürün</a><a href="/fiyatlandirma.html">Fiyatlandırma</a><a href="/dokumanlar.html">Dokümanlar</a><a href="/karşılaştırma/">Karşılaştırma</a></nav></header>
+<main class="wrap">
+<div class="crumb"><a href="/">Ana sayfa</a> › <a href="/rehber/">Rehber</a> › Claude Code Rate Limit Çözümü</div>
+<h1>Claude Code Rate Limit Çözümü: Yerel Gateway ile</h1>
+<div class="meta">Güncelleme: 12 Eylül 2026 · 8 dk okuma</div>
+
+<div class="tldr"><strong>TL;DR:</strong> Claude Code rate limit hatası (429 Too Many Requests) alıyorsanız, Unichanl yerel gateway'i kurup 2+ Anthropic API anahtarını havuzlayabilirsiniz. Biri takılırsa gateway otomatik diğerine döner. 5 dakikalık kurulum, sorun çözülür.</div>
+
+<h2>Sorun tanısı: 429 hatası nedir?</h2>
+
+<p>Claude API'nin kendi başına rate limit'i vardır: Per-minute token limiti, request limiti. Yoğun kullanımda (özellikle büyük prompt'lar, sık çağrılar) limiti aşabilirsiniz.</p>
+
+<pre>Error: 429 Too Many Requests
+message: "Rate limit exceeded. Please retry after 60 seconds."</pre>
+
+<p>Bu sorun ile karşılaştığınızda Claude Code kendisini 60+ saniye suspend eder. Kod yazamızsınız; verimsiz.</p>
+
+<h2>Çözüm 1: Anahtarları havuzlama (Unichanl)</h2>
+
+<p>Anthropic API'ye birden fazla anahtar oluşturun. Unichanl bu anahtarları havuzlar — istek rate-limit'e takılırsa gateway otomatik diğer anahtarını kullanır.</p>
+
+<div class="step">
+<h3>Adım 1: Anthropic anahtarlarını oluştur</h3>
+<p>
+  <a href="https://console.anthropic.com/keys" target="_blank" rel="noopener">console.anthropic.com/keys</a>'e git.<br>
+  <strong>Create Key</strong> butonuna tıkla 3-5 anahtar oluştur. Her anahtarı not et.
+</p>
+</div>
+
+<div class="step">
+<h3>Adım 2: Unichanl'ı kur</h3>
+<pre>npm install -g unichanl
+unichanl start</pre>
+</div>
+
+<div class="step">
+<h3>Adım 3: Dashboard açılır — anahtarları ekle</h3>
+<p>
+  Tarayıcı otomatik <code>http://127.0.0.1:20128</code> açılır.<br>
+  <strong>Settings → Provider Keys</strong>'e git.<br>
+  Adım 1'deki 3-5 Anthropic anahtarını ekle.<br>
+  Kaydet.
+</p>
+</div>
+
+<div class="step">
+<h3>Adım 4: Claude Code'u yapılandır</h3>
+<p>
+  Claude Code ayarları açın. <code>.env</code> veya config'e ekle:
+</p>
+<pre>ANTHROPIC_BASE_URL=http://127.0.0.1:20128
+ANTHROPIC_API_KEY=unichanl-gateway-key (dashboard'dan kopyala)</pre>
+</div>
+
+<div class="step">
+<h3>Adım 5: Test et</h3>
+<p>
+  Claude Code'da büyük bir prompt gönder. Şu şekilde çalışacaktır:
+  <br/>
+  • İstek 1 → Anahtar 1 rate-limit yok → başarı<br/>
+  • İstek 2 → Anahtar 1 rate-limit'e girdi → gateway Anahtar 2'ye döner → başarı<br/>
+  • İstek 3 → Anahtar 2 rate-limit'e girdi → gateway Anahtar 3'e döner → başarı
+</p>
+</div>
+
+<h2>Çözüm 2: Ek bakiye yükle</h2>
+
+<p>Basit çözüm: daha fazla bakiye yükleyin. Ama rate-limit (RPM, TPM) ortaya çıkabileceği için kalıcı değil.</p>
+
+<h2>Çözüm 3: Provider failover</h2>
+
+<p>Unichanl'da OpenAI, Google Vertex, AWS Bedrock da upstream olarak ekleyebilirsiniz. Anthropic rate limit'e girerse, Unichanl istekleri OpenAI'ye yönlendirir. Maliyeti artar ama kodlama kesintiye uğramaz.</p>
+
+<h2>Sık sorulan sorular</h2>
+
+<h3>Kaç anahtar havuzlamalıyım?</h3>
+<p>3 minimum, 5-10 ideal. Her anahtar bağımsız rate-limit'e sahiptir; toplanır.</p>
+
+<h3>Ücret artacak mı?</h3>
+<p>Hayır. Aynı token sayısını havuzla yönetmekle, tek anahtardan göndermeyin arasında fark yoktur. Havuzlama bedavadır.</p>
+
+<h3>Otomatik failover ne kadar hızlı?</h3>
+<p>Milisaniye cinsinden. Hiç hissedilmez; kullanıcı için sorunsuz.</p>
+
+<h3>Tüm Anthropic modellerine mi uygulanır?</h3>
+<p>Evet. Sonnet, Opus, Haiku tüm modellerde rate-limit ortaya çıkabilir ve Unichanl tüm modellere uygulanır.</p>
+
+<a href="/fiyatlandirma.html" class="cta">Unichanl'ı 5$ ile dene →</a>
+</main>
+<footer>© Unichanl · <a href="/gizlilik-politikasi.html">Gizlilik</a> · <a href="/kvkk-aydinlatma-metni.html">KVKK</a></footer>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="/favicon.png?v=2">
+<title>Cursor için OpenRouter Kurulumu: Adım Adım</title>
+<meta name="description" content="Cursor IDE'de OpenRouter entegrasyonu: Claude, o1, Gemini modellerine erişim. Kurulum rehberi, konfigürasyon, fiyatlandırma.">
+<link rel="canonical" href="https://unichanl.com/rehber/cursor-icin-openrouter-kurulumu.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cursor için OpenRouter Kurulumu: Adım Adım">
+<meta property="og:description" content="Cursor'da OpenRouter ile 300+ model kurulumu.">
+<meta property="og:url" content="https://unichanl.com/rehber/cursor-icin-openrouter-kurulumu.html">
+<meta property="og:image" content="https://unichanl.com/favicon.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Ana Sayfa","item":"https://unichanl.com/"},{"@type":"ListItem","position":2,"name":"Rehber","item":"https://unichanl.com/rehber/"},{"@type":"ListItem","position":3,"name":"Cursor için OpenRouter Kurulumu","item":"https://unichanl.com/rehber/cursor-icin-openrouter-kurulumu.html"}]},{"@type":"HowTo","name":"Cursor'da OpenRouter kurmak","description":"OpenRouter API'sini Cursor IDE'ye entegre etme adımları.","step":[{"@type":"HowToStep","position":1,"name":"OpenRouter hesabı açmak","text":"openrouter.ai'de hesap oluştur, API anahtarını kopyala."},{"@type":"HowToStep","position":2,"name":"Cursor ayarlarını açmak","text":"Cursor → Settings → Models → OpenRouter seç."},{"@type":"HowToStep","position":3,"name":"API anahtarını girmek","text":"OpenRouter API Key alanına anahtarı yapıştır."},{"@type":"HowToStep","position":4,"name":"Model seçmek","text":"Claude, o1, Gemini gibi 300+ modellerden seç."},{"@type":"HowToStep","position":5,"name":"Test etmek","text":"Kodlama isteğini gönder, başarısını doğrula."}]}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#03090B;color:#F2F5F4;font-family:'Archivo',system-ui,sans-serif;line-height:1.6}a{color:#7FD1AE;text-decoration:none}a:hover{text-decoration:underline}.wrap{max-width:820px;margin:0 auto;padding:60px 24px 100px}header.nav{border-bottom:1px solid #132023;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto}header.nav a.brand{font-weight:700;font-size:18px;color:#F2F5F4}header.nav nav a{margin-left:22px;color:#C7CFCE;font-size:14px}h1{font-family:'Newsreader',serif;font-weight:400;font-size:44px;line-height:1.1;letter-spacing:-.02em;margin-bottom:12px}h2{font-family:'Newsreader',serif;font-weight:400;font-size:28px;margin:44px 0 14px}h3{font-size:18px;font-weight:600;margin:22px 0 8px}.meta{color:#7A8A87;font-size:13px;margin-bottom:26px}code{background:#071114;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',mono;font-size:13px;color:#7FD1AE}pre{background:#071114;border:1px solid #132023;border-radius:8px;padding:14px 16px;overflow-x:auto;margin:12px 0;color:#C7CFCE;line-height:1.5;font-family:'JetBrains Mono',mono;font-size:13px}.tldr{background:#071114;border:1px solid #132023;border-radius:12px;padding:20px 22px;margin:20px 0 30px;font-size:15px;color:#C7CFCE}.tldr strong{color:#F2F5F4}.step{background:#071114;border-left:3px solid #7FD1AE;padding:14px 16px;margin:16px 0;border-radius:4px}.cta{display:inline-block;background:#F2F5F4;color:#03090B;padding:14px 28px;border-radius:24px;font-weight:600;margin-top:20px}footer{border-top:1px solid #132023;padding:30px 24px;text-align:center;color:#7A8A87;font-size:13px;max-width:1200px;margin:0 auto}.crumb{color:#7A8A87;font-size:13px;margin-bottom:16px}.crumb a{color:#7A8A87}</style>
+</head>
+<body>
+<header class="nav"><a href="/" class="brand">Unichanl</a><nav><a href="/landing.html">Ürün</a><a href="/fiyatlandirma.html">Fiyatlandırma</a><a href="/dokumanlar.html">Dokümanlar</a><a href="/karşılaştırma/">Karşılaştırma</a></nav></header>
+<main class="wrap">
+<div class="crumb"><a href="/">Ana sayfa</a> › <a href="/rehber/">Rehber</a> › Cursor için OpenRouter Kurulumu</div>
+<h1>Cursor için OpenRouter Kurulumu: Adım Adım</h1>
+<div class="meta">Güncelleme: 12 Eylül 2026 · 6 dk okuma</div>
+
+<div class="tldr"><strong>TL;DR:</strong> Cursor Settings → Models sekmesinde OpenRouter seç, API anahtarını gir. 300+ model erişim. Kurulum 2 dakika.</div>
+
+<h2>Adım 1: OpenRouter hesabı oluştur</h2>
+
+<div class="step">
+<p><a href="https://openrouter.ai" target="_blank" rel="noopener">openrouter.ai</a>'ye git.</p>
+<p><strong>Sign Up</strong> → Email + parola ile hesap aç (veya Google, GitHub oAuth).</p>
+<p><strong>Settings → API Keys</strong>'e git.</p>
+<p><strong>Create Key</strong> tıkla, API anahtarını kopyala. Bunu not et (birazdan gerekecek).</p>
+<p>Minimum 5$ yükle (kredi kartı veya bank transferi).</p>
+</div>
+
+<h2>Adım 2: Cursor'ı aç ve Settings'e git</h2>
+
+<div class="step">
+<p>Cursor IDE'yi aç.</p>
+<p>Cmd+K (Mac) veya Ctrl+K (Windows/Linux) → <code>settings</code> yaz → <strong>Settings</strong> aç.</p>
+<p><strong>Models</strong> sekmesini bulun.</p>
+</div>
+
+<h2>Adım 3: OpenRouter'ı provider olarak seç</h2>
+
+<div class="step">
+<p><strong>Provider</strong> açılır menüsünde <strong>OpenRouter</strong> seç.</p>
+<p><strong>API Key</strong> alanına Adım 1'den kopyaladığın anahtarı yapıştır.</p>
+<p><strong>Save</strong> / <strong>Apply</strong> tıkla.</p>
+</div>
+
+<h2>Adım 4: Model seç</h2>
+
+<div class="step">
+<p><strong>Model</strong> sekmesinde 300+ modellerden seç:</p>
+<ul>
+<li><code>anthropic/claude-3.5-sonnet</code> (önerilir, hız ve kalite dengesi)</li>
+<li><code>openai/gpt-4o</code> (güçlü ama pahalı)</li>
+<li><code>google/gemini-2.0-flash</code> (hızlı, ucuz)</li>
+<li><code>anthropic/claude-3-opus</code> (güçsü ama çok pahalı)</li>
+<li><code>deepseek/deepseek-r1</code> (ucuz, reasoning)</li>
+</ul>
+<p>Başlangıçta <strong>Sonnet</strong> veya <strong>o1-mini</strong> tavsiye edilir.</p>
+</div>
+
+<h2>Adım 5: Test et</h2>
+
+<div class="step">
+<p>Cursor'da yeni bir dosya oluştur.</p>
+<p>Chat açılır menüde OpenRouter'ın seçili olduğunu doğrula.</p>
+<p>Kodlama isteği gönder: <code>Python'da fibonacci fonksiyonu yazılı</code></p>
+<p>Eğer model cevap verirse başarılı demektir!</p>
+</div>
+
+<h2>Fiyatlandırma tamamı</h2>
+
+<p>OpenRouter ~%5 marj ekler provider fiyatına:</p>
+<ul>
+<li>Sonnet 3.5: ~$3/1M input tokens, ~$15/1M output tokens</li>
+<li>o1-mini: ~$3/1M input, ~$12/1M output</li>
+<li>Gemini 2.0 Flash: ~$0.075/1M input, ~$0.3/1M output</li>
+</ul>
+
+<p>100 istekte ortalama 30K token → ~0.5$ maliyet.</p>
+
+<h2>İpuçları</h2>
+
+<ul>
+<li><strong>Model değiştirmek istersen:</strong> Settings → Model → yeni model seç. Anında geçiş.</li>
+<li><strong>Rate limit alırsan:</strong> İsteğin başında söyle: <em>"Bekle, rate limit'e girdiysem farklı model dene"</em> — OpenRouter otomatik fallback'e gitmez; sen manuel yapmalısın.</li>
+<li><strong>Masraf takip:</strong> OpenRouter dashboard'ında <strong>Usage</strong> sekmesinde aylık masrafı gör.</li>
+<li><strong>Unichanl alternatifi:</strong> OpenRouter yerine Unichanl local gateway'i kullansan, marj ve latency azalır.</li>
+</ul>
+
+<a href="/fiyatlandirma.html" class="cta">Unichanl'ı 5$ ile dene →</a>
+</main>
+<footer>© Unichanl · <a href="/gizlilik-politikasi.html">Gizlilik</a> · <a href="/kvkk-aydinlatma-metni.html">KVKK</a></footer>
+</body>
+</html>

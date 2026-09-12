@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="/favicon.png?v=2">
+<title>Unichanl vs Portkey: 2026 Karşılaştırması</title>
+<meta name="description" content="Portkey observability-first AI gateway ile Unichanl developer-first yerel gateway arasındaki farklar: fiyat, izleme, coding tool entegrasyonu.">
+<link rel="canonical" href="https://unichanl.com/karsilastirma/unichanl-vs-portkey.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unichanl vs Portkey: 2026 Karşılaştırması">
+<meta property="og:description" content="Observability-first vs developer-first — hangisi kimin için?">
+<meta property="og:url" content="https://unichanl.com/karsilastirma/unichanl-vs-portkey.html">
+<meta property="og:image" content="https://unichanl.com/favicon.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Ana Sayfa","item":"https://unichanl.com/"},{"@type":"ListItem","position":2,"name":"Karşılaştırma","item":"https://unichanl.com/karsilastirma/"},{"@type":"ListItem","position":3,"name":"Unichanl vs Portkey","item":"https://unichanl.com/karsilastirma/unichanl-vs-portkey.html"}]},{"@type":"Article","headline":"Unichanl vs Portkey: 2026 Karşılaştırması","author":{"@type":"Organization","name":"Unichanl"},"publisher":{"@type":"Organization","name":"Unichanl","logo":{"@type":"ImageObject","url":"https://unichanl.com/favicon.png"}},"datePublished":"2026-09-12","dateModified":"2026-09-12","inLanguage":"tr-TR"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@300;400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#03090B;color:#F2F5F4;font-family:'Archivo',system-ui,sans-serif;line-height:1.6}a{color:#7FD1AE;text-decoration:none}a:hover{text-decoration:underline}.wrap{max-width:820px;margin:0 auto;padding:60px 24px 100px}header.nav{border-bottom:1px solid #132023;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto}header.nav a.brand{font-weight:700;font-size:18px;color:#F2F5F4}header.nav nav a{margin-left:22px;color:#C7CFCE;font-size:14px}h1{font-family:'Newsreader',serif;font-weight:400;font-size:44px;line-height:1.1;letter-spacing:-.02em;margin-bottom:12px}h2{font-family:'Newsreader',serif;font-weight:400;font-size:28px;margin:44px 0 14px}.meta{color:#7A8A87;font-size:13px;margin-bottom:26px}.tldr{background:#071114;border:1px solid #132023;border-radius:12px;padding:20px 22px;margin:20px 0 30px;font-size:15px;color:#C7CFCE}.tldr strong{color:#F2F5F4}p{margin:12px 0;color:#C7CFCE}ul,ol{margin:12px 0 12px 22px;color:#C7CFCE}li{margin:6px 0}table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}th,td{border:1px solid #132023;padding:12px 14px;text-align:left;vertical-align:top}th{background:#071114;color:#F2F5F4;font-weight:600}td{color:#C7CFCE}.cta{display:inline-block;background:#F2F5F4;color:#03090B;padding:14px 28px;border-radius:24px;font-weight:600;margin-top:20px}footer{border-top:1px solid #132023;padding:30px 24px;text-align:center;color:#7A8A87;font-size:13px;max-width:1200px;margin:0 auto}.crumb{color:#7A8A87;font-size:13px;margin-bottom:16px}.crumb a{color:#7A8A87}</style>
+</head>
+<body>
+<header class="nav"><a href="/" class="brand">Unichanl</a><nav><a href="/landing.html">Ürün</a><a href="/fiyatlandirma.html">Fiyatlandırma</a><a href="/dokumanlar.html">Dokümanlar</a><a href="/karsilastirma/">Karşılaştırma</a></nav></header>
+<main class="wrap">
+<div class="crumb"><a href="/">Ana sayfa</a> › <a href="/karsilastirma/">Karşılaştırma</a> › Unichanl vs Portkey</div>
+<h1>Unichanl vs Portkey: 2026 Karşılaştırması</h1>
+<div class="meta">Güncelleme: 12 Eylül 2026 · 5 dk okuma</div>
+
+<div class="tldr"><strong>TL;DR:</strong> Portkey enterprise LLM gözlemlenebilirliği (traces, guardrails, prompt versioning) etrafında konumlanır. Unichanl developer-first bir yerel gateway'dir; Claude Code, Cursor, Codex ile out-of-the-box çalışır. Uygulama üretim gözlemi istiyorsanız Portkey; günlük kodlama gateway'i istiyorsanız Unichanl.</div>
+
+<h2>Kısa özet tablosu</h2>
+<table>
+<thead><tr><th>Özellik</th><th>Unichanl</th><th>Portkey</th></tr></thead>
+<tbody>
+<tr><td>Odak</td><td>Developer / coding tools</td><td>Prod app observability</td></tr>
+<tr><td>Konum</td><td>Yerel gateway</td><td>Cloud + self-host seçeneği</td></tr>
+<tr><td>Prompt loglama</td><td>Yok (metadata only)</td><td>Tam log (opsiyonel)</td></tr>
+<tr><td>Traces / spans</td><td>Basit metadata</td><td>Detaylı OpenTelemetry</td></tr>
+<tr><td>Guardrails</td><td>Yok</td><td>Var</td></tr>
+<tr><td>Prompt versioning</td><td>Yok</td><td>Var</td></tr>
+<tr><td>Claude Code / Cursor</td><td>Native</td><td>Custom endpoint wrap</td></tr>
+<tr><td>Fiyat başlangıç</td><td>5$ kullandıkça</td><td>Ücretsiz tier + kurumsal plan</td></tr>
+</tbody>
+</table>
+
+<h2>Portkey ne zaman doğru seçim?</h2>
+<p>Üretimde çalışan bir LLM ürününüz var; her prompt'u loglamak, guardrails uygulamak, versiyon yönetmek ve OpenTelemetry ile izlemek istiyorsunuz. Portkey bu iş için tasarlandı.</p>
+
+<h2>Unichanl ne zaman doğru seçim?</h2>
+<p>Siz veya ekibiniz Claude Code / Cursor / Codex ile <em>kod yazıyorsunuz</em>. Her prompt'u loglamak istemiyorsunuz (aksine, gizli tutmak istiyorsunuz), yalnızca gateway'in <strong>hızlı, dayanıklı ve tek anahtarlı</strong> olmasını istiyorsunuz. Unichanl bu iş için tasarlandı.</p>
+
+<h2>Karar özeti</h2>
+<p>Ürününüzde LLM kullanıyorsanız → Portkey. Ürününüzü LLM ile yazıyorsanız → Unichanl.</p>
+
+<a href="/fiyatlandirma.html" class="cta">Unichanl'ı 5$ ile dene →</a>
+</main>
+<footer>© Unichanl · <a href="/gizlilik-politikasi.html">Gizlilik</a> · <a href="/kvkk-aydinlatma-metni.html">KVKK</a></footer>
+</body>
+</html>

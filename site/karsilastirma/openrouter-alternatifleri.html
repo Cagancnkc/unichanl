@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="/favicon.png?v=2">
+<title>OpenRouter Alternatifleri: 2026 Rehberi</title>
+<meta name="description" content="OpenRouter alternatifleri: Unichanl, LiteLLM, Portkey, Helicone karşılaştırması. Yerel gateway, self-hosted proxy ve observability seçenekleri.">
+<link rel="canonical" href="https://unichanl.com/karsilastirma/openrouter-alternatifleri.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenRouter Alternatifleri: 2026 Rehberi">
+<meta property="og:description" content="OpenRouter yerine kullanabileceğiniz 4 gateway.">
+<meta property="og:url" content="https://unichanl.com/karsilastirma/openrouter-alternatifleri.html">
+<meta property="og:image" content="https://unichanl.com/favicon.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Ana Sayfa","item":"https://unichanl.com/"},{"@type":"ListItem","position":2,"name":"Karşılaştırma","item":"https://unichanl.com/karsilastirma/"},{"@type":"ListItem","position":3,"name":"OpenRouter Alternatifleri","item":"https://unichanl.com/karsilastirma/openrouter-alternatifleri.html"}]},{"@type":"ItemList","itemListElement":[{"@type":"ListItem","position":1,"name":"Unichanl","url":"https://unichanl.com/"},{"@type":"ListItem","position":2,"name":"LiteLLM","url":"https://github.com/BerriAI/litellm"},{"@type":"ListItem","position":3,"name":"Portkey","url":"https://portkey.ai/"},{"@type":"ListItem","position":4,"name":"Helicone","url":"https://helicone.ai/"}]}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@300;400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#03090B;color:#F2F5F4;font-family:'Archivo',system-ui,sans-serif;line-height:1.6}a{color:#7FD1AE;text-decoration:none}a:hover{text-decoration:underline}.wrap{max-width:820px;margin:0 auto;padding:60px 24px 100px}header.nav{border-bottom:1px solid #132023;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto}header.nav a.brand{font-weight:700;font-size:18px;color:#F2F5F4}header.nav nav a{margin-left:22px;color:#C7CFCE;font-size:14px}h1{font-family:'Newsreader',serif;font-weight:400;font-size:44px;line-height:1.1;letter-spacing:-.02em;margin-bottom:12px}h2{font-family:'Newsreader',serif;font-weight:400;font-size:28px;margin:44px 0 14px}h3{font-size:20px;font-weight:600;margin:22px 0 8px;color:#F2F5F4}.meta{color:#7A8A87;font-size:13px;margin-bottom:26px}.tldr{background:#071114;border:1px solid #132023;border-radius:12px;padding:20px 22px;margin:20px 0 30px;font-size:15px;color:#C7CFCE}.tldr strong{color:#F2F5F4}p{margin:12px 0;color:#C7CFCE}ul,ol{margin:12px 0 12px 22px;color:#C7CFCE}li{margin:6px 0}.card{background:#071114;border:1px solid #132023;border-radius:12px;padding:20px 22px;margin:14px 0}.cta{display:inline-block;background:#F2F5F4;color:#03090B;padding:14px 28px;border-radius:24px;font-weight:600;margin-top:20px}footer{border-top:1px solid #132023;padding:30px 24px;text-align:center;color:#7A8A87;font-size:13px;max-width:1200px;margin:0 auto}.crumb{color:#7A8A87;font-size:13px;margin-bottom:16px}.crumb a{color:#7A8A87}</style>
+</head>
+<body>
+<header class="nav"><a href="/" class="brand">Unichanl</a><nav><a href="/landing.html">Ürün</a><a href="/fiyatlandirma.html">Fiyatlandırma</a><a href="/dokumanlar.html">Dokümanlar</a><a href="/karsilastirma/">Karşılaştırma</a></nav></header>
+<main class="wrap">
+<div class="crumb"><a href="/">Ana sayfa</a> › <a href="/karsilastirma/">Karşılaştırma</a> › OpenRouter Alternatifleri</div>
+<h1>OpenRouter Alternatifleri: 2026 Rehberi</h1>
+<div class="meta">Güncelleme: 12 Eylül 2026 · 7 dk okuma</div>
+
+<div class="tldr"><strong>TL;DR:</strong> OpenRouter cloud-based bir aggregator; alternatiflerin çoğu ya self-hosted (LiteLLM), ya enterprise observability (Portkey, Helicone), ya da developer-first yerel gateway (Unichanl) yönünde konumlanır. Bu sayfa 4 pratik alternatifi karşılaştırır.</div>
+
+<h2>1. Unichanl — yerel gateway (önerilen)</h2>
+<div class="card">
+<p><strong>Kim için:</strong> Claude Code, Cursor, Codex, Gemini CLI kullanan tek geliştirici veya küçük ekipler.</p>
+<p><strong>Fark:</strong> Yerelde 127.0.0.1:20128'de çalışır. Marj yok. Otomatik failover. KVKK uyumu (TR). Türkiye'den kart ödeme ve TL bakiye görünürlüğü.</p>
+<p><strong>Fiyat:</strong> 5$ minimum, kullandıkça öde. İlk kayıtlara %45 kredi bonusu.</p>
+<a href="/karsilastirma/unichanl-vs-openrouter.html">→ Detaylı karşılaştırma</a>
+</div>
+
+<h2>2. LiteLLM — self-hosted proxy</h2>
+<div class="card">
+<p><strong>Kim için:</strong> Kendi altyapısını kuran, DevOps yeteneği olan ekipler.</p>
+<p><strong>Fark:</strong> Açık kaynak (Python). Kendi sunucunuzda çalıştırırsınız. Tüm trafiği VPC içinde tutmak isteyen kurumsal ekipler için idealdir.</p>
+<p><strong>Fiyat:</strong> Yazılım ücretsiz; sunucu ve provider maliyetleri sizin.</p>
+<a href="/karsilastirma/unichanl-vs-litellm.html">→ Detaylı karşılaştırma</a>
+</div>
+
+<h2>3. Portkey — enterprise observability</h2>
+<div class="card">
+<p><strong>Kim için:</strong> Üretimde LLM kullanan ürün ekipleri.</p>
+<p><strong>Fark:</strong> Prompt versioning, guardrails, OpenTelemetry traces. Coding tool entegrasyonu ikincildir; asıl güç production observability'dir.</p>
+<p><strong>Fiyat:</strong> Ücretsiz tier + kurumsal planlar.</p>
+<a href="/karsilastirma/unichanl-vs-portkey.html">→ Detaylı karşılaştırma</a>
+</div>
+
+<h2>4. Helicone — logging & analytics</h2>
+<div class="card">
+<p><strong>Kim için:</strong> LLM isteklerini merkezi logging ve maliyet analitiği yapmak isteyen ekipler.</p>
+<p><strong>Fark:</strong> Basit proxy header'ı ile mevcut SDK'lara takılır, tüm istekleri dashboard'da toplar. Failover odaklı değil, gözlem odaklıdır.</p>
+<p><strong>Fiyat:</strong> Ücretsiz tier + hacim tabanlı planlar.</p>
+</div>
+
+<h2>Nasıl seçmeli?</h2>
+<ul>
+<li><strong>Kodlama araçları için tek anahtar + failover</strong> → Unichanl</li>
+<li><strong>Kurumsal, tam kontrol</strong> → LiteLLM</li>
+<li><strong>Üretim LLM app observability</strong> → Portkey</li>
+<li><strong>Logging & analytics odaklı</strong> → Helicone</li>
+<li><strong>Sadece model çeşitliliği</strong> → OpenRouter (kalırsınız)</li>
+</ul>
+
+<a href="/fiyatlandirma.html" class="cta">Unichanl'ı 5$ ile dene →</a>
+</main>
+<footer>© Unichanl · <a href="/gizlilik-politikasi.html">Gizlilik</a> · <a href="/kvkk-aydinlatma-metni.html">KVKK</a></footer>
+</body>
+</html>

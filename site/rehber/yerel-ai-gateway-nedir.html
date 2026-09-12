@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="/favicon.png?v=2">
+<title>Yerel AI Gateway Nedir? 2026 Teknik Rehberi</title>
+<meta name="description" content="Yerel AI gateway nedir? Proxy vs gateway farkı, neden developer'lar kullanır, OpenRouter vs Unichanl vs LiteLLM. Teknik rehber.">
+<link rel="canonical" href="https://unichanl.com/rehber/yerel-ai-gateway-nedir.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Yerel AI Gateway Nedir? 2026 Teknik Rehberi">
+<meta property="og:description" content="Local AI gateway teknik açıklaması, kullanım nedenleri, vs cloud proxy.">
+<meta property="og:url" content="https://unichanl.com/rehber/yerel-ai-gateway-nedir.html">
+<meta property="og:image" content="https://unichanl.com/favicon.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Ana Sayfa","item":"https://unichanl.com/"},{"@type":"ListItem","position":2,"name":"Rehber","item":"https://unichanl.com/rehber/"},{"@type":"ListItem","position":3,"name":"Yerel AI Gateway Nedir?","item":"https://unichanl.com/rehber/yerel-ai-gateway-nedir.html"}]},{"@type":"TechArticle","headline":"Yerel AI Gateway Nedir? 2026 Teknik Rehberi","description":"Yerel AI gateway mimarisi, cloud proxy ile farkları, neden ve nasıl kullanılır.","author":{"@type":"Organization","name":"Unichanl"},"publisher":{"@type":"Organization","name":"Unichanl","logo":{"@type":"ImageObject","url":"https://unichanl.com/favicon.png"}},"datePublished":"2026-09-12","dateModified":"2026-09-12","inLanguage":"tr-TR"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#03090B;color:#F2F5F4;font-family:'Archivo',system-ui,sans-serif;line-height:1.6}a{color:#7FD1AE;text-decoration:none}a:hover{text-decoration:underline}.wrap{max-width:820px;margin:0 auto;padding:60px 24px 100px}header.nav{border-bottom:1px solid #132023;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto}header.nav a.brand{font-weight:700;font-size:18px;color:#F2F5F4}header.nav nav a{margin-left:22px;color:#C7CFCE;font-size:14px}h1{font-family:'Newsreader',serif;font-weight:400;font-size:44px;line-height:1.1;letter-spacing:-.02em;margin-bottom:12px}h2{font-family:'Newsreader',serif;font-weight:400;font-size:28px;margin:44px 0 14px}h3{font-size:18px;font-weight:600;margin:22px 0 8px}.meta{color:#7A8A87;font-size:13px;margin-bottom:26px}code{background:#071114;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',mono;font-size:13px;color:#7FD1AE}pre{background:#071114;border:1px solid #132023;border-radius:8px;padding:14px 16px;overflow-x:auto;margin:12px 0;color:#C7CFCE;line-height:1.5;font-family:'JetBrains Mono',mono;font-size:13px}.tldr{background:#071114;border:1px solid #132023;border-radius:12px;padding:20px 22px;margin:20px 0 30px;font-size:15px;color:#C7CFCE}.tldr strong{color:#F2F5F4}p{margin:12px 0;color:#C7CFCE}ul,ol{margin:12px 0 12px 22px;color:#C7CFCE}li{margin:6px 0}.cta{display:inline-block;background:#F2F5F4;color:#03090B;padding:14px 28px;border-radius:24px;font-weight:600;margin-top:20px}footer{border-top:1px solid #132023;padding:30px 24px;text-align:center;color:#7A8A87;font-size:13px;max-width:1200px;margin:0 auto}.crumb{color:#7A8A87;font-size:13px;margin-bottom:16px}.crumb a{color:#7A8A87}</style>
+</head>
+<body>
+<header class="nav"><a href="/" class="brand">Unichanl</a><nav><a href="/landing.html">Ürün</a><a href="/fiyatlandirma.html">Fiyatlandırma</a><a href="/dokumanlar.html">Dokümanlar</a><a href="/karşılaştırma/">Karşılaştırma</a></nav></header>
+<main class="wrap">
+<div class="crumb"><a href="/">Ana sayfa</a> › <a href="/rehber/">Rehber</a> › Yerel AI Gateway Nedir?</div>
+<h1>Yerel AI Gateway Nedir? 2026 Teknik Rehberi</h1>
+<div class="meta">Güncelleme: 12 Eylül 2026 · 10 dk okuma</div>
+
+<div class="tldr"><strong>TL;DR:</strong> Yerel AI gateway, bilgisayarınızda çalışan bir ağ ara sunucusudur. Kodlama araçlarınız (IDE, CLI) gateway'e istek gönderir; gateway bunları Anthropic, OpenAI, Google gibi upstream provider'lara yönlendirir. İstekler doğrudan bilgisayarınızdan çıkar; cloud ara atlaması yoktur. Faydası: failover, rate limit havuzlama, KVKK gizliliği, kesintisiz çalışma.</div>
+
+<h2>Temel kavram: Proxy vs Gateway</h2>
+
+<h3>Proxy (OpenRouter, Helicone)</h3>
+<p>Cloud ortasında bir sunucu. Tüm istekler orada geçer. Üretim gözlemi için idealdir; ancak ekstra hop, marj ve privacy endişesi vardır.</p>
+<pre>Claude Code → Internet → OpenRouter (US) → Anthropic → Internet → Claude Code</pre>
+
+<h3>Gateway (Unichanl, LiteLLM)</h3>
+<p>Bilgisayarınızda koşan bir sunucu. İstekler doğrudan oradan upstream'e gider. Privacy, latency ve kontrol için idealdir.</p>
+<pre>Claude Code → Localhost:20128 (Unichanl) → Anthropic → Localhost:20128 → Claude Code</pre>
+
+<h2>Yerel Gateway Mimarisi</h2>
+
+<h3>Katmanlar:</h3>
+<ol>
+<li><strong>Client layer:</strong> Claude Code, Cursor, Codex CLI, SDK. ANTHROPIC_BASE_URL=http://127.0.0.1:20128'e istek gönderir.</li>
+<li><strong>Gateway layer:</strong> Unichanl daemon. Localhost:20128'de dinler. İstek alır, yönlendirir, yanıt döner.</li>
+<li><strong>Upstream layer:</strong> Anthropic, OpenAI, Google, Bedrock, Vertex. Gerçek modelleri çalıştırır.</li>
+</ol>
+
+<h3>Failover Mantığı:</h3>
+<p>Upstream 1 (Anthropic) aşağı düşerse veya rate limit'e girerse, gateway Upstream 2'ye (OpenAI) döner. Client hiç farkında değildir; istek hiç düşmez.</p>
+
+<h2>Neden developer'lar gateway kullanır?</h2>
+
+<h3>1. Rate limit havuzlaması</h3>
+<p>Birden fazla API anahtarının limitlerini birleştirirsiniz. Biri takılırsa, diğeri devam eder.</p>
+
+<h3>2. Provider failover</h3>
+<p>Anthropic aşağı düşerse, Unichanl istekleri Bedrock/Vertex'e yönlendirir. Kodlama seansı kesilmez.</p>
+
+<h3>3. Gizlilik</h3>
+<p>İstekler doğrudan bilgisayarınızdan çıkar. Cloud proxy'de değildir. Türkiye'de KVKK uyumu sağlanır.</p>
+
+<h3>4. Marj yok</h3>
+<p>Gateway yalnızca yönlendirir. Cloud proxy'ler ~%5 marj ekler; gateway bunu atlatır.</p>
+
+<h3>5. Latency</h3>
+<p>Localhost iletişimi internet üzerinden US'a gitmekten hızlıdır (~1ms vs ~200ms).</p>
+
+<h2>Unichanl örneği</h2>
+
+<h3>Kurulum:</h3>
+<pre>npm install -g unichanl
+unichanl start --key YOUR_GATEWAY_KEY</pre>
+
+<h3>Claude Code entegrasyonu:</h3>
+<pre>ANTHROPIC_BASE_URL=http://127.0.0.1:20128
+ANTHROPIC_API_KEY=YOUR_GATEWAY_KEY</pre>
+
+<h3>Perde arkası:</h3>
+<p>Unichanl dashboard'ında 2+ Anthropic anahtarı eklersin. Her istek geldiğinde en iyi performanslı anahtarı seçer. Biri rate limit'e girerse otomatik failover. Sen kodlamaya devam edersin.</p>
+
+<h2>Cloud gateway vs local gateway: özet</h2>
+
+<table style="width:100%;border-collapse:collapse;margin:20px 0;font-size:14px">
+<tr style="border:1px solid #132023"><th style="background:#071114;padding:12px;text-align:left">Faktör</th><th style="background:#071114;padding:12px;text-align:left">Cloud (OpenRouter)</th><th style="background:#071114;padding:12px;text-align:left">Local (Unichanl)</th></tr>
+<tr style="border:1px solid #132023"><td style="padding:12px">Konum</td><td style="padding:12px">ABD sunucusu</td><td style="padding:12px">Bilgisayarınız (127.0.0.1)</td></tr>
+<tr style="border:1px solid #132023"><td style="padding:12px">Latency</td><td style="padding:12px">~200ms</td><td style="padding:12px">~1ms</td></tr>
+<tr style="border:1px solid #132023"><td style="padding:12px">Marj</td><td style="padding:12px">~%5</td><td style="padding:12px">0%</td></tr>
+<tr style="border:1px solid #132023"><td style="padding:12px">Privacy</td><td style="padding:12px">Cloud ortasında</td><td style="padding:12px">Bilgisayarınızda</td></tr>
+<tr style="border:1px solid #132023"><td style="padding:12px">Failover</td><td style="padding:12px">Manuel config</td><td style="padding:12px">Otomatik</td></tr>
+<tr style="border:1px solid #132023"><td style="padding:12px">Model çeşitliliği</td><td style="padding:12px">300+ model</td><td style="padding:12px">Upstream seçimine bağlı</td></tr>
+</table>
+
+<h2>Sık sorulan sorular</h2>
+
+<h3>Gateway açık kalması mı gerekir?</h3>
+<p>Evet. Gateway açık olmadığı sürece IDE istek gönderemez. Ancak bir kez başlatıldıktan sonra arka planda çalışır.</p>
+
+<h3>Güvenlik riski mi var?</h3>
+<p>Hayır. Gateway yalnızca upstream'e istek yönlendirir. Şifre, token gibi hassas bilgiyi saklamaz. Metadata logluyor, prompt/response içeriğini değil.</p>
+
+<h3>En iyi seçim hangisi?</h3>
+<p>OpenRouter: model çeşitliliği istiyorsanız. Unichanl: Claude Code'u kesintisiz çalıştırmak istiyorsanız. LiteLLM: kurumsal kontrol istiyorsanız. Portkey: üretim observability istiyorsanız.</p>
+
+<a href="/fiyatlandirma.html" class="cta">Unichanl'ı 5$ ile dene →</a>
+</main>
+<footer>© Unichanl · <a href="/gizlilik-politikasi.html">Gizlilik</a> · <a href="/kvkk-aydinlatma-metni.html">KVKK</a></footer>
+</body>
+</html>

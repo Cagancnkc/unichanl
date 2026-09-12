@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="/favicon.png?v=2">
+<title>Unichanl vs LiteLLM: 2026 Karşılaştırması</title>
+<meta name="description" content="LiteLLM self-hosted gateway ile Unichanl managed local gateway arasındaki farklar: kurulum, bakım, failover, coding tool desteği ve toplam maliyet.">
+<link rel="canonical" href="https://unichanl.com/karsilastirma/unichanl-vs-litellm.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unichanl vs LiteLLM: 2026 Karşılaştırması">
+<meta property="og:description" content="Self-hosted proxy vs managed local gateway — hangisi kimin için?">
+<meta property="og:url" content="https://unichanl.com/karsilastirma/unichanl-vs-litellm.html">
+<meta property="og:image" content="https://unichanl.com/favicon.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Ana Sayfa","item":"https://unichanl.com/"},{"@type":"ListItem","position":2,"name":"Karşılaştırma","item":"https://unichanl.com/karsilastirma/"},{"@type":"ListItem","position":3,"name":"Unichanl vs LiteLLM","item":"https://unichanl.com/karsilastirma/unichanl-vs-litellm.html"}]},{"@type":"Article","headline":"Unichanl vs LiteLLM: 2026 Karşılaştırması","author":{"@type":"Organization","name":"Unichanl"},"publisher":{"@type":"Organization","name":"Unichanl","logo":{"@type":"ImageObject","url":"https://unichanl.com/favicon.png"}},"datePublished":"2026-09-12","dateModified":"2026-09-12","inLanguage":"tr-TR"},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"LiteLLM ücretsiz değil mi?","acceptedAnswer":{"@type":"Answer","text":"LiteLLM'in kendisi açık kaynaktır ve ücretsizdir; ancak sunucu, izleme, güncelleme ve provider anahtarlarını siz yönetirsiniz. Toplam sahip olma maliyeti sıfır değildir."}},{"@type":"Question","name":"LiteLLM'i Claude Code ile kullanabilir miyim?","acceptedAnswer":{"@type":"Answer","text":"Evet, LiteLLM Anthropic-uyumlu endpoint sunar. Yalnız kendi sunucunuzu ayağa kaldırıp yönetmeniz gerekir. Unichanl aynı arayüzü zero-config sunar."}}]}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@300;400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#03090B;color:#F2F5F4;font-family:'Archivo',system-ui,sans-serif;line-height:1.6}a{color:#7FD1AE;text-decoration:none}a:hover{text-decoration:underline}.wrap{max-width:820px;margin:0 auto;padding:60px 24px 100px}header.nav{border-bottom:1px solid #132023;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto}header.nav a.brand{font-weight:700;font-size:18px;color:#F2F5F4}header.nav nav a{margin-left:22px;color:#C7CFCE;font-size:14px}h1{font-family:'Newsreader',serif;font-weight:400;font-size:44px;line-height:1.1;letter-spacing:-.02em;margin-bottom:12px}h2{font-family:'Newsreader',serif;font-weight:400;font-size:28px;margin:44px 0 14px}h3{font-size:18px;font-weight:600;margin:22px 0 8px}.meta{color:#7A8A87;font-size:13px;margin-bottom:26px}.tldr{background:#071114;border:1px solid #132023;border-radius:12px;padding:20px 22px;margin:20px 0 30px;font-size:15px;color:#C7CFCE}.tldr strong{color:#F2F5F4}p{margin:12px 0;color:#C7CFCE}ul,ol{margin:12px 0 12px 22px;color:#C7CFCE}li{margin:6px 0}table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}th,td{border:1px solid #132023;padding:12px 14px;text-align:left;vertical-align:top}th{background:#071114;color:#F2F5F4;font-weight:600}td{color:#C7CFCE}.cta{display:inline-block;background:#F2F5F4;color:#03090B;padding:14px 28px;border-radius:24px;font-weight:600;margin-top:20px}footer{border-top:1px solid #132023;padding:30px 24px;text-align:center;color:#7A8A87;font-size:13px;max-width:1200px;margin:0 auto}.crumb{color:#7A8A87;font-size:13px;margin-bottom:16px}.crumb a{color:#7A8A87}</style>
+</head>
+<body>
+<header class="nav"><a href="/" class="brand">Unichanl</a><nav><a href="/landing.html">Ürün</a><a href="/fiyatlandirma.html">Fiyatlandırma</a><a href="/dokumanlar.html">Dokümanlar</a><a href="/karsilastirma/">Karşılaştırma</a></nav></header>
+<main class="wrap">
+<div class="crumb"><a href="/">Ana sayfa</a> › <a href="/karsilastirma/">Karşılaştırma</a> › Unichanl vs LiteLLM</div>
+<h1>Unichanl vs LiteLLM: 2026 Karşılaştırması</h1>
+<div class="meta">Güncelleme: 12 Eylül 2026 · 5 dk okuma</div>
+
+<div class="tldr"><strong>TL;DR:</strong> LiteLLM güçlü bir açık kaynak proxy'dir; ama siz sunucu, güncelleme, izleme ve provider anahtar yönetimini üstlenirsiniz. Unichanl bu iş akışını managed local gateway olarak sunar — tek komutla kurulur, Claude Code / Cursor / Codex ile out-of-the-box çalışır. LiteLLM: kontrol ister, DevOps kabul eder. Unichanl: zaman ister, kolaylık kabul eder.</div>
+
+<h2>Kısa özet tablosu</h2>
+<table>
+<thead><tr><th>Özellik</th><th>Unichanl</th><th>LiteLLM</th></tr></thead>
+<tbody>
+<tr><td>Model</td><td>Managed local gateway</td><td>Self-hosted proxy (OSS)</td></tr>
+<tr><td>Kurulum</td><td>Tek komut, sıfır konfig</td><td>YAML config + sunucu</td></tr>
+<tr><td>Bakım yükü</td><td>Yok</td><td>Var (siz yönetirsiniz)</td></tr>
+<tr><td>Provider anahtarları</td><td>Havuzlanmış (Unichanl yönetir)</td><td>Siz sağlarsınız</td></tr>
+<tr><td>Failover</td><td>Otomatik</td><td>Router config ile manuel</td></tr>
+<tr><td>Fiyat</td><td>Kullandıkça öde</td><td>Yazılım ücretsiz + provider maliyeti + sunucu</td></tr>
+<tr><td>Claude Code desteği</td><td>Native</td><td>Anthropic proxy modu</td></tr>
+<tr><td>Dashboard</td><td>Hazır</td><td>UI ayrı çalıştırılır</td></tr>
+<tr><td>Log & privacy</td><td>Metadata only</td><td>Sizin config'inize göre</td></tr>
+</tbody>
+</table>
+
+<h2>LiteLLM ne zaman doğru seçim?</h2>
+<ul>
+<li>Kurumsal ortam, tüm trafiği kendi VPC'nizde tutmanız gerekiyor.</li>
+<li>Zaten DevOps ekibi olan bir ekipsiniz; anahtar rotasyonu, izleme, alerting'i siz kuracaksınız.</li>
+<li>100+ kullanıcıya kurumsal SSO ile hizmet vereceksiniz.</li>
+</ul>
+
+<h2>Unichanl ne zaman doğru seçim?</h2>
+<ul>
+<li>Tek geliştirici veya küçük ekipsiniz; sunucu bakımına vaktiniz yok.</li>
+<li>Claude Code / Cursor'u bugün, şimdi rate-limit'siz çalıştırmak istiyorsunuz.</li>
+<li>Provider anahtar yönetimi, faturalar, kart bilgisi yerine <strong>tek fatura</strong> istiyorsunuz.</li>
+<li>Türkiye'den kullanıyorsanız KVKK aydınlatma + TL bakiye + yerel kart ödemesi hazırdır.</li>
+</ul>
+
+<h2>Toplam maliyet karşılaştırması</h2>
+<p>LiteLLM'i Fly.io veya küçük bir VPS'te çalıştırmanın aylık maliyeti ~10-30$; buna Anthropic/OpenAI kredi kartı yönetimi ve olası downtime cezası eklenir. Unichanl'da yalnız provider harcaması ödersiniz (havuzlanmış oranla) + minimum ~0 platform ücreti.</p>
+
+<h2>Karar özeti</h2>
+<p>Kontrol istiyorsanız LiteLLM. Zamanınıza değer veriyorsanız Unichanl. Hibrit senaryo mümkün: LiteLLM'i kurumsal proxy olarak koruyup Unichanl'ı individual developer'lar için yan gateway olarak kullanabilirsiniz.</p>
+
+<a href="/fiyatlandirma.html" class="cta">Unichanl'ı 5$ ile dene →</a>
+</main>
+<footer>© Unichanl · <a href="/gizlilik-politikasi.html">Gizlilik</a> · <a href="/kvkk-aydinlatma-metni.html">KVKK</a></footer>
+</body>
+</html>

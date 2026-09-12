@@ -1,0 +1,34 @@
+# Unichanl
+
+> Unichanl, Claude Code, Cursor, Codex ve Gemini CLI için tek anahtarla çalışan yerel bir AI gateway'dir. 127.0.0.1:20128 üzerinde çalışır, birden fazla provider anahtarını havuzlar, otomatik failover ve rate-limit yönlendirmesi yapar. Fiyatlama: 5$ minimum yükleme + kullandıkça öde. Türkiye merkezli, KVKK uyumlu.
+
+## Ne yapar
+
+Unichanl bir yerel proxy'dir. AI kodlama araçlarınızı (Claude Code, Cursor, Codex CLI, Gemini CLI, OpenCode) tek bir Unichanl API anahtarına bağlarsınız; Unichanl istekleri arka planda Anthropic, OpenAI, Google, Bedrock, Vertex ve OpenRouter'a yönlendirir. Bir provider aşağı düştüğünde veya rate-limit'e takıldığında otomatik failover devreye girer. Prompt/response içerikleri diskte saklanmaz — yalnızca metadata (token, model, gecikme) loglanır.
+
+## Ana sayfalar
+
+- [Ana sayfa](https://unichanl.com/): Ürün özeti
+- [Ürün](https://unichanl.com/landing.html): Özellikler ve akış
+- [Fiyatlandırma](https://unichanl.com/fiyatlandirma.html): 5$ yükle, kullandıkça öde
+- [Dokümanlar](https://unichanl.com/dokumanlar.html): Kurulum ve entegrasyon
+
+## Karşılaştırmalar
+
+- [Unichanl vs OpenRouter](https://unichanl.com/karsilastirma/unichanl-vs-openrouter.html)
+- [Unichanl vs LiteLLM](https://unichanl.com/karsilastirma/unichanl-vs-litellm.html)
+- [Unichanl vs Portkey](https://unichanl.com/karsilastirma/unichanl-vs-portkey.html)
+- [OpenRouter alternatifleri](https://unichanl.com/karsilastirma/openrouter-alternatifleri.html)
+
+## Rehberler
+
+- [Claude Code rate limit çözümü](https://unichanl.com/rehber/claude-code-rate-limit-cozumu.html)
+- [Cursor için OpenRouter kurulumu](https://unichanl.com/rehber/cursor-icin-openrouter-kurulumu.html)
+- [Yerel AI gateway nedir?](https://unichanl.com/rehber/yerel-ai-gateway-nedir.html)
+
+## Yasal
+
+- [Gizlilik](https://unichanl.com/gizlilik-politikasi.html)
+- [KVKK](https://unichanl.com/kvkk-aydinlatma-metni.html)
+- [Kullanıcı Sözleşmesi](https://unichanl.com/kullanici-sozlesmesi.html)
+- [Çerez Politikası](https://unichanl.com/cerez-politikasi.html)
