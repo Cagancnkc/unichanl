@@ -34,9 +34,29 @@ export async function createApp() {
     genReqId: () => generateRequestId(),
   });
 
-  await app.register(helmet, { contentSecurityPolicy: false });
+  await app.register(helmet, {
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        'default-src': ["'self'"],
+        'script-src': ["'self'"],
+        'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        'font-src': ["'self'", 'https://fonts.gstatic.com', 'data:'],
+        'img-src': ["'self'", 'data:', 'https:'],
+        'connect-src': ["'self'"],
+        'frame-ancestors': ["'none'"],
+        'base-uri': ["'self'"],
+        'form-action': ["'self'"],
+      },
+    },
+  });
+
+  const allowedOriginsEnv = process.env.ALLOWED_ORIGINS;
+  if (process.env.NODE_ENV === 'production' && (!allowedOriginsEnv || allowedOriginsEnv === '*')) {
+    throw new Error('ALLOWED_ORIGINS prod ortamda açık domain listesi olmalı (wildcard yasak)');
+  }
   await app.register(cors, {
-    origin: process.env.ALLOWED_ORIGINS === '*' ? true : (process.env.ALLOWED_ORIGINS ?? '*').split(','),
+    origin: allowedOriginsEnv === '*' ? true : (allowedOriginsEnv ?? '*').split(',').map((s) => s.trim()),
     methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
   });
 

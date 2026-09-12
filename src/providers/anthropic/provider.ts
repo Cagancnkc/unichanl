@@ -18,6 +18,38 @@ import {
 } from './translate.js';
 
 const CLIENT_FACING_MODEL_ALIAS = 'unichanl-auto';
+const RETRYABLE_STATUS = new Set([429, 500, 502, 503]);
+const RETRYABLE_CODES = new Set([
+  'ANTHROPIC_RATE_LIMIT',
+  'ANTHROPIC_SERVER_ERROR',
+  'ANTHROPIC_NETWORK_ERROR',
+]);
+const MAX_RETRIES = 2;
+
+function isRetryable(err: ProviderError): boolean {
+  return RETRYABLE_STATUS.has(err.status) || RETRYABLE_CODES.has(err.code);
+}
+
+function backoffMs(attempt: number): number {
+  const base = 250 * 2 ** attempt;
+  const jitter = Math.floor(Math.random() * 100);
+  return Math.min(base + jitter, 2000);
+}
+
+function sleep(ms: number, signal: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal.aborted) return reject(new Error('aborted'));
+    const onAbort = () => {
+      clearTimeout(t);
+      reject(new Error('aborted'));
+    };
+    const t = setTimeout(() => {
+      signal.removeEventListener('abort', onAbort);
+      resolve();
+    }, ms);
+    signal.addEventListener('abort', onAbort, { once: true });
+  });
+}
 
 export interface AnthropicProviderOptions {
   clientFactory?: (apiKey: string) => Anthropic;
@@ -105,38 +137,64 @@ export class AnthropicProvider implements Provider {
     );
 
     try {
-      const res = await client.messages.create(params as Anthropic.MessageCreateParamsNonStreaming, {
-        signal,
-      });
-      logger.info(
-        {
-          requestId: opts.requestId,
-          provider: 'anthropic',
-          upstreamModel,
-          latencyMs: Date.now() - started,
-          promptTokens: res.usage?.input_tokens,
-          completionTokens: res.usage?.output_tokens,
-          finishReason: res.stop_reason,
-        },
-        'anthropic request completed',
-      );
-      return anthropicResponseToOpenAI(res, clientFacingModel);
-    } catch (err) {
-      if (isTimeout()) {
-        logger.warn({ requestId: opts.requestId, provider: 'anthropic' }, 'anthropic request timeout');
-        throw new ProviderError(504, 'ANTHROPIC_TIMEOUT', 'Anthropic request timed out');
+      let lastErr: ProviderError | null = null;
+      for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        try {
+          const res = await client.messages.create(
+            params as Anthropic.MessageCreateParamsNonStreaming,
+            { signal },
+          );
+          logger.info(
+            {
+              requestId: opts.requestId,
+              provider: 'anthropic',
+              upstreamModel,
+              latencyMs: Date.now() - started,
+              attempt,
+              promptTokens: res.usage?.input_tokens,
+              completionTokens: res.usage?.output_tokens,
+              finishReason: res.stop_reason,
+            },
+            'anthropic request completed',
+          );
+          return anthropicResponseToOpenAI(res, clientFacingModel);
+        } catch (err) {
+          if (isTimeout()) {
+            logger.warn({ requestId: opts.requestId, provider: 'anthropic' }, 'anthropic request timeout');
+            throw new ProviderError(504, 'ANTHROPIC_TIMEOUT', 'Anthropic request timed out');
+          }
+          const perr = normalizeAnthropicError(err);
+          lastErr = perr;
+          if (attempt < MAX_RETRIES && isRetryable(perr)) {
+            const delay = backoffMs(attempt);
+            logger.warn(
+              {
+                requestId: opts.requestId,
+                provider: 'anthropic',
+                code: perr.code,
+                status: perr.status,
+                attempt,
+                delayMs: delay,
+              },
+              'anthropic request retryable — backing off',
+            );
+            await sleep(delay, signal);
+            continue;
+          }
+          logger.warn(
+            {
+              requestId: opts.requestId,
+              provider: 'anthropic',
+              code: perr.code,
+              status: perr.status,
+              attempt,
+            },
+            'anthropic request failed',
+          );
+          throw perr;
+        }
       }
-      const perr = normalizeAnthropicError(err);
-      logger.warn(
-        {
-          requestId: opts.requestId,
-          provider: 'anthropic',
-          code: perr.code,
-          status: perr.status,
-        },
-        'anthropic request failed',
-      );
-      throw perr;
+      throw lastErr ?? new ProviderError(502, 'ANTHROPIC_UNKNOWN', 'Unknown provider error');
     } finally {
       cleanup();
     }

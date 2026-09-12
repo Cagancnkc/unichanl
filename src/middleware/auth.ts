@@ -82,14 +82,15 @@ export async function authMiddleware(request: FastifyRequest, reply: FastifyRepl
   try {
     ({ allowed, remaining, resetAt } = await checkRateLimit(validKey.id, validKey.rateLimit));
   } catch (err) {
-    // Redis down: fail-open — auth başarısıyla ilgili kararı rate limiter ile birleştirme.
     logger.error(
       { err, requestId: request.id, apiKeyId: validKey.id },
-      'authMiddleware: rate limiter unavailable — fail-open',
+      'authMiddleware: rate limiter unavailable — fail-closed',
     );
-    allowed = true;
-    remaining = validKey.rateLimit;
-    resetAt = Date.now() + 60_000;
+    throw new AppError(
+      503,
+      'RATE_LIMITER_UNAVAILABLE',
+      'Rate limiter geçici olarak kullanılamıyor',
+    );
   }
 
   reply.header('X-RateLimit-Limit', validKey.rateLimit);
