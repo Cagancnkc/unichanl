@@ -19,51 +19,26 @@
   }
 
   ready(function () {
-    var log = function (msg) {
-      console.log("[uc-first-topup] " + msg);
-      window.__ucLog = (window.__ucLog || []).concat([msg]);
-    };
-
-    log("Script loaded. pathname=" + location.pathname);
-
-    // Debug: expose openModal globally for manual testing
-    window.__ucDebug = { openModal: openModal, log: log };
-
     // Only on dashboard
-    var isOnDashboard = /\/dashboard(\.html)?\/?$/i.test(location.pathname);
-    log("Path check: " + (isOnDashboard ? "✓" : "✗") + " (pathname=" + location.pathname + ")");
-    if (!isOnDashboard) { log("Not on dashboard, skipping"); return; }
-
-    var shown = localStorage.getItem(SHOWN_KEY);
-    log("Shown flag: " + (shown === "1" ? "already shown" : "not shown"));
-    if (shown === "1") return;
-
+    if (!/\/dashboard(\.html)?\/?$/i.test(location.pathname)) return;
+    if (localStorage.getItem(SHOWN_KEY) === "1") return;
     var raw = localStorage.getItem(STORAGE);
-    log("Onboarding data: " + (raw ? "present" : "missing"));
     if (!raw) return;
-
     var onboarding;
-    try { onboarding = JSON.parse(raw); } catch (_) { log("Parse error"); return; }
-    if (!onboarding || !onboarding.plan) { log("No plan"); return; }
-
+    try { onboarding = JSON.parse(raw); } catch (_) { return; }
+    if (!onboarding || !onboarding.plan) return;
     var key = localStorage.getItem(KEY_STORAGE);
-    log("API key: " + (key ? "present" : "missing"));
     if (!key) return;
 
-    log("Fetching balance...");
     fetch(API + "/balance", { headers: { Authorization: "Bearer " + key } })
-      .then(function (r) {
-        log("Balance response: " + r.status);
-        return r.ok ? r.json() : null;
-      })
+      .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) {
-        if (!j) { log("No balance data"); return; }
+        if (!j) return;
         var bal = parseFloat(j.balanceUsd != null ? j.balanceUsd : j.balance);
-        log("Balance: $" + bal + " (check: " + (bal <= 0.001 ? "✓ open modal" : "✗ skip") + ")");
         if (!isFinite(bal) || bal > 0.001) return;
         openModal(j);
       })
-      .catch(function (e) { log("Fetch error: " + e.message); });
+      .catch(function () {});
   });
 
   function fmt(n) { return "$" + (Math.round(n * 100) / 100).toFixed(2); }
