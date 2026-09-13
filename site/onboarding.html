@@ -4,6 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Unichanl — Kurulum</title>
+<link rel="icon" type="image/png" href="/favicon.png?v=2">
+<link rel="shortcut icon" type="image/png" href="/favicon.png?v=2">
+<link rel="apple-touch-icon" href="/favicon.png?v=2">
 <style>
   :root {
     --bg: #0a0a0a;
@@ -70,6 +73,28 @@
   .cta-wrap { min-height: 44px; }
   .cta-reveal { opacity: 0; pointer-events: none; transition: opacity .5s; }
   .cta-reveal.show { opacity: 1; pointer-events: auto; }
+  /* Screen 8-9 plan reveal / edit */
+  .plan-wrap { max-width: 640px; }
+  .plan-card { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; margin-bottom: 12px; opacity: 0; transform: translateY(12px); transition: opacity .4s, transform .4s; }
+  .plan-card.show { opacity: 1; transform: none; }
+  .plan-card .head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .plan-card .label { font-size: 11px; letter-spacing: .12em; color: var(--fg-dim); text-transform: uppercase; }
+  .plan-card .badge { font: 500 11px ui-monospace, monospace; color: var(--accent-2); background: rgba(124,92,255,.08); border: 1px solid rgba(124,92,255,.25); padding: 3px 8px; border-radius: 999px; }
+  .plan-card .value { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13.5px; line-height: 1.8; color: var(--fg); white-space: pre-wrap; }
+  .plan-card .desc { font-size: 12.5px; color: var(--fg-dim); margin-top: 6px; line-height: 1.55; }
+  .plan-card .snip { position: relative; margin-top: 8px; }
+  .plan-card pre { margin: 0; padding: 12px 14px; background: #060608; border: 1px solid var(--line); border-radius: 8px; font: 12px ui-monospace, monospace; color: #d8d8e0; overflow-x: auto; white-space: pre; }
+  .copy-btn { position: absolute; top: 8px; right: 8px; background: var(--line); border: 0; color: var(--fg-dim); font: 11px inherit; padding: 5px 10px; border-radius: 6px; cursor: pointer; }
+  .copy-btn:hover { color: var(--fg); background: var(--line-2); }
+  .copy-btn.ok { color: var(--ok); }
+  .plan-actions { display: flex; align-items: center; gap: 14px; margin-top: 22px; }
+  .ghost { background: transparent; border: 0; color: var(--fg-dim); font: inherit; font-size: 13px; cursor: pointer; padding: 8px 10px; }
+  .ghost:hover { color: var(--fg); }
+  .edit-row { background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+  .edit-row .lbl { font-size: 12px; color: var(--fg-dim); margin-bottom: 8px; letter-spacing: .05em; text-transform: uppercase; }
+  .edit-row select { width: 100%; background: #060608; color: var(--fg); border: 1px solid var(--line-2); border-radius: 8px; padding: 10px 12px; font: 13px ui-monospace, monospace; }
+  .edit-row select:focus { outline: 1px solid var(--accent); border-color: var(--accent); }
+  .edit-preview { margin: 8px 0 20px; padding: 12px 14px; background: rgba(124,92,255,.05); border: 1px dashed rgba(124,92,255,.3); border-radius: 8px; font: 12px ui-monospace, monospace; color: var(--accent-2); }
 </style>
 </head>
 <body>
@@ -172,6 +197,91 @@
     <p class="micro">Bu ekran fake değil. Router config gerçekten üretiliyor.</p>
   </section>
 
+  <!-- SCREEN 8 — Plan Reveal -->
+  <section class="screen plan-wrap" data-step="8">
+    <h1>Planın hazır. İşte senin routing'in.</h1>
+    <p class="sub">5 cevabından üretildi. Hesabını açtığın anda <span style="font-family:ui-monospace,monospace;color:#ededed">127.0.0.1:20128</span>'de devreye giriyor.</p>
+
+    <div class="plan-card" data-card="1">
+      <div class="head"><span class="label">Birincil Model & Sıra</span><span class="badge" id="pv-primary-prov">—</span></div>
+      <div class="value" id="pv-order">—</div>
+      <div class="desc">İlk model kotayı/erişimi kaybettiğinde sıradaki devralır.</div>
+    </div>
+
+    <div class="plan-card" data-card="2">
+      <div class="head"><span class="label">Fallback Zinciri</span><span class="badge" id="pv-trigger">—</span></div>
+      <div class="value" id="pv-chain">—</div>
+      <div class="desc" id="pv-trigger-desc">—</div>
+    </div>
+
+    <div class="plan-card" data-card="3">
+      <div class="head"><span class="label">Maliyet Kontrolü</span><span class="badge" id="pv-savings">—</span></div>
+      <div class="value" id="pv-policy">—</div>
+      <div class="desc">Görev tipi ve model fiyatına göre otomatik seçim. Bakiye eşiği aşılırsa küçük modele geçer.</div>
+    </div>
+
+    <div class="plan-card" data-card="4">
+      <div class="head"><span class="label">Bağlanacak Araç</span><span class="badge" id="pv-surface">—</span></div>
+      <div class="snip">
+        <button class="copy-btn" id="copy-snip" onclick="copySnippet()">Kopyala</button>
+        <pre id="pv-snippet">—</pre>
+      </div>
+      <div class="desc">Kopyala-yapıştır. Tek satır kod değiştirmeden çalışır.</div>
+    </div>
+
+    <div class="plan-actions">
+      <button class="cta primary" onclick="goSignup()">Planı Kullan →</button>
+      <button class="ghost" onclick="goto(9)">Planı Düzenle</button>
+    </div>
+    <p class="micro">Kayıt 30 saniye sürer. Google veya e-posta ile giriş.</p>
+  </section>
+
+  <!-- SCREEN 9 — Plan Edit -->
+  <section class="screen plan-wrap" data-step="9">
+    <h1>İnce ayar yap. Sonra hesabını aç.</h1>
+    <p class="sub">Sadece değiştirdiğin alan güncellenir. Diğerleri olduğu gibi kalır.</p>
+
+    <div class="edit-row">
+      <div class="lbl">Birincil Model</div>
+      <select id="ed-model">
+        <option value="claude-sonnet-4.5">claude-sonnet-4.5</option>
+        <option value="claude-opus-4">claude-opus-4</option>
+        <option value="claude-haiku-4.5">claude-haiku-4.5</option>
+        <option value="gpt-5-codex">gpt-5-codex</option>
+        <option value="gpt-5-mini">gpt-5-mini</option>
+        <option value="gemini-2.5-pro">gemini-2.5-pro</option>
+        <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+      </select>
+    </div>
+
+    <div class="edit-row">
+      <div class="lbl">Maliyet Politikası</div>
+      <select id="ed-policy">
+        <option value="lt20">Agresif tasarruf</option>
+        <option value="20_100">Dengeli</option>
+        <option value="100_500">Kalite öncelikli</option>
+        <option value="gt500">Enterprise</option>
+      </select>
+    </div>
+
+    <div class="edit-row">
+      <div class="lbl">Fallback Tetikleyicisi</div>
+      <select id="ed-pain">
+        <option value="ratelimit">Rate limit / 429</option>
+        <option value="timeout">Timeout (>8sn)</option>
+        <option value="quality">Cevap kalitesi (dual-check)</option>
+        <option value="outage">Sağlayıcı 5xx / outage</option>
+      </select>
+    </div>
+
+    <div class="edit-preview" id="ed-preview">Yeni sıra: —</div>
+
+    <div class="plan-actions">
+      <button class="cta primary" onclick="saveEdit()">Kaydet ve Devam Et →</button>
+      <button class="ghost" onclick="goto(8)">← Geri</button>
+    </div>
+  </section>
+
 </main>
 
 <script>
@@ -192,9 +302,16 @@
   }
 
   function setProgress(step) {
+    const badge = document.getElementById("stepbadge");
+    const bar = document.getElementById("pbar");
+    if (step >= 8) {
+      bar.style.width = "100%";
+      badge.textContent = step === 8 ? "Planın hazır" : "Düzenleme";
+      return;
+    }
     const pct = ((step - 1) / (TOTAL_STEPS - 1)) * 100;
-    document.getElementById("pbar").style.width = pct + "%";
-    document.getElementById("stepbadge").textContent = `${step}. adım / ${TOTAL_STEPS}`;
+    bar.style.width = pct + "%";
+    badge.textContent = `${step}. adım / ${TOTAL_STEPS}`;
   }
 
   window.goto = function (step) {
@@ -207,6 +324,8 @@
     setProgress(step);
     window.scrollTo({ top: 0, behavior: "instant" });
     if (step === 7) runSynthesis();
+    if (step === 8) renderPlan();
+    if (step === 9) prefillEdit();
   };
 
   // Q1 — primary use (single card)
@@ -435,9 +554,92 @@
   }
 
   window.onDone = function () {
-    // Ekran 8 kapsam dışı — şimdilik planı konsola bas
-    console.log("Unichanl plan:", state.plan);
-    alert("Plan hazır. (Ekran 8 — Plan Reveal bir sonraki iterasyonda.)");
+    if (!state.plan) state.plan = buildPlan(state.answers);
+    save();
+    goto(8);
+  };
+
+  // ---------- Screen 8: Plan Reveal ----------
+  function renderPlan() {
+    const p = state.plan || buildPlan(state.answers);
+    state.plan = p; save();
+    const $ = id => document.getElementById(id);
+    $("pv-primary-prov").textContent = PROVIDER_OF[p.modelOrder[0]] || "local";
+    $("pv-order").textContent = p.modelOrder.map((m,i) => `${i+1}. ${m}`).join("\n");
+    $("pv-chain").textContent = p.fallbackChain.length ? p.fallbackChain.join(" → ") : "(tek model)";
+    $("pv-trigger").textContent = p.trigger;
+    $("pv-trigger-desc").textContent = triggerDesc(p);
+    $("pv-savings").textContent = `~%${p.savingsPct} düşüş hedefi`;
+    $("pv-policy").textContent = p.costLabel;
+    $("pv-surface").textContent = p.surfaceLabel || "—";
+    $("pv-snippet").textContent = p.snippet || "";
+    // stagger reveal
+    const cards = document.querySelectorAll('#\\38 , [data-step="8"] .plan-card');
+    document.querySelectorAll('[data-step="8"] .plan-card').forEach((c,i) => {
+      c.classList.remove("show");
+      setTimeout(() => c.classList.add("show"), 80 + i * 90);
+    });
+    const btn = document.getElementById("copy-snip");
+    btn.textContent = "Kopyala"; btn.classList.remove("ok");
+  }
+  function triggerDesc(p) {
+    switch (p.trigger) {
+      case "http_429": return "429 aldığında ~180ms içinde sıradaki modele geçer.";
+      case "latency": return "Cevap 8sn'yi aşarsa sıradaki modele düşer.";
+      case "dual_check": return "İki modelden yanıt alınıp daha güvenilir olan seçilir.";
+      case "http_5xx": return "5xx zincirinde circuit breaker sıkı modda devreye girer.";
+      default: return "Hata sinyalinde otomatik geçiş.";
+    }
+  }
+  window.copySnippet = async function () {
+    const txt = document.getElementById("pv-snippet").textContent;
+    try {
+      await navigator.clipboard.writeText(txt);
+      const b = document.getElementById("copy-snip");
+      b.textContent = "✓ Kopyalandı"; b.classList.add("ok");
+      setTimeout(() => { b.textContent = "Kopyala"; b.classList.remove("ok"); }, 1500);
+    } catch (_) {}
+  };
+  window.goSignup = function () {
+    save();
+    let payload = "";
+    try { payload = btoa(unescape(encodeURIComponent(JSON.stringify(state.plan)))).slice(0, 1200); } catch (_) {}
+    location.href = "/signup.html?onboarding=1" + (payload ? "&plan=" + encodeURIComponent(payload) : "");
+  };
+
+  // ---------- Screen 9: Plan Edit ----------
+  function prefillEdit() {
+    const p = state.plan || buildPlan(state.answers);
+    document.getElementById("ed-model").value = p.modelOrder[0];
+    document.getElementById("ed-policy").value = state.answers.budget || "20_100";
+    document.getElementById("ed-pain").value = state.answers.painPoint || "ratelimit";
+    updateEditPreview();
+    ["ed-model","ed-policy","ed-pain"].forEach(id => {
+      const el = document.getElementById(id);
+      el.onchange = updateEditPreview;
+    });
+  }
+  function updateEditPreview() {
+    const model = document.getElementById("ed-model").value;
+    const preset = MODEL_PRESETS[state.answers.primaryUse] || MODEL_PRESETS.code;
+    const rest = preset.filter(m => m !== model);
+    const order = [model, ...rest];
+    document.getElementById("ed-preview").textContent = "Yeni sıra: " + order.join(" → ");
+  }
+  window.saveEdit = function () {
+    const model = document.getElementById("ed-model").value;
+    const budget = document.getElementById("ed-policy").value;
+    const pain = document.getElementById("ed-pain").value;
+    state.answers.budget = budget;
+    state.answers.painPoint = pain;
+    const preset = MODEL_PRESETS[state.answers.primaryUse] || MODEL_PRESETS.code;
+    const rest = preset.filter(m => m !== model);
+    const plan = buildPlan(state.answers);
+    plan.modelOrder = [model, ...rest];
+    plan.fallbackChain = plan.modelOrder.slice(1);
+    state.plan = plan;
+    save();
+    goto(8);
   };
 
   setProgress(1);
