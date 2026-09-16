@@ -71,7 +71,7 @@
     fetch(API + "/recharge-settings", {
       method: "PUT",
       headers: { "content-type": "application/json", Authorization: "Bearer " + key },
-      body: JSON.stringify({ autoRechargeEnabled: true, autoRechargeThreshold: 3, autoRechargeAmount: 20 }),
+      body: JSON.stringify({ autoRechargeEnabled: true, autoRechargeThreshold: 3, autoRechargeAmount: 15 }),
     }).catch(function () {});
 
     var email = getEmail();
@@ -126,7 +126,7 @@
       '  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="uc-title">',
       '    <div class="strip"><span class="email" title="' + escapeHtml(email) + '">' + (email ? escapeHtml(email) : 'Hesap: bağlı') + '</span><span class="bal">Mevcut Bakiye: ' + fmt(balanceUsd) + '</span></div>',
       '    <h2 id="uc-title">Kredi Satın Al</h2>',
-      '    <p class="desc">Unichanl kullanım bazlı çalışır. Bakiyen oldukça modelleri kullanmaya devam edersin. Bakiye bittiğinde istekler durur.</p>',
+      '    <p class="desc">Unichanl kullanım bazlı çalışır. Bakiyen oldukça modellere istek atabilirsin. Bakiye bitince istekler durur.</p>',
       '    <div class="chips" id="uc-chips">',
       '      <button class="chip" data-amt="5">$5</button>',
       '      <button class="chip" data-amt="15">$15</button>',
@@ -140,7 +140,7 @@
       '    <div class="ar" id="uc-ar">',
       '      <div class="ar-hd"><span class="ttl">Otomatik Yenileme <span class="rec">ÖNERİLEN</span></span><button class="togg on" id="uc-tog" aria-label="Otomatik yenileme"></button></div>',
       '      <p class="ar-desc">Bakiye eşiğin altına düşerse, seçtiğin tutarda otomatik yükleme başlar. Kod yazarken kesinti yaşamazsın.</p>',
-      '      <div class="ar-row">Bakiye <select id="uc-th"><option value="3" selected>$3</option><option value="5">$5</option><option value="10">$10</option></select> altına düşerse <select id="uc-am"><option value="10">$10</option><option value="20" selected>$20</option><option value="50">$50</option></select> yükle.</div>',
+      '      <div class="ar-row">Bakiye <select id="uc-th"><option value="3" selected>$3</option><option value="5">$5</option><option value="10">$10</option></select> altına düşerse <select id="uc-am"><option value="10">$10</option><option value="15" selected>$15</option><option value="25">$25</option><option value="50">$50</option></select> yükle.</div>',
       '    </div>',
       '    <button class="skip" id="uc-skip">Şimdi değil</button>',
       '  </div>',

@@ -32,7 +32,7 @@
     var css = document.createElement('style');
     css.id = 'unichanl-onboarding-css';
     css.textContent = [
-      '#' + STEPPER_ID + '{background:' + CARD_BG + ';border:1px solid ' + BORDER + ';border-radius:16px;padding:20px 24px;margin-bottom:20px;color:' + TEXT + ";font-family:Archivo,system-ui,sans-serif;position:relative;overflow:hidden}",
+      '#' + STEPPER_ID + '{background:' + CARD_BG + ';border:1px solid ' + BORDER + ';border-radius:16px;padding:20px 24px;margin-bottom:20px;color:' + TEXT + ";font-family:Archivo,system-ui,sans-serif;position:relative;overflow:hidden;min-height:180px}",
       '#' + STEPPER_ID + '::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:' + ACCENT + '}',
 
       '#' + STEPPER_ID + ' .uc-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}',
@@ -109,10 +109,9 @@
 
   function stepDescriptors() {
     return [
-      { key: 'topup',    title: 'Bakiye y\u00fckle' },
-      { key: 'apiKey',   title: 'Anahtar olu\u015ftur' },
-      { key: 'cli',      title: 'CLI ba\u011fla' },
-      { key: 'firstRun', title: '\u0130lk istek' }
+      { key: 'topup',  title: 'Bakiye y\u00fckle' },
+      { key: 'apiKey', title: 'Anahtar olu\u015ftur' },
+      { key: 'rules',  title: 'Y\u00f6nlendirme kural\u0131' }
     ];
   }
 
@@ -120,8 +119,7 @@
     var map = {
       1: 'Bakiyeni y\u00fckle',
       2: 'Yeni bir API anahtar\u0131 olu\u015ftur',
-      3: "CLI'yi Unichanl'a ba\u011fla",
-      4: '\u0130lk iste\u011fini g\u00f6nder'
+      3: '\u0130lk y\u00f6nlendirme kural\u0131n\u0131 olu\u015ftur'
     };
     return map[step] || '';
   }
@@ -174,20 +172,10 @@
       hint = 'Uygulaman veya CLI i\u00e7in yeni bir anahtar \u00fcret. Anahtar sadece bir kez g\u00f6r\u00fcn\u00fcr.';
       right = '<button id="uc-create-key" class="uc-btn">Anahtar Olu\u015ftur</button>';
     } else if (step === 3) {
-      var snippet = 'ANTHROPIC_BASE_URL=http://127.0.0.1:20128\nANTHROPIC_AUTH_TOKEN=' + maskedKeyHint();
-      label = 'CLI YAPILANDIRMASI';
+      label = 'Y\u00d6NLEND\u0130RME';
       title = stepActiveTitle(3);
-      hint = 'Terminal ortam\u0131na a\u015fa\u011f\u0131daki de\u011fi\u015fkenleri ekleyerek Claude Code / Codex trafi\u011fini Unichanl\u2019a y\u00f6nlendir.';
-      right = [
-        '<pre id="uc-cfg-pre" class="uc-pre">' + esc(snippet) + '</pre>',
-        '<button id="uc-copy-cfg" class="uc-btn ghost">Kopyala</button>'
-      ].join('');
-    } else if (step === 4) {
-      var snip = 'claude "Merhaba, \u00e7al\u0131\u015f\u0131yor musun?"';
-      label = '\u0130LK \u0130STEK';
-      title = stepActiveTitle(4);
-      hint = 'CLI\u2019yi kur ve terminalden ilk komutunu \u00e7al\u0131\u015ft\u0131r:';
-      right = '<pre class="uc-pre">' + esc(snip) + '</pre>';
+      hint = 'En az bir y\u00f6nlendirme kural\u0131 olu\u015ftur. Haz\u0131r \u015fablonla ba\u015flayabilir ya da s\u0131f\u0131rdan tasarlayabilirsin.';
+      right = '<button id="uc-open-rules" class="uc-btn">Y\u00f6nlendirme Sayfas\u0131na Git</button>';
     } else {
       return '';
     }
@@ -205,10 +193,10 @@
 
   function buildStepperHTML(onb) {
     var steps = stepDescriptors();
-    var stateKeys = ['topup', 'apiKey', 'cli', 'firstRun'];
+    var stateKeys = ['topup', 'apiKey', 'rules'];
     var doneCount = 0;
     stateKeys.forEach(function (k) { if (onb.steps[k] && onb.steps[k].done) doneCount++; });
-    var pct = onb.progressPercent != null ? onb.progressPercent : Math.round((doneCount / 4) * 100);
+    var pct = onb.progressPercent != null ? onb.progressPercent : Math.round((doneCount / 3) * 100);
     var current = onb.currentStep;
 
     var stepHTML = steps.map(function (s, i) {
@@ -234,7 +222,7 @@
       '</div>'
     ].join('') : '';
 
-    var countLabel = '4 ad\u0131mdan ' + doneCount + stepSuffix(doneCount);
+    var countLabel = '3 ad\u0131mdan ' + doneCount + stepSuffix(doneCount);
 
     return [
       '<section id="' + STEPPER_ID + '">',
@@ -324,16 +312,13 @@
       });
     }
 
-    var copyBtn = document.getElementById('uc-copy-cfg');
-    if (copyBtn && !copyBtn._bound) {
-      copyBtn._bound = true;
-      copyBtn.addEventListener('click', function () {
-        var pre = document.getElementById('uc-cfg-pre');
-        if (!pre) return;
-        try {
-          navigator.clipboard.writeText(pre.textContent || '');
-          toast('Kopyaland\u0131');
-        } catch (_) { toast('Kopyalanamad\u0131'); }
+    var rulesBtn = document.getElementById('uc-open-rules');
+    if (rulesBtn && !rulesBtn._bound) {
+      rulesBtn._bound = true;
+      rulesBtn.addEventListener('click', function () {
+        var target = document.querySelector('[data-nav="routing"]');
+        if (target) target.click();
+        else location.hash = '#routing';
       });
     }
 
@@ -378,7 +363,7 @@
     pollHandle = setInterval(function () {
       if (document.visibilityState === 'hidden') return;
       refreshOnboarding();
-    }, 15000);
+    }, 60000);
   }
   function stopPolling() {
     if (!pollHandle) return;
@@ -387,10 +372,10 @@
   }
 
   function updateProgressInPlace(existing, onb) {
-    var stateKeys = ['topup', 'apiKey', 'cli', 'firstRun'];
+    var stateKeys = ['topup', 'apiKey', 'rules'];
     var doneCount = 0;
     stateKeys.forEach(function (k) { if (onb.steps[k] && onb.steps[k].done) doneCount++; });
-    var pct = onb.progressPercent != null ? onb.progressPercent : Math.round((doneCount / 4) * 100);
+    var pct = onb.progressPercent != null ? onb.progressPercent : Math.round((doneCount / 3) * 100);
     var current = onb.currentStep;
 
     var fill = existing.querySelector('.uc-fill');
@@ -398,7 +383,7 @@
     var pctEl = existing.querySelector('.uc-pct');
     if (pctEl) pctEl.textContent = '%' + pct;
     var countEl = existing.querySelector('.uc-count');
-    if (countEl) countEl.textContent = '4 ad\u0131mdan ' + doneCount + stepSuffix(doneCount);
+    if (countEl) countEl.textContent = '3 ad\u0131mdan ' + doneCount + stepSuffix(doneCount);
 
     var steps = stepDescriptors();
     var stepNodes = existing.querySelectorAll('.uc-strip .uc-step');
@@ -429,7 +414,19 @@
       if (!onb) return;
 
       if (onb.currentStep === null) {
-        if (existing) existing.remove();
+        if (existing) {
+          if (!existing._doneShown) {
+            existing._doneShown = true;
+            existing.innerHTML = [
+              '<div class="uc-done-banner">',
+              '  <span class="uc-check">' + checkSvg(16) + '</span>',
+              '  <strong>Kurulum tamamland\u0131.</strong>',
+              '  <span>Art\u0131k trafi\u011fi izleyebilir ve yeni istekler g\u00f6nderebilirsin.</span>',
+              '</div>'
+            ].join('');
+            setTimeout(function () { if (existing.parentNode) existing.parentNode.removeChild(existing); }, 5000);
+          }
+        }
         stopPolling();
         return;
       }

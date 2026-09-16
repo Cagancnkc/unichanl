@@ -206,13 +206,7 @@ img,svg{max-width:100%}
       <button class="nav-btn" data-nav="routing"><span class="bar"></span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M6 8.5v3.5a4 4 0 0 0 4 4h5.5"/></svg>Yönlendirme
       </button>
-      <button class="nav-btn" data-nav="requests"><span class="bar"></span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12h4l2 6 4-14 2 8h6"/></svg>İstekler
-      </button>
-      <button class="nav-btn" data-nav="usage"><span class="bar"></span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Kullanım
-      </button>
-      <button class="nav-btn" data-nav="apikeys"><span class="bar"></span>
+<button class="nav-btn" data-nav="apikeys"><span class="bar"></span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7.5" cy="15.5" r="3.5"/><path d="M10 13 20 3M17 6l2 2M14 9l2 2"/></svg>API Anahtarları
       </button>
       <button class="nav-btn" data-nav="settings"><span class="bar"></span>
@@ -312,9 +306,7 @@ img,svg{max-width:100%}
       <div id="view-overview" class="view hidden"></div>
       <div id="view-models" class="view hidden"></div>
       <div id="view-routing" class="view hidden"></div>
-      <div id="view-requests" class="view hidden"></div>
-      <div id="view-usage" class="view hidden"></div>
-      <div id="view-apikeys" class="view hidden"></div>
+<div id="view-apikeys" class="view hidden"></div>
       <div id="view-settings" class="view hidden"></div>
       <div id="view-integrations" class="view hidden"></div>
       <div id="view-pricing" class="view hidden"></div>
@@ -391,7 +383,7 @@ function modal(html,{onClose,onMount}={}){
   return close;
 }
 
-const VIEWS=['overview','models','routing','requests','usage','apikeys','settings','integrations','pricing'];
+const VIEWS=['overview','models','routing','apikeys','settings','integrations','pricing'];
 const POLAR_CHECKOUT_URL='https://buy.polar.sh/polar_cl_KPLbu6b1dABR2LXgvmEu2jeALNSSn5HnuujYD4BudFI';
 function buildPolarCheckoutUrl(amountUsd){
   const params=new URLSearchParams();
@@ -553,14 +545,14 @@ LOADERS.overview=async function(){
       <div class="card" style="overflow:hidden">
         <div class="section-hd">
           <div class="ttl">Son istekler</div>
-          <button class="link" data-nav="requests">Tümünü gör →</button>
+          <span class="mono" style="font-size:11px;color:#657172">son 20</span>
         </div>
         <div id="ov-recent"></div>
       </div>
     </div>`;
 
   const [usage,bal,onb]=await Promise.all([
-    api('/api/usage?limit=6').catch(()=>null),
+    api('/api/usage?limit=20').catch(()=>null),
     api('/api/billing/balance').catch(()=>null),
     api('/api/dashboard/onboarding-status').catch(()=>null),
   ]);
@@ -605,7 +597,7 @@ LOADERS.overview=async function(){
   else{
     rec.innerHTML=`<div style="display:grid;grid-template-columns:110px 1fr 180px 110px 90px 100px;padding:10px 22px;font:600 10px 'JetBrains Mono';letter-spacing:.1em;color:#4C5758;border-bottom:1px solid #132023">
       <span>ZAMAN</span><span>OTURUM</span><span>MODEL</span><span>DURUM</span><span>GECİKME</span><span style="text-align:right">MALİYET</span>
-    </div>`+recent.slice(0,6).map(r=>{
+    </div>`+recent.slice(0,20).map(r=>{
       const status=r.errorCode?'err':'ok';
       const clr=status==='ok'?'#4ADE80':'#F87171';
       const stTxt=status==='ok'?'Başarılı':(r.errorCode||'Hata');
@@ -1188,8 +1180,8 @@ function bindRuleWizard(root,s,closeFn){
   if(tog)tog.onclick=()=>{s.enabled=!s.enabled;const lbl=root.querySelector('#rw-toggle-lbl');tog.classList.toggle('on',s.enabled);if(lbl){lbl.textContent=s.enabled?'Aktif':'Pasif';lbl.style.color=s.enabled?'#DFFF00':'#657172';}};
 }
 
-/* ---------- REQUESTS ---------- */
-LOADERS.requests=async function(){
+/* ---------- REQUESTS (deprecated, kept for reference — merged into overview) ---------- */
+LOADERS._requests_unused=async function(){
   const el=$('#view-requests');
   el.innerHTML=`
     <div style="max-width:1180px;margin:0 auto">
@@ -1242,8 +1234,8 @@ LOADERS.requests=async function(){
   });
 };
 
-/* ---------- USAGE ---------- */
-LOADERS.usage=async function(){
+/* ---------- USAGE (deprecated, kept for reference — merged into overview) ---------- */
+LOADERS._usage_unused=async function(){
   const el=$('#view-usage');
   el.innerHTML=`
     <div style="max-width:1180px;margin:0 auto">
