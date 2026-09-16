@@ -308,6 +308,7 @@
         if (!isFinite(amt) || amt < 5) { toast('Minimum $5'); return; }
         if (amt > 1000) { toast('Maksimum $1000'); return; }
         topupBtn.disabled = true;
+        try { window.unichanlAnalytics && window.unichanlAnalytics.track('cta_click', { name: 'topup_go', amount: amt }); } catch (_) {}
         location.href = buildPolarCheckoutUrl(amt);
       });
     }
@@ -332,6 +333,7 @@
           body: JSON.stringify({ name: 'onboarding-' + Date.now().toString(36) })
         }).then(function (r) { return r.json(); }).then(function (res) {
           if (res && res.key) {
+            try { window.unichanlAnalytics && window.unichanlAnalytics.trackOnce('first_api_call'); } catch (_) {}
             prompt('Yeni API anahtar\u0131n\u0131z (bir daha g\u00f6sterilmeyecek):', res.key);
             refreshOnboarding();
           } else {
@@ -352,7 +354,18 @@
       .then(function (o) {
         if (!o) return;
         if (!window.__unichanl) window.__unichanl = {};
+        var prev = window.__unichanl.onboarding;
         window.__unichanl.onboarding = o;
+        try {
+          if (o.steps) {
+            if (o.steps.topup && o.steps.topup.done && (!prev || !prev.steps || !prev.steps.topup || !prev.steps.topup.done)) {
+              window.unichanlAnalytics && window.unichanlAnalytics.trackOnce('first_topup_success');
+            }
+            if (o.steps.rules && o.steps.rules.done && (!prev || !prev.steps || !prev.steps.rules || !prev.steps.rules.done)) {
+              window.unichanlAnalytics && window.unichanlAnalytics.trackOnce('first_rule_created');
+            }
+          }
+        } catch (_) {}
         mount();
       }).catch(function () {});
   }

@@ -6,6 +6,7 @@
 <title>unichanl · Panel</title>
 <link rel="icon" type="image/png" href="/favicon.png?v=2">
 <script defer src="/_first_topup.js"></script>
+<script defer src="/_analytics.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://www.googletagmanager.com">
@@ -729,7 +730,7 @@ LOADERS.models=async function(){
     const {primary,mid,fallback}=getLogo(brand,modelId);
     const s=size||24;
     const ph=placeholderSvg(modelId);
-    if(!primary)return `<img src="${ph}" alt="" width="${s}" height="${s}" style="width:${s}px;height:${s}px;border-radius:6px;object-fit:contain">`;
+    if(!primary)return `<img src="${ph}" alt="" width="${s}" height="${s}" loading="lazy" decoding="async" style="width:${s}px;height:${s}px;border-radius:6px;object-fit:contain">`;
     return `<img src="${esc(primary)}" alt="Logo" width="${s}" height="${s}" style="width:${s}px;height:${s}px;border-radius:6px;background:#0F1A1B;padding:3px;object-fit:contain" loading="lazy" data-mid="${esc(mid)}" data-fb="${esc(fallback)}" data-ph="${esc(ph)}" onerror="var s=this.dataset.step||'0';if(s==='0'&&this.dataset.mid){this.dataset.step='1';this.src=this.dataset.mid;}else if((s==='0'||s==='1')&&this.dataset.fb){this.dataset.step='2';this.src=this.dataset.fb;}else{this.dataset.step='3';this.src=this.dataset.ph;this.onerror=null;}">`;
   }
   const el=$('#view-models');

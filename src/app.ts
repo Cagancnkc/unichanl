@@ -21,6 +21,7 @@ import { sessionRoutes } from './api/routes/sessions.js';
 import { onboardingRoutes } from './api/routes/onboarding.js';
 import { adminRoutes } from './api/routes/admin.js';
 import { publicModelRoutes } from './api/routes/publicModels.js';
+import { analyticsRoutes } from './api/routes/analytics.js';
 import { generateRequestId } from './utils/id.js';
 import { logger } from './utils/logger.js';
 
@@ -97,6 +98,7 @@ export async function createApp() {
   await app.register(billingWebhookRoutes, { prefix: '/api' });
   await app.register(authRoutes);
   await app.register(publicModelRoutes);
+  await app.register(analyticsRoutes, { prefix: '/api' });
 
   await app.register(
     async (protectedApp) => {
