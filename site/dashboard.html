@@ -7,6 +7,7 @@
 <link rel="icon" type="image/png" href="/favicon.png?v=2">
 <script defer src="/_first_topup.js"></script>
 <script defer src="/_analytics.js"></script>
+<script defer src="/_setup_wizard.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://www.googletagmanager.com">
@@ -959,7 +960,7 @@ LOADERS.routing=async function(){
           <h1 class="h1">Yönlendirme</h1>
           <p class="sub">Aktif kurallar. Öncelik ve stratejiye göre model seçimi.</p>
         </div>
-        <button id="rule-new" class="btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Yönlendirme Kuralı Oluştur</button>
+        <button id="rule-new" class="btn" data-wiz-target="rules"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Yönlendirme Kuralı Oluştur</button>
       </div>
       <div class="card" style="overflow:hidden">
         <div id="rules-body"><div class="empty">Yükleniyor…</div></div>
@@ -979,7 +980,7 @@ async function renderRulesTable(){
     b.innerHTML=`<div class="empty" style="padding:56px 24px">
       <div style="font-size:15px;color:#C7CFCE;margin-bottom:8px">Henüz yönlendirme kuralın yok.</div>
       <div style="font-size:13px;color:#657172;margin-bottom:20px;max-width:440px;margin-left:auto;margin-right:auto">Kural olmadığında istekler varsayılan stratejiyle işlenir. İlk kuralını oluşturmak için aşağıdaki butona bas — adım adım rehber seni yönlendirir.</div>
-      <button id="rule-new-empty" class="btn">İlk Kuralı Oluştur</button>
+      <button id="rule-new-empty" class="btn" data-wiz-target="rules">İlk Kuralı Oluştur</button>
     </div>`;
     const b2=$('#rule-new-empty');if(b2)b2.addEventListener('click',()=>openRuleWizard());
     return;
@@ -1297,7 +1298,7 @@ LOADERS.apikeys=async function(){
       <div class="crumb">UNICHANL / KİMLİK</div>
       <h1 class="h1">API Anahtarları</h1>
       <p class="sub">CLI ve uygulamalarınız için anahtar oluşturun. Her anahtar yalnızca oluşturulurken bir kez gösterilir.</p>
-      <div style="margin-bottom:16px"><button class="btn" id="btn-newkey"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Yeni Anahtar Oluştur</button></div>
+      <div style="margin-bottom:16px"><button class="btn" id="btn-newkey" data-wiz-target="apikey"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>Yeni Anahtar Oluştur</button></div>
       <div class="card" style="overflow:hidden">
         <div id="keys-body"><div class="empty">Yükleniyor…</div></div>
       </div>
@@ -1425,7 +1426,7 @@ LOADERS.integrations=async function(){
       <p class="sub">CLI ve editörleri Unichanl gateway'ine bağla. Tüm istekler <span class="mono" style="color:#DFFF00">127.0.0.1:20128</span> üzerinden geçer.</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px">
         ${INTEGRATIONS.map(it=>`
-          <div class="card" style="padding:22px 24px">
+          <div class="card" data-wiz-target="integration" style="padding:22px 24px">
             <div class="row-split" style="margin-bottom:8px">
               <div style="font-weight:600;font-size:16px;color:#F2F5F4;display:flex;align-items:center;gap:8px">${integrationLogo(it.id)}${esc(it.name)}</div>
               <span class="pill mut">${esc(it.id)}</span>
@@ -1442,6 +1443,7 @@ LOADERS.integrations=async function(){
     </div>`;
   $$('.copy',el).forEach(b=>b.addEventListener('click',async()=>{
     try{await navigator.clipboard.writeText(b.dataset.copy);toast('Kopyalandı','ok');}catch(_){toast('Kopyalanamadı','err');}
+    try{window.UnichanlSetupWizard&&window.UnichanlSetupWizard.markIntegrationDone();}catch(_){}
   }));
 };
 
