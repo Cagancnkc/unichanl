@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="/favicon.png?v=2">
+<title>Cursor Entegrasyonu: Unichanl ile Custom API Kurulumu</title>
+<meta name="description" content="Cursor IDE için Unichanl gateway entegrasyonu — OpenAI/Anthropic base URL override, Team modu, sub-key yönetimi ve troubleshooting rehberi.">
+<link rel="canonical" href="https://unichanl.com/rehber/entegrasyon-cursor.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cursor Entegrasyonu: Unichanl ile Custom API">
+<meta property="og:description" content="Cursor'da Unichanl gateway'i base URL override ile bağlama rehberi.">
+<meta property="og:url" content="https://unichanl.com/rehber/entegrasyon-cursor.html">
+<meta property="og:image" content="https://unichanl.com/favicon.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Ana Sayfa","item":"https://unichanl.com/"},{"@type":"ListItem","position":2,"name":"Rehber","item":"https://unichanl.com/rehber/"},{"@type":"ListItem","position":3,"name":"Entegrasyon: Cursor","item":"https://unichanl.com/rehber/entegrasyon-cursor.html"}]},{"@type":"TechArticle","headline":"Cursor Entegrasyonu: Unichanl ile Custom API","description":"Cursor için Unichanl gateway entegrasyon adımları.","author":{"@type":"Organization","name":"Unichanl"},"publisher":{"@type":"Organization","name":"Unichanl","logo":{"@type":"ImageObject","url":"https://unichanl.com/favicon.png"}},"datePublished":"2026-09-16","dateModified":"2026-09-16","inLanguage":"tr-TR"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#03090B;color:#F2F5F4;font-family:'Archivo',system-ui,sans-serif;line-height:1.6}a{color:#7FD1AE;text-decoration:none}a:hover{text-decoration:underline}.wrap{max-width:820px;margin:0 auto;padding:60px 24px 100px}header.nav{border-bottom:1px solid #132023;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto}header.nav a.brand{font-weight:700;font-size:18px;color:#F2F5F4}header.nav nav a{margin-left:22px;color:#C7CFCE;font-size:14px}h1{font-family:'Newsreader',serif;font-weight:400;font-size:44px;line-height:1.1;letter-spacing:-.02em;margin-bottom:12px}h2{font-family:'Newsreader',serif;font-weight:400;font-size:28px;margin:44px 0 14px}h3{font-size:18px;font-weight:600;margin:22px 0 8px}.meta{color:#7A8A87;font-size:13px;margin-bottom:26px}code{background:#071114;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',mono;font-size:13px;color:#7FD1AE}pre{background:#071114;border:1px solid #132023;border-radius:8px;padding:14px 16px;overflow-x:auto;margin:12px 0;color:#C7CFCE;line-height:1.5;font-family:'JetBrains Mono',mono;font-size:13px}.tldr{background:#071114;border:1px solid #132023;border-radius:12px;padding:20px 22px;margin:20px 0 30px;font-size:15px;color:#C7CFCE}.tldr strong{color:#F2F5F4}p{margin:12px 0;color:#C7CFCE}ul,ol{margin:12px 0 12px 22px;color:#C7CFCE}li{margin:6px 0}table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}th,td{border:1px solid #132023;padding:12px 14px;text-align:left;vertical-align:top}th{background:#071114;color:#F2F5F4;font-weight:600}td{color:#C7CFCE}.cta{display:inline-block;background:#F2F5F4;color:#03090B;padding:14px 28px;border-radius:24px;font-weight:600;margin-top:20px}footer{border-top:1px solid #132023;padding:30px 24px;text-align:center;color:#7A8A87;font-size:13px;max-width:1200px;margin:0 auto}.crumb{color:#7A8A87;font-size:13px;margin-bottom:16px}.crumb a{color:#7A8A87}</style>
+</head>
+<body>
+<header class="nav"><a href="/" class="brand">Unichanl</a><nav><a href="/landing.html">Ürün</a><a href="/fiyatlandirma.html">Fiyatlandırma</a><a href="/dokumanlar.html">Dokümanlar</a><a href="/karsilastirma/">Karşılaştırma</a></nav></header>
+<main class="wrap">
+<div class="crumb"><a href="/">Ana sayfa</a> › <a href="/rehber/">Rehber</a> › Entegrasyon: Cursor</div>
+<h1>Cursor Entegrasyonu</h1>
+<div class="meta">Güncelleme: 16 Eylül 2026 · 5 dk okuma</div>
+
+<div class="tldr"><strong>TL;DR:</strong> Cursor'ı Unichanl gateway'e bağlamak için Settings → Models altında OpenAI Base URL'i <code>http://127.0.0.1:20128/v1</code> ve API Key'i Unichanl gateway key'inizle değiştirin. Aynı ekranda Anthropic Base URL'i <code>http://127.0.0.1:20128</code> yapın. Tek anahtar ile Chat, Composer, Cmd+K ve Tab özelliklerinin tamamı yerel gateway üzerinden failover'lu çalışır.</div>
+
+<h2>Ön gereksinimler</h2>
+<ul>
+<li>Cursor 0.42+ (Custom API mode desteği için).</li>
+<li>Unichanl gateway kurulu ve <code>127.0.0.1:20128</code>'de dinliyor.</li>
+<li>Aktif gateway key (<a href="/fiyatlandirma.html">5$ minimum topup</a>).</li>
+</ul>
+
+<h2>Adım 1: Gateway'i başlat</h2>
+<pre>npm install -g unichanl
+unichanl start --key sk-unichanl-YOUR_KEY
+
+# Sağlık kontrolü:
+curl http://127.0.0.1:20128/health
+# {"status":"ok","upstreams":3,"routing":"failover"}</pre>
+
+<h2>Adım 2: Cursor Settings</h2>
+<p><code>Cmd/Ctrl + ,</code> → <strong>Models</strong> → <strong>OpenAI API Key</strong> bölümünü açın.</p>
+
+<h3>OpenAI ayarları</h3>
+<pre>API Key            : sk-unichanl-YOUR_KEY
+Override OpenAI URL: http://127.0.0.1:20128/v1
+Verify             : [Verify butonuna basın → yeşil "Verified" görünmeli]</pre>
+
+<h3>Anthropic ayarları</h3>
+<pre>Anthropic API Key: sk-unichanl-YOUR_KEY
+Anthropic URL    : http://127.0.0.1:20128</pre>
+
+<h2>Adım 3: Model listesi</h2>
+<p>Cursor'un model dropdown'unda:</p>
+<ul>
+<li><code>claude-sonnet-4</code> — günlük kodlama</li>
+<li><code>claude-opus-4</code> — büyük refactor</li>
+<li><code>claude-haiku-4</code> — Tab autocomplete</li>
+<li><code>gpt-4o</code> — vision / diagram</li>
+<li><code>gemini-2.5-pro</code> — çok uzun context</li>
+</ul>
+
+<h2>Adım 4: Test</h2>
+<p>Yeni bir dosyada Cmd+K açın, "// print hello world" yazın. Yanıt anında gelmeli. Unichanl loglarında istek görünecek:</p>
+<pre>[unichanl] POST /v1/chat/completions model=claude-sonnet-4
+[unichanl] upstream=anthropic-direct latency=142ms tokens_out=18</pre>
+
+<h2>Team modu için sub-key kullanımı</h2>
+<p>5+ kişilik ekipler için ana gateway key'i doğrudan paylaşmak yerine dashboard'dan kişi bazlı sub-key üretin. Her sub-key:</p>
+<ul>
+<li>Kendi kullanım limitine sahiptir (aylık 20$ gibi).</li>
+<li>Kişi bazlı dashboard'da görünür.</li>
+<li>Çalışan ayrılınca iptal edilebilir; ana key değişmez.</li>
+</ul>
+<pre>unichanl subkey create --name "developer-ali" --monthly-cap 25
+# → sk-unichanl-sub-abc123...</pre>
+
+<h2>Somut senaryo</h2>
+<p>10 kişilik bir React ekibi Cursor'da Composer ile büyük bir migration üzerinde çalışıyor. Her geliştiriciye sub-key veriliyor. Aylık 250$ bütçe belirlendi. Cursor'un kendi "usage-based" fiyatı yerine Unichanl marjsız Sonnet 4 fiyatıyla harcama %8-10 azaldı; ayrıca ekip TL'li KDV'li fatura aldı.</p>
+
+<h2>Cursor Rules ile model önerisi</h2>
+<p><code>.cursorrules</code> dosyanıza şu ipucunu koyun:</p>
+<pre># .cursorrules
+- Composer/Chat için varsayılan model: claude-sonnet-4
+- Uzun dokümantasyon üretimi için: gemini-2.5-pro
+- Görsel/diagram için: gpt-4o</pre>
+
+<h2>Sorun giderme</h2>
+
+<h3>"Failed to verify" hatası</h3>
+<p>Gateway ayakta mı? Base URL'in sonunda <code>/v1</code> var mı? <code>curl -v http://127.0.0.1:20128/v1/models</code> ile doğrulayın.</p>
+
+<h3>Chat çalışıyor ama Composer takılıyor</h3>
+<p>Composer büyük context gönderir; timeout'u artırın veya <code>claude-sonnet-4</code> yerine <code>gemini-2.5-pro</code> deneyin (1M+ context).</p>
+
+<h3>Tab autocomplete gecikmeli</h3>
+<p>Tab için ayrı model belirtin: Cursor Settings → "Tab Model" → <code>claude-haiku-4</code>.</p>
+
+<h2>İlgili rehberler</h2>
+<ul>
+<li><a href="/rehber/cursor-ai-gateway.html">Cursor AI Gateway (kapsamlı)</a></li>
+<li><a href="/rehber/entegrasyon-claude-code.html">Claude Code Entegrasyonu</a></li>
+<li><a href="/rehber/entegrasyon-codex.html">Codex Entegrasyonu</a></li>
+<li><a href="/rehber/entegrasyon-gemini-cli.html">Gemini CLI Entegrasyonu</a></li>
+<li><a href="/karsilastirma/openrouter-alternative.html">OpenRouter Alternative</a></li>
+<li><a href="/fiyatlandirma.html">Fiyatlandırma</a></li>
+</ul>
+
+<a href="/fiyatlandirma.html" class="cta">Unichanl'ı 5$ ile dene →</a>
+</main>
+<footer>© Unichanl · <a href="/gizlilik-politikasi.html">Gizlilik</a> · <a href="/kvkk-aydinlatma-metni.html">KVKK</a></footer>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="/favicon.png?v=2">
+<title>Gemini CLI Entegrasyonu: Unichanl Gateway ile Kurulum</title>
+<meta name="description" content="Google Gemini CLI için Unichanl gateway entegrasyonu — GOOGLE_API_KEY, OpenAI-compat mode, model seçimi, failover ve Vertex AI upstream rehberi.">
+<link rel="canonical" href="https://unichanl.com/rehber/entegrasyon-gemini-cli.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Gemini CLI Entegrasyonu: Unichanl Gateway">
+<meta property="og:description" content="Gemini CLI için Unichanl gateway entegrasyon rehberi.">
+<meta property="og:url" content="https://unichanl.com/rehber/entegrasyon-gemini-cli.html">
+<meta property="og:image" content="https://unichanl.com/favicon.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Ana Sayfa","item":"https://unichanl.com/"},{"@type":"ListItem","position":2,"name":"Rehber","item":"https://unichanl.com/rehber/"},{"@type":"ListItem","position":3,"name":"Entegrasyon: Gemini CLI","item":"https://unichanl.com/rehber/entegrasyon-gemini-cli.html"}]},{"@type":"TechArticle","headline":"Gemini CLI Entegrasyonu: Unichanl Gateway","description":"Gemini CLI için Unichanl gateway entegrasyon rehberi.","author":{"@type":"Organization","name":"Unichanl"},"publisher":{"@type":"Organization","name":"Unichanl","logo":{"@type":"ImageObject","url":"https://unichanl.com/favicon.png"}},"datePublished":"2026-09-16","dateModified":"2026-09-16","inLanguage":"tr-TR"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#03090B;color:#F2F5F4;font-family:'Archivo',system-ui,sans-serif;line-height:1.6}a{color:#7FD1AE;text-decoration:none}a:hover{text-decoration:underline}.wrap{max-width:820px;margin:0 auto;padding:60px 24px 100px}header.nav{border-bottom:1px solid #132023;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto}header.nav a.brand{font-weight:700;font-size:18px;color:#F2F5F4}header.nav nav a{margin-left:22px;color:#C7CFCE;font-size:14px}h1{font-family:'Newsreader',serif;font-weight:400;font-size:44px;line-height:1.1;letter-spacing:-.02em;margin-bottom:12px}h2{font-family:'Newsreader',serif;font-weight:400;font-size:28px;margin:44px 0 14px}h3{font-size:18px;font-weight:600;margin:22px 0 8px}.meta{color:#7A8A87;font-size:13px;margin-bottom:26px}code{background:#071114;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',mono;font-size:13px;color:#7FD1AE}pre{background:#071114;border:1px solid #132023;border-radius:8px;padding:14px 16px;overflow-x:auto;margin:12px 0;color:#C7CFCE;line-height:1.5;font-family:'JetBrains Mono',mono;font-size:13px}.tldr{background:#071114;border:1px solid #132023;border-radius:12px;padding:20px 22px;margin:20px 0 30px;font-size:15px;color:#C7CFCE}.tldr strong{color:#F2F5F4}p{margin:12px 0;color:#C7CFCE}ul,ol{margin:12px 0 12px 22px;color:#C7CFCE}li{margin:6px 0}table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}th,td{border:1px solid #132023;padding:12px 14px;text-align:left;vertical-align:top}th{background:#071114;color:#F2F5F4;font-weight:600}td{color:#C7CFCE}.cta{display:inline-block;background:#F2F5F4;color:#03090B;padding:14px 28px;border-radius:24px;font-weight:600;margin-top:20px}footer{border-top:1px solid #132023;padding:30px 24px;text-align:center;color:#7A8A87;font-size:13px;max-width:1200px;margin:0 auto}.crumb{color:#7A8A87;font-size:13px;margin-bottom:16px}.crumb a{color:#7A8A87}</style>
+</head>
+<body>
+<header class="nav"><a href="/" class="brand">Unichanl</a><nav><a href="/landing.html">Ürün</a><a href="/fiyatlandirma.html">Fiyatlandırma</a><a href="/dokumanlar.html">Dokümanlar</a><a href="/karsilastirma/">Karşılaştırma</a></nav></header>
+<main class="wrap">
+<div class="crumb"><a href="/">Ana sayfa</a> › <a href="/rehber/">Rehber</a> › Entegrasyon: Gemini CLI</div>
+<h1>Gemini CLI Entegrasyonu</h1>
+<div class="meta">Güncelleme: 16 Eylül 2026 · 5 dk okuma</div>
+
+<div class="tldr"><strong>TL;DR:</strong> Google Gemini CLI'yi Unichanl gateway ile kullanmak için OpenAI-uyumlu modda çalıştırın ve <code>OPENAI_BASE_URL=http://127.0.0.1:20128/v1</code> ile <code>OPENAI_API_KEY=sk-unichanl-...</code> set edin. Unichanl <code>gemini-2.5-pro</code> ve <code>gemini-2.5-flash</code> modellerini Google AI Studio veya Vertex AI upstream üzerinden servis eder; kota bittiğinde otomatik olarak diğer upstream'e döner.</div>
+
+<h2>1. Gateway kurulumu</h2>
+<pre>npm install -g unichanl
+unichanl start --key sk-unichanl-YOUR_KEY</pre>
+
+<h2>2. Gemini CLI OpenAI-compat mode</h2>
+<p>Gemini CLI yakın zamanda OpenAI-uyumlu endpoint desteği ekledi. Bu modda base URL değişikliği yeterlidir:</p>
+<pre>gemini --openai-compat \
+  --base-url http://127.0.0.1:20128/v1 \
+  --api-key sk-unichanl-YOUR_KEY \
+  --model gemini-2.5-pro \
+  "src/router.ts dosyasındaki failover mantığını gözden geçir"</pre>
+
+<h2>3. Kalıcı env değişkenleri</h2>
+<pre># macOS / Linux
+export OPENAI_BASE_URL="http://127.0.0.1:20128/v1"
+export OPENAI_API_KEY="sk-unichanl-YOUR_KEY"
+export GEMINI_MODEL="gemini-2.5-pro"</pre>
+
+<pre># Windows PowerShell
+[Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "http://127.0.0.1:20128/v1", "User")
+[Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "sk-unichanl-YOUR_KEY", "User")</pre>
+
+<h2>4. Native Gemini API modu</h2>
+<p>Bazı Gemini CLI kullanımları native Google API'yi bekler. Unichanl bu format için proxy modu sunar:</p>
+<pre>export GOOGLE_API_BASE="http://127.0.0.1:20128/google"
+export GOOGLE_API_KEY="sk-unichanl-YOUR_KEY"
+
+gemini "1M token'lık PDF'i özetle"</pre>
+
+<h2>5. Model seçenekleri</h2>
+<table>
+<thead><tr><th>Model</th><th>Context</th><th>Kullanım</th></tr></thead>
+<tbody>
+<tr><td>gemini-2.5-pro</td><td>~1M token</td><td>Uzun döküman analizi, kod tabanı okuma</td></tr>
+<tr><td>gemini-2.5-flash</td><td>~1M token</td><td>Hızlı özet, düşük maliyet</td></tr>
+</tbody>
+</table>
+
+<h2>6. Somut senaryo</h2>
+<p>Bir teknik yazar, 3.000 sayfalık ürün dokümantasyonundan changelog üretmek için Gemini 2.5 Pro'nun 1M+ context'ini kullanıyor. Direkt Google AI Studio'da free tier limit'i günde birkaç kez doluyor ve iş duruyordu. Unichanl gateway ile:</p>
+<ul>
+<li>Primary upstream: Google AI Studio (paid).</li>
+<li>Backup upstream: Vertex AI (europe-west4 bölgesi).</li>
+<li>Kota bittiğinde otomatik Vertex'e düşüş.</li>
+<li>Aylık harcama TL cinsinden tek fatura.</li>
+</ul>
+
+<h2>7. Cross-model routing örneği</h2>
+<p>Unichanl aynı gateway üzerinden Gemini ile Claude arasında geçişi tek komutla mümkün kılar:</p>
+<pre># Uzun context için Gemini
+gemini --model gemini-2.5-pro "docs/ klasörünü özetle"
+
+# Kod refactor için Claude (aynı base URL)
+codex --model claude-sonnet-4 "src/auth.ts'yi test edilebilir hale getir"</pre>
+
+<h2>8. Sorun giderme</h2>
+
+<h3>"Model not found: gemini-2.5-pro"</h3>
+<p>Gateway upstream olarak Google AI Studio veya Vertex bağlı değil. Dashboard'da provider ekleyin.</p>
+
+<h3>"429 quota exceeded"</h3>
+<p>Tek upstream'de Google kota limit'i doldu. Dashboard'a ikinci bir Google project ekleyip round-robin açın veya Vertex'i backup olarak set edin.</p>
+
+<h3>PDF/multimodal isteklerde hata</h3>
+<p>Multimodal içerik için native Google API modu (<code>/google</code> path) tercih edin; OpenAI-compat mode her multimodal feature'ı desteklemeyebilir.</p>
+
+<h2>İlgili rehberler</h2>
+<ul>
+<li><a href="/rehber/entegrasyon-claude-code.html">Claude Code Entegrasyonu</a></li>
+<li><a href="/rehber/entegrasyon-cursor.html">Cursor Entegrasyonu</a></li>
+<li><a href="/rehber/entegrasyon-codex.html">Codex Entegrasyonu</a></li>
+<li><a href="/rehber/one-api-multiple-ai-models.html">One API for Multiple AI Models</a></li>
+<li><a href="/rehber/ai-model-router.html">AI Model Router / LLM Routing</a></li>
+<li><a href="/karsilastirma/openrouter-alternative.html">OpenRouter Alternative</a></li>
+<li><a href="/fiyatlandirma.html">Fiyatlandırma</a></li>
+</ul>
+
+<a href="/fiyatlandirma.html" class="cta">Unichanl'ı 5$ ile dene →</a>
+</main>
+<footer>© Unichanl · <a href="/gizlilik-politikasi.html">Gizlilik</a> · <a href="/kvkk-aydinlatma-metni.html">KVKK</a></footer>
+</body>
+</html>

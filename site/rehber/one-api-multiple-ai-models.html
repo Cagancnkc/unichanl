@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="/favicon.png?v=2">
+<title>One API for Multiple AI Models: Tek Anahtar, Tüm Modeller</title>
+<meta name="description" content="Tek API anahtarı ile Anthropic Claude, OpenAI GPT, Google Gemini, Bedrock ve Vertex modellerine erişin. Unichanl unified API rehberi ve örnek kodlar.">
+<link rel="canonical" href="https://unichanl.com/rehber/one-api-multiple-ai-models.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="One API for Multiple AI Models">
+<meta property="og:description" content="Tek anahtarla Claude, GPT, Gemini, Bedrock, Vertex — unified API.">
+<meta property="og:url" content="https://unichanl.com/rehber/one-api-multiple-ai-models.html">
+<meta property="og:image" content="https://unichanl.com/favicon.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Ana Sayfa","item":"https://unichanl.com/"},{"@type":"ListItem","position":2,"name":"Rehber","item":"https://unichanl.com/rehber/"},{"@type":"ListItem","position":3,"name":"One API for Multiple AI Models","item":"https://unichanl.com/rehber/one-api-multiple-ai-models.html"}]},{"@type":"TechArticle","headline":"One API for Multiple AI Models","description":"Tek API anahtarı ile birden fazla AI modeline erişim mimarisi.","author":{"@type":"Organization","name":"Unichanl"},"publisher":{"@type":"Organization","name":"Unichanl","logo":{"@type":"ImageObject","url":"https://unichanl.com/favicon.png"}},"datePublished":"2026-09-16","dateModified":"2026-09-16","inLanguage":"tr-TR"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#03090B;color:#F2F5F4;font-family:'Archivo',system-ui,sans-serif;line-height:1.6}a{color:#7FD1AE;text-decoration:none}a:hover{text-decoration:underline}.wrap{max-width:820px;margin:0 auto;padding:60px 24px 100px}header.nav{border-bottom:1px solid #132023;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto}header.nav a.brand{font-weight:700;font-size:18px;color:#F2F5F4}header.nav nav a{margin-left:22px;color:#C7CFCE;font-size:14px}h1{font-family:'Newsreader',serif;font-weight:400;font-size:44px;line-height:1.1;letter-spacing:-.02em;margin-bottom:12px}h2{font-family:'Newsreader',serif;font-weight:400;font-size:28px;margin:44px 0 14px}h3{font-size:18px;font-weight:600;margin:22px 0 8px}.meta{color:#7A8A87;font-size:13px;margin-bottom:26px}code{background:#071114;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',mono;font-size:13px;color:#7FD1AE}pre{background:#071114;border:1px solid #132023;border-radius:8px;padding:14px 16px;overflow-x:auto;margin:12px 0;color:#C7CFCE;line-height:1.5;font-family:'JetBrains Mono',mono;font-size:13px}.tldr{background:#071114;border:1px solid #132023;border-radius:12px;padding:20px 22px;margin:20px 0 30px;font-size:15px;color:#C7CFCE}.tldr strong{color:#F2F5F4}p{margin:12px 0;color:#C7CFCE}ul,ol{margin:12px 0 12px 22px;color:#C7CFCE}li{margin:6px 0}table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}th,td{border:1px solid #132023;padding:12px 14px;text-align:left;vertical-align:top}th{background:#071114;color:#F2F5F4;font-weight:600}td{color:#C7CFCE}.cta{display:inline-block;background:#F2F5F4;color:#03090B;padding:14px 28px;border-radius:24px;font-weight:600;margin-top:20px}footer{border-top:1px solid #132023;padding:30px 24px;text-align:center;color:#7A8A87;font-size:13px;max-width:1200px;margin:0 auto}.crumb{color:#7A8A87;font-size:13px;margin-bottom:16px}.crumb a{color:#7A8A87}</style>
+</head>
+<body>
+<header class="nav"><a href="/" class="brand">Unichanl</a><nav><a href="/landing.html">Ürün</a><a href="/fiyatlandirma.html">Fiyatlandırma</a><a href="/dokumanlar.html">Dokümanlar</a><a href="/karsilastirma/">Karşılaştırma</a></nav></header>
+<main class="wrap">
+<div class="crumb"><a href="/">Ana sayfa</a> › <a href="/rehber/">Rehber</a> › One API for Multiple AI Models</div>
+<h1>One API for Multiple AI Models</h1>
+<div class="meta">Güncelleme: 16 Eylül 2026 · 8 dk okuma</div>
+
+<div class="tldr"><strong>TL;DR:</strong> Unichanl tek bir gateway key ile Anthropic Claude, OpenAI GPT, Google Gemini, AWS Bedrock ve Google Vertex modellerine hem OpenAI-uyumlu <code>/v1/chat/completions</code> hem de Anthropic-uyumlu <code>/v1/messages</code> endpoint'lerinden erişim sağlar. Kod tarafında sadece <code>model</code> alanını değiştirerek provider değiştirirsiniz; anahtar yönetimi, failover ve fatura tek yerden akar.</div>
+
+<h2>Sorun: her provider için ayrı entegrasyon</h2>
+<p>Modern bir AI uygulaması tipik olarak birden fazla model kullanır: karmaşık planlama için Claude Opus, hızlı yanıt için Haiku, vision için GPT-4o, uzun context için Gemini 2.5 Pro. Bu her provider için:</p>
+<ul>
+<li>Ayrı SDK</li>
+<li>Ayrı API anahtarı</li>
+<li>Ayrı fatura</li>
+<li>Ayrı rate limit yönetimi</li>
+<li>Ayrı hata yönetimi</li>
+</ul>
+<p>Bir gateway katmanı bunları tek çatı altında birleştirir.</p>
+
+<h2>Unified API mimarisi</h2>
+<pre>Uygulama
+   │
+   │ tek endpoint: http://127.0.0.1:20128
+   │ tek anahtar: sk-unichanl-...
+   ▼
+Unichanl Gateway
+   │
+   ├─► Anthropic (claude-sonnet-4, claude-opus-4, claude-haiku-4)
+   ├─► OpenAI (gpt-4o, gpt-4.1, o1)
+   ├─► Google (gemini-2.5-pro, gemini-2.5-flash)
+   ├─► AWS Bedrock (claude via bedrock, llama-3.3)
+   └─► Google Vertex (claude via vertex, gemini)</pre>
+
+<h2>OpenAI-uyumlu endpoint</h2>
+<pre>curl http://127.0.0.1:20128/v1/chat/completions \
+  -H "Authorization: Bearer sk-unichanl-YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [{"role":"user","content":"Merhaba"}]
+  }'
+
+# Aynı endpoint, farklı model:
+curl http://127.0.0.1:20128/v1/chat/completions \
+  -H "Authorization: Bearer sk-unichanl-YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "claude-sonnet-4",
+    "messages": [{"role":"user","content":"Merhaba"}]
+  }'</pre>
+
+<h2>Anthropic-uyumlu endpoint</h2>
+<pre>curl http://127.0.0.1:20128/v1/messages \
+  -H "x-api-key: sk-unichanl-YOUR_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{
+    "model": "claude-sonnet-4",
+    "max_tokens": 256,
+    "messages": [{"role":"user","content":"Merhaba"}]
+  }'</pre>
+
+<h2>Python: tek SDK, tüm modeller</h2>
+<pre>from openai import OpenAI
+
+client = OpenAI(
+    base_url="http://127.0.0.1:20128/v1",
+    api_key="sk-unichanl-YOUR_KEY"
+)
+
+# Aynı SDK ile Claude
+r1 = client.chat.completions.create(
+    model="claude-sonnet-4",
+    messages=[{"role":"user","content":"Refactor önerisi"}]
+)
+
+# Aynı SDK ile GPT
+r2 = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role":"user","content":"Refactor önerisi"}]
+)
+
+# Aynı SDK ile Gemini
+r3 = client.chat.completions.create(
+    model="gemini-2.5-pro",
+    messages=[{"role":"user","content":"Refactor önerisi"}]
+)</pre>
+
+<h2>TypeScript / Node</h2>
+<pre>import OpenAI from "openai";
+
+const ai = new OpenAI({
+  baseURL: "http://127.0.0.1:20128/v1",
+  apiKey: process.env.UNICHANL_KEY
+});
+
+const models = ["claude-sonnet-4", "gpt-4o", "gemini-2.5-pro"];
+for (const model of models) {
+  const r = await ai.chat.completions.create({
+    model,
+    messages: [{ role: "user", content: "Test" }]
+  });
+  console.log(model, r.choices[0].message.content);
+}</pre>
+
+<h2>Desteklenen modeller (2026-09)</h2>
+<table>
+<thead><tr><th>Provider</th><th>Modeller</th></tr></thead>
+<tbody>
+<tr><td>Anthropic</td><td>claude-opus-4, claude-sonnet-4, claude-haiku-4</td></tr>
+<tr><td>OpenAI</td><td>gpt-4o, gpt-4.1, gpt-4.1-mini, o1, o1-mini</td></tr>
+<tr><td>Google</td><td>gemini-2.5-pro, gemini-2.5-flash</td></tr>
+<tr><td>Bedrock</td><td>claude-sonnet-4 (bedrock), llama-3.3-70b</td></tr>
+<tr><td>Vertex</td><td>claude-sonnet-4 (vertex), gemini-2.5-pro (vertex)</td></tr>
+</tbody>
+</table>
+
+<h2>Kullanım senaryosu: multi-model uygulama</h2>
+<p>Bir SaaS uygulaması müşteri desteği + kod üretimi + görsel analiz özellikleri sunuyor. Kod tarafında tek bir <code>ai.chat()</code> fonksiyonu var; parametre olarak <code>task_type</code> alıyor. Router seçim mantığı:</p>
+<pre>const modelMap = {
+  support: "claude-haiku-4",   // hızlı ve ucuz
+  code:    "claude-sonnet-4",  // kaliteli refactor
+  vision:  "gpt-4o",           // görsel analiz
+  long:    "gemini-2.5-pro"    // 1M+ context
+};
+
+async function ai(taskType, prompt) {
+  return client.chat.completions.create({
+    model: modelMap[taskType],
+    messages: [{ role: "user", content: prompt }]
+  });
+}</pre>
+<p>Ay sonunda fatura tek TL cinsinden gelir, muhasebe için tek e-arşiv fatura.</p>
+
+<h2>Faydalar özet</h2>
+<ol>
+<li>Tek SDK / tek anahtar / tek fatura.</li>
+<li>Model değişikliği sadece string değişikliği — kod değişikliği yok.</li>
+<li>Cross-provider failover (Anthropic direkt → Bedrock → Vertex).</li>
+<li>Kullanım metrikleri (token, latency, cost) tek dashboard'da.</li>
+<li>KVKK aydınlatma metni + Türkiye e-arşiv fatura.</li>
+</ol>
+
+<h2>Sınırlamalar</h2>
+<ul>
+<li>Her modelin özel parametreleri (Anthropic'in <code>thinking</code>, OpenAI'nin <code>response_format</code>) yalnızca ilgili provider'da çalışır. Router bu farkları normalize etmeye çalışır ama edge case'lerde farkındalık gerekir.</li>
+<li>Streaming her iki format için de destekli, ancak SSE frame yapısı endpoint'e göre değişir.</li>
+</ul>
+
+<h2>İlgili içerikler</h2>
+<ul>
+<li><a href="/rehber/ai-model-router.html">AI Model Router / LLM Routing</a></li>
+<li><a href="/rehber/yerel-ai-gateway-nedir.html">Yerel AI Gateway Nedir?</a></li>
+<li><a href="/rehber/entegrasyon-codex.html">Codex Entegrasyonu</a></li>
+<li><a href="/rehber/entegrasyon-gemini-cli.html">Gemini CLI Entegrasyonu</a></li>
+<li><a href="/karsilastirma/openrouter-alternative.html">OpenRouter Alternative</a></li>
+<li><a href="/fiyatlandirma.html">Fiyatlandırma</a></li>
+</ul>
+
+<a href="/fiyatlandirma.html" class="cta">Unichanl'ı 5$ ile dene →</a>
+</main>
+<footer>© Unichanl · <a href="/gizlilik-politikasi.html">Gizlilik</a> · <a href="/kvkk-aydinlatma-metni.html">KVKK</a></footer>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="/favicon.png?v=2">
+<title>Claude Code Entegrasyonu: Unichanl Gateway Rehberi</title>
+<meta name="description" content="Claude Code için Unichanl entegrasyonu — ANTHROPIC_BASE_URL, gateway key, PowerShell/bash, systemd servis, pm2 arka plan servisi ve failover.">
+<link rel="canonical" href="https://unichanl.com/rehber/entegrasyon-claude-code.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Claude Code Entegrasyonu: Unichanl Gateway">
+<meta property="og:description" content="Claude Code CLI'yi Unichanl yerel gateway üzerinden çalıştırma rehberi.">
+<meta property="og:url" content="https://unichanl.com/rehber/entegrasyon-claude-code.html">
+<meta property="og:image" content="https://unichanl.com/favicon.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Ana Sayfa","item":"https://unichanl.com/"},{"@type":"ListItem","position":2,"name":"Rehber","item":"https://unichanl.com/rehber/"},{"@type":"ListItem","position":3,"name":"Entegrasyon: Claude Code","item":"https://unichanl.com/rehber/entegrasyon-claude-code.html"}]},{"@type":"TechArticle","headline":"Claude Code Entegrasyonu: Unichanl Gateway","description":"Claude Code için Unichanl gateway entegrasyon rehberi.","author":{"@type":"Organization","name":"Unichanl"},"publisher":{"@type":"Organization","name":"Unichanl","logo":{"@type":"ImageObject","url":"https://unichanl.com/favicon.png"}},"datePublished":"2026-09-16","dateModified":"2026-09-16","inLanguage":"tr-TR"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#03090B;color:#F2F5F4;font-family:'Archivo',system-ui,sans-serif;line-height:1.6}a{color:#7FD1AE;text-decoration:none}a:hover{text-decoration:underline}.wrap{max-width:820px;margin:0 auto;padding:60px 24px 100px}header.nav{border-bottom:1px solid #132023;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto}header.nav a.brand{font-weight:700;font-size:18px;color:#F2F5F4}header.nav nav a{margin-left:22px;color:#C7CFCE;font-size:14px}h1{font-family:'Newsreader',serif;font-weight:400;font-size:44px;line-height:1.1;letter-spacing:-.02em;margin-bottom:12px}h2{font-family:'Newsreader',serif;font-weight:400;font-size:28px;margin:44px 0 14px}h3{font-size:18px;font-weight:600;margin:22px 0 8px}.meta{color:#7A8A87;font-size:13px;margin-bottom:26px}code{background:#071114;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',mono;font-size:13px;color:#7FD1AE}pre{background:#071114;border:1px solid #132023;border-radius:8px;padding:14px 16px;overflow-x:auto;margin:12px 0;color:#C7CFCE;line-height:1.5;font-family:'JetBrains Mono',mono;font-size:13px}.tldr{background:#071114;border:1px solid #132023;border-radius:12px;padding:20px 22px;margin:20px 0 30px;font-size:15px;color:#C7CFCE}.tldr strong{color:#F2F5F4}p{margin:12px 0;color:#C7CFCE}ul,ol{margin:12px 0 12px 22px;color:#C7CFCE}li{margin:6px 0}table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}th,td{border:1px solid #132023;padding:12px 14px;text-align:left;vertical-align:top}th{background:#071114;color:#F2F5F4;font-weight:600}td{color:#C7CFCE}.cta{display:inline-block;background:#F2F5F4;color:#03090B;padding:14px 28px;border-radius:24px;font-weight:600;margin-top:20px}footer{border-top:1px solid #132023;padding:30px 24px;text-align:center;color:#7A8A87;font-size:13px;max-width:1200px;margin:0 auto}.crumb{color:#7A8A87;font-size:13px;margin-bottom:16px}.crumb a{color:#7A8A87}</style>
+</head>
+<body>
+<header class="nav"><a href="/" class="brand">Unichanl</a><nav><a href="/landing.html">Ürün</a><a href="/fiyatlandirma.html">Fiyatlandırma</a><a href="/dokumanlar.html">Dokümanlar</a><a href="/karsilastirma/">Karşılaştırma</a></nav></header>
+<main class="wrap">
+<div class="crumb"><a href="/">Ana sayfa</a> › <a href="/rehber/">Rehber</a> › Entegrasyon: Claude Code</div>
+<h1>Claude Code Entegrasyonu</h1>
+<div class="meta">Güncelleme: 16 Eylül 2026 · 6 dk okuma</div>
+
+<div class="tldr"><strong>TL;DR:</strong> Claude Code CLI'yi Unichanl gateway ile kullanmak için iki env değişkeni yeterlidir: <code>ANTHROPIC_BASE_URL=http://127.0.0.1:20128</code> ve <code>ANTHROPIC_API_KEY=sk-unichanl-...</code>. Gateway ayakta olduğu sürece Claude Code, Anthropic direkt, Bedrock ve Vertex arasında otomatik failover yapar. macOS/Linux için <code>~/.zshrc</code>, Windows için PowerShell environment variable kullanın.</div>
+
+<h2>1. Unichanl gateway kurulumu</h2>
+<pre>npm install -g unichanl
+unichanl start --key sk-unichanl-YOUR_KEY</pre>
+
+<h2>2. Env değişkenleri</h2>
+
+<h3>macOS / Linux (zsh)</h3>
+<pre>cat &gt;&gt; ~/.zshrc &lt;&lt;'EOF'
+export ANTHROPIC_BASE_URL="http://127.0.0.1:20128"
+export ANTHROPIC_API_KEY="sk-unichanl-YOUR_KEY"
+EOF
+source ~/.zshrc</pre>
+
+<h3>macOS / Linux (bash)</h3>
+<pre>cat &gt;&gt; ~/.bashrc &lt;&lt;'EOF'
+export ANTHROPIC_BASE_URL="http://127.0.0.1:20128"
+export ANTHROPIC_API_KEY="sk-unichanl-YOUR_KEY"
+EOF
+source ~/.bashrc</pre>
+
+<h3>Windows PowerShell (kalıcı)</h3>
+<pre>[Environment]::SetEnvironmentVariable(
+  "ANTHROPIC_BASE_URL", "http://127.0.0.1:20128", "User")
+[Environment]::SetEnvironmentVariable(
+  "ANTHROPIC_API_KEY", "sk-unichanl-YOUR_KEY", "User")
+
+# Yeni bir PowerShell açın, doğrulayın:
+$env:ANTHROPIC_BASE_URL</pre>
+
+<h2>3. Doğrulama</h2>
+<pre>claude "hangi model üzerinden konuşuyorum ve base url ne?"
+# Cevabı beklerken başka bir terminalde:
+unichanl logs --follow</pre>
+
+<h2>4. Arka plan servisi</h2>
+
+<h3>macOS / Linux (pm2)</h3>
+<pre>npm install -g pm2
+pm2 start "unichanl start --key sk-unichanl-YOUR_KEY" --name unichanl
+pm2 save
+pm2 startup   # Sistem başlangıcında otomatik çalışır</pre>
+
+<h3>Linux (systemd)</h3>
+<pre># /etc/systemd/system/unichanl.service
+[Unit]
+Description=Unichanl AI Gateway
+After=network.target
+
+[Service]
+Type=simple
+User=your_user
+ExecStart=/usr/bin/unichanl start --key sk-unichanl-YOUR_KEY
+Restart=always
+
+[Install]
+WantedBy=multi-user.target</pre>
+<pre>sudo systemctl enable --now unichanl</pre>
+
+<h3>Windows (NSSM)</h3>
+<pre>nssm install unichanl "C:\Program Files\nodejs\node.exe" "C:\...\unichanl\bin\unichanl.js" start --key sk-unichanl-YOUR_KEY
+nssm start unichanl</pre>
+
+<h2>5. MCP server'lar ile birlikte kullanım</h2>
+<p>Claude Code'un MCP server'ları gateway'den bağımsız çalışır — MCP stdio üzerinden Claude Code process'iyle konuşur, network trafiği gateway'e girmez. Yani hem MCP hem gateway aynı anda sorunsuz çalışır.</p>
+
+<h2>6. Model seçimi</h2>
+<p>Claude Code varsayılan olarak <code>claude-sonnet-4</code>'ü kullanır. Değiştirmek için:</p>
+<pre>claude --model claude-opus-4 "büyük refactor önerisi ver"
+claude --model claude-haiku-4 "hızlı özet"</pre>
+
+<h2>7. Somut kullanım senaryosu</h2>
+<p>Bir freelancer haftada 40 saat Claude Code kullanıyor. Direkt Anthropic key'i ile Tier-2 limit'i haftada 2-3 kez aşıyor ve session'ları kesiliyor. Unichanl'a geçince:</p>
+<ul>
+<li>3 farklı Anthropic anahtar dashboard'a eklendi → round-robin havuz.</li>
+<li>Bedrock upstream backup olarak eklendi.</li>
+<li>4 haftadır tek bir kesinti yok.</li>
+<li>Aylık fatura TL cinsinden, KDV'li e-arşiv fatura.</li>
+</ul>
+
+<h2>8. Sorun giderme</h2>
+
+<h3>"ECONNREFUSED 127.0.0.1:20128"</h3>
+<p>Gateway ayakta değil. <code>unichanl status</code> ile kontrol edin.</p>
+
+<h3>"401 Invalid API Key"</h3>
+<p>Anthropic key'i (<code>sk-ant-...</code>) yerine Unichanl gateway key'i (<code>sk-unichanl-...</code>) kullanmalısınız.</p>
+
+<h3>Bazı istekler yavaş</h3>
+<p>Bir upstream (ör. Bedrock) yavaş yanıt veriyor olabilir. Dashboard'da per-upstream latency'yi görün, sıralamayı düzenleyin.</p>
+
+<h3>Env değişkenleri yüklenmiyor</h3>
+<p>Yeni terminal penceresi açın veya <code>source ~/.zshrc</code> çalıştırın. Windows'ta ise yeni PowerShell/CMD açın.</p>
+
+<h2>İlgili rehberler</h2>
+<ul>
+<li><a href="/rehber/claude-code-router.html">Claude Code Router (routing modları)</a></li>
+<li><a href="/rehber/entegrasyon-cursor.html">Cursor Entegrasyonu</a></li>
+<li><a href="/rehber/entegrasyon-codex.html">Codex Entegrasyonu</a></li>
+<li><a href="/rehber/entegrasyon-gemini-cli.html">Gemini CLI Entegrasyonu</a></li>
+<li><a href="/rehber/yerel-ai-gateway-nedir.html">Yerel AI Gateway Nedir?</a></li>
+<li><a href="/karsilastirma/unichanl-vs-openrouter.html">Unichanl vs OpenRouter</a></li>
+<li><a href="/fiyatlandirma.html">Fiyatlandırma</a></li>
+</ul>
+
+<a href="/fiyatlandirma.html" class="cta">Unichanl'ı 5$ ile dene →</a>
+</main>
+<footer>© Unichanl · <a href="/gizlilik-politikasi.html">Gizlilik</a> · <a href="/kvkk-aydinlatma-metni.html">KVKK</a></footer>
+</body>
+</html>

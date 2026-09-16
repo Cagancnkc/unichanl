@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="/favicon.png?v=2">
+<title>Cursor AI Gateway: Unichanl Entegrasyonu (2026)</title>
+<meta name="description" content="Cursor için Unichanl AI gateway entegrasyonu: custom OpenAI base URL, Anthropic Claude, model override ve rate limit havuzlaması adım adım.">
+<link rel="canonical" href="https://unichanl.com/rehber/cursor-ai-gateway.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cursor AI Gateway: Unichanl Entegrasyonu">
+<meta property="og:description" content="Cursor için Unichanl gateway kurulumu ve model override ayarları.">
+<meta property="og:url" content="https://unichanl.com/rehber/cursor-ai-gateway.html">
+<meta property="og:image" content="https://unichanl.com/favicon.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Ana Sayfa","item":"https://unichanl.com/"},{"@type":"ListItem","position":2,"name":"Rehber","item":"https://unichanl.com/rehber/"},{"@type":"ListItem","position":3,"name":"Cursor AI Gateway","item":"https://unichanl.com/rehber/cursor-ai-gateway.html"}]},{"@type":"TechArticle","headline":"Cursor AI Gateway: Unichanl Entegrasyonu","description":"Cursor IDE'yi Unichanl gateway üzerinden çalıştırma rehberi.","author":{"@type":"Organization","name":"Unichanl"},"publisher":{"@type":"Organization","name":"Unichanl","logo":{"@type":"ImageObject","url":"https://unichanl.com/favicon.png"}},"datePublished":"2026-09-16","dateModified":"2026-09-16","inLanguage":"tr-TR"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#03090B;color:#F2F5F4;font-family:'Archivo',system-ui,sans-serif;line-height:1.6}a{color:#7FD1AE;text-decoration:none}a:hover{text-decoration:underline}.wrap{max-width:820px;margin:0 auto;padding:60px 24px 100px}header.nav{border-bottom:1px solid #132023;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto}header.nav a.brand{font-weight:700;font-size:18px;color:#F2F5F4}header.nav nav a{margin-left:22px;color:#C7CFCE;font-size:14px}h1{font-family:'Newsreader',serif;font-weight:400;font-size:44px;line-height:1.1;letter-spacing:-.02em;margin-bottom:12px}h2{font-family:'Newsreader',serif;font-weight:400;font-size:28px;margin:44px 0 14px}h3{font-size:18px;font-weight:600;margin:22px 0 8px}.meta{color:#7A8A87;font-size:13px;margin-bottom:26px}code{background:#071114;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',mono;font-size:13px;color:#7FD1AE}pre{background:#071114;border:1px solid #132023;border-radius:8px;padding:14px 16px;overflow-x:auto;margin:12px 0;color:#C7CFCE;line-height:1.5;font-family:'JetBrains Mono',mono;font-size:13px}.tldr{background:#071114;border:1px solid #132023;border-radius:12px;padding:20px 22px;margin:20px 0 30px;font-size:15px;color:#C7CFCE}.tldr strong{color:#F2F5F4}p{margin:12px 0;color:#C7CFCE}ul,ol{margin:12px 0 12px 22px;color:#C7CFCE}li{margin:6px 0}table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}th,td{border:1px solid #132023;padding:12px 14px;text-align:left;vertical-align:top}th{background:#071114;color:#F2F5F4;font-weight:600}td{color:#C7CFCE}.cta{display:inline-block;background:#F2F5F4;color:#03090B;padding:14px 28px;border-radius:24px;font-weight:600;margin-top:20px}footer{border-top:1px solid #132023;padding:30px 24px;text-align:center;color:#7A8A87;font-size:13px;max-width:1200px;margin:0 auto}.crumb{color:#7A8A87;font-size:13px;margin-bottom:16px}.crumb a{color:#7A8A87}</style>
+</head>
+<body>
+<header class="nav"><a href="/" class="brand">Unichanl</a><nav><a href="/landing.html">Ürün</a><a href="/fiyatlandirma.html">Fiyatlandırma</a><a href="/dokumanlar.html">Dokümanlar</a><a href="/karsilastirma/">Karşılaştırma</a></nav></header>
+<main class="wrap">
+<div class="crumb"><a href="/">Ana sayfa</a> › <a href="/rehber/">Rehber</a> › Cursor AI Gateway</div>
+<h1>Cursor AI Gateway: Unichanl Entegrasyonu</h1>
+<div class="meta">Güncelleme: 16 Eylül 2026 · 6 dk okuma</div>
+
+<div class="tldr"><strong>TL;DR:</strong> Cursor'da Settings → Models altında "Override OpenAI Base URL" alanına <code>http://127.0.0.1:20128/v1</code> ve API key olarak Unichanl gateway key'inizi girin. Cursor'un tüm AI istekleri (Cmd+K, Chat, Composer, Tab) yerel gateway üzerinden geçer; Anthropic ve OpenAI arasında otomatik failover yapılır. KVKK uyumlu, marj yok, 5$ minimum.</div>
+
+<h2>Cursor'da neden gateway kullanılır?</h2>
+<p>Cursor, kendi cloud proxy'si üzerinden OpenAI/Anthropic'e konuşur ve "usage-based pricing" ile fatura keser. Kendi API anahtarlarınızı Custom API mode'da kullanmak isterseniz üç sorunla karşılaşırsınız:</p>
+<ol>
+<li>Rate limit havuzlaması yok — tek anahtar takılırsa Cursor'un Composer'ı durur.</li>
+<li>Failover yok — Anthropic outage sırasında iş durur.</li>
+<li>Türkiye'den KVKK / VAT uyumu ayrı bir süreç.</li>
+</ol>
+<p>Unichanl bu üç problemi tek gateway ile çözer.</p>
+
+<h2>Adım 1: Unichanl gateway'i başlat</h2>
+<pre>npm install -g unichanl
+unichanl start --key sk-unichanl-YOUR_KEY
+# 127.0.0.1:20128 aktif</pre>
+
+<h2>Adım 2: Cursor ayarlarını aç</h2>
+<p><code>Cmd/Ctrl + ,</code> ile Settings'i açın → <strong>Models</strong> sekmesi.</p>
+
+<h2>Adım 3: OpenAI Override</h2>
+<p>"OpenAI API Key" alanına Unichanl gateway key'inizi girin:</p>
+<pre>API Key: sk-unichanl-YOUR_KEY
+Override OpenAI Base URL: http://127.0.0.1:20128/v1
+Verify: (Cursor "Verified" göstermeli)</pre>
+
+<h2>Adım 4: Anthropic Override</h2>
+<p>Aynı ekranda Anthropic bölümüne:</p>
+<pre>Anthropic API Key: sk-unichanl-YOUR_KEY
+Base URL: http://127.0.0.1:20128</pre>
+
+<h2>Adım 5: Model seçimi</h2>
+<p>Model listesinden <code>claude-sonnet-4</code>, <code>claude-opus-4</code>, <code>gpt-4o</code> veya <code>gpt-4.1</code> seçin. Unichanl her modeli uygun provider'a yönlendirir.</p>
+
+<h2>Doğrulama testi</h2>
+<pre># Terminalde
+curl http://127.0.0.1:20128/v1/chat/completions \
+  -H "Authorization: Bearer sk-unichanl-YOUR_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "claude-sonnet-4",
+    "messages": [{"role":"user","content":"ping"}],
+    "max_tokens": 50
+  }'</pre>
+<p>Yanıt 200 döndüyse Cursor'da Cmd+K açıp "hello" yazın. Unichanl loglarında istek görünmeli.</p>
+
+<h2>Somut senaryo: Frontend refactor haftası</h2>
+<p>Bir hafta boyunca 5 kişilik bir ekip Cursor Composer ile büyük bir Next.js refactor'u yapıyor. Anthropic Tier-2 limitleri günün ortasında dolmaya başlıyor. Unichanl'ın round-robin router'ı sayesinde 3 farklı Anthropic anahtar, 1 Bedrock ve 1 Vertex upstream'i arasında yük dağılıyor — Composer hiç durmuyor. Hafta sonunda dashboard'da harcama TL cinsinden görünüyor, muhasebe için tek fatura kesiliyor.</p>
+
+<h2>Cursor Tab (Copilot mode)</h2>
+<p>Tab autocomplete küçük ve hızlı bir model kullanır. Unichanl'ın <strong>cost routing</strong> modunu açıp Tab isteklerini <code>claude-haiku-4</code>'e yönlendirebilirsiniz. Composer istekleri otomatik olarak Sonnet/Opus'a düşer.</p>
+
+<h2>Team modu için ipuçları</h2>
+<ul>
+<li>Ekip üyelerine tek gateway key dağıtmak yerine dashboard'dan kişi bazlı sub-key üretin.</li>
+<li>Aylık bütçe alarmı kurun — 80% seviyesinde e-posta uyarısı.</li>
+<li>Fatura için Türkiye'de KDV'li e-arşiv fatura seçeneği aktif.</li>
+</ul>
+
+<h2>Sorun giderme</h2>
+
+<h3>Cursor "Failed to verify"</h3>
+<p>Gateway ayakta mı? <code>curl http://127.0.0.1:20128/health</code> ile kontrol edin.</p>
+
+<h3>Composer takılıyor</h3>
+<p>Base URL'in sonunda <code>/v1</code> olduğundan emin olun (OpenAI için). Anthropic için <code>/v1</code> olmamalı.</p>
+
+<h3>Tab autocomplete yavaş</h3>
+<p>Latency routing'i açın veya Tab modelini Haiku'ya sabitleyin. Localhost gecikmesi 1-2ms, Anthropic'e giden hop 40-80ms olmalı.</p>
+
+<h2>İlgili rehberler</h2>
+<ul>
+<li><a href="/rehber/entegrasyon-cursor.html">Cursor Detaylı Entegrasyon</a></li>
+<li><a href="/rehber/claude-code-router.html">Claude Code Router</a></li>
+<li><a href="/rehber/one-api-multiple-ai-models.html">One API for Multiple AI Models</a></li>
+<li><a href="/karsilastirma/openrouter-alternative.html">OpenRouter Alternative</a></li>
+<li><a href="/fiyatlandirma.html">Fiyatlandırma</a></li>
+</ul>
+
+<a href="/fiyatlandirma.html" class="cta">Unichanl'ı 5$ ile dene →</a>
+</main>
+<footer>© Unichanl · <a href="/gizlilik-politikasi.html">Gizlilik</a> · <a href="/kvkk-aydinlatma-metni.html">KVKK</a></footer>
+</body>
+</html>

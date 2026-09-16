@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="/favicon.png?v=2">
+<title>Codex CLI Entegrasyonu: Unichanl Gateway ile Kurulum</title>
+<meta name="description" content="OpenAI Codex CLI için Unichanl gateway entegrasyonu — OPENAI_BASE_URL, model override, failover ve rate limit havuzlama adım adım rehber.">
+<link rel="canonical" href="https://unichanl.com/rehber/entegrasyon-codex.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Codex CLI Entegrasyonu: Unichanl Gateway">
+<meta property="og:description" content="Codex CLI için Unichanl gateway entegrasyon rehberi.">
+<meta property="og:url" content="https://unichanl.com/rehber/entegrasyon-codex.html">
+<meta property="og:image" content="https://unichanl.com/favicon.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Ana Sayfa","item":"https://unichanl.com/"},{"@type":"ListItem","position":2,"name":"Rehber","item":"https://unichanl.com/rehber/"},{"@type":"ListItem","position":3,"name":"Entegrasyon: Codex","item":"https://unichanl.com/rehber/entegrasyon-codex.html"}]},{"@type":"TechArticle","headline":"Codex CLI Entegrasyonu: Unichanl Gateway","description":"Codex CLI için Unichanl gateway entegrasyon rehberi.","author":{"@type":"Organization","name":"Unichanl"},"publisher":{"@type":"Organization","name":"Unichanl","logo":{"@type":"ImageObject","url":"https://unichanl.com/favicon.png"}},"datePublished":"2026-09-16","dateModified":"2026-09-16","inLanguage":"tr-TR"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#03090B;color:#F2F5F4;font-family:'Archivo',system-ui,sans-serif;line-height:1.6}a{color:#7FD1AE;text-decoration:none}a:hover{text-decoration:underline}.wrap{max-width:820px;margin:0 auto;padding:60px 24px 100px}header.nav{border-bottom:1px solid #132023;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto}header.nav a.brand{font-weight:700;font-size:18px;color:#F2F5F4}header.nav nav a{margin-left:22px;color:#C7CFCE;font-size:14px}h1{font-family:'Newsreader',serif;font-weight:400;font-size:44px;line-height:1.1;letter-spacing:-.02em;margin-bottom:12px}h2{font-family:'Newsreader',serif;font-weight:400;font-size:28px;margin:44px 0 14px}h3{font-size:18px;font-weight:600;margin:22px 0 8px}.meta{color:#7A8A87;font-size:13px;margin-bottom:26px}code{background:#071114;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',mono;font-size:13px;color:#7FD1AE}pre{background:#071114;border:1px solid #132023;border-radius:8px;padding:14px 16px;overflow-x:auto;margin:12px 0;color:#C7CFCE;line-height:1.5;font-family:'JetBrains Mono',mono;font-size:13px}.tldr{background:#071114;border:1px solid #132023;border-radius:12px;padding:20px 22px;margin:20px 0 30px;font-size:15px;color:#C7CFCE}.tldr strong{color:#F2F5F4}p{margin:12px 0;color:#C7CFCE}ul,ol{margin:12px 0 12px 22px;color:#C7CFCE}li{margin:6px 0}table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}th,td{border:1px solid #132023;padding:12px 14px;text-align:left;vertical-align:top}th{background:#071114;color:#F2F5F4;font-weight:600}td{color:#C7CFCE}.cta{display:inline-block;background:#F2F5F4;color:#03090B;padding:14px 28px;border-radius:24px;font-weight:600;margin-top:20px}footer{border-top:1px solid #132023;padding:30px 24px;text-align:center;color:#7A8A87;font-size:13px;max-width:1200px;margin:0 auto}.crumb{color:#7A8A87;font-size:13px;margin-bottom:16px}.crumb a{color:#7A8A87}</style>
+</head>
+<body>
+<header class="nav"><a href="/" class="brand">Unichanl</a><nav><a href="/landing.html">Ürün</a><a href="/fiyatlandirma.html">Fiyatlandırma</a><a href="/dokumanlar.html">Dokümanlar</a><a href="/karsilastirma/">Karşılaştırma</a></nav></header>
+<main class="wrap">
+<div class="crumb"><a href="/">Ana sayfa</a> › <a href="/rehber/">Rehber</a> › Entegrasyon: Codex</div>
+<h1>Codex CLI Entegrasyonu</h1>
+<div class="meta">Güncelleme: 16 Eylül 2026 · 5 dk okuma</div>
+
+<div class="tldr"><strong>TL;DR:</strong> OpenAI Codex CLI'yi Unichanl gateway ile kullanmak için <code>OPENAI_BASE_URL=http://127.0.0.1:20128/v1</code> ve <code>OPENAI_API_KEY=sk-unichanl-...</code> env değişkenlerini ayarlayın. Codex CLI, tüm OpenAI-uyumlu isteklerini yerel gateway'e gönderir; Unichanl bunları OpenAI direkt, Azure OpenAI veya alternatif provider arasında failover ile yönlendirir. Marj yok, KVKK uyumlu, 5$ minimum topup.</div>
+
+<h2>1. Gateway kurulumu</h2>
+<pre>npm install -g unichanl
+unichanl start --key sk-unichanl-YOUR_KEY</pre>
+
+<h2>2. Codex CLI env değişkenleri</h2>
+
+<h3>macOS / Linux</h3>
+<pre>export OPENAI_BASE_URL="http://127.0.0.1:20128/v1"
+export OPENAI_API_KEY="sk-unichanl-YOUR_KEY"
+
+# Codex bazı sürümlerde ayrıca:
+export OPENAI_API_BASE="http://127.0.0.1:20128/v1"</pre>
+
+<h3>Windows PowerShell</h3>
+<pre>[Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "http://127.0.0.1:20128/v1", "User")
+[Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "sk-unichanl-YOUR_KEY", "User")</pre>
+
+<h2>3. Doğrulama</h2>
+<pre>codex --version
+codex "readme.md dosyasını özetle"
+# Aynı anda:
+unichanl logs --follow</pre>
+
+<h2>4. Model seçimi</h2>
+<p>Codex CLI varsayılan olarak <code>gpt-4o</code> veya kullandığı sürüme göre <code>o1</code> kullanır. Model değişikliği için:</p>
+<pre>codex --model gpt-4.1 "test dosyası üret"
+codex --model o1 "algoritmanın karmaşıklığını çıkar"</pre>
+<p>Unichanl aynı endpoint'ten Claude modellerini de servis eder — kod tarafında sadece model adı değişir:</p>
+<pre>codex --model claude-sonnet-4 "TypeScript'e refactor et"</pre>
+
+<h2>5. Somut senaryo</h2>
+<p>Bir DevOps ekibi CI/CD pipeline'larında Codex CLI'yi kullanıyor: her PR'de otomatik test üretimi, migration script'i oluşturma, docstring güncelleme. Direkt OpenAI key'iyle Tier-3 limit sık sık PR queue'yu bloke ediyordu. Unichanl'a geçtikten sonra:</p>
+<ul>
+<li>2 OpenAI + 1 Azure OpenAI anahtar havuzlandı.</li>
+<li>CI pipeline'ları hiç failover'sız çalışıyor.</li>
+<li>Aylık ~%7 tasarruf (marj yok).</li>
+<li>KVKK gereksinimleri karşılandı.</li>
+</ul>
+
+<h2>6. CI kullanımı (GitHub Actions örneği)</h2>
+<pre>name: Codex Review
+on: [pull_request]
+jobs:
+  review:
+    runs-on: self-hosted   # Unichanl gateway kurulu runner
+    env:
+      OPENAI_BASE_URL: http://127.0.0.1:20128/v1
+      OPENAI_API_KEY: ${{ secrets.UNICHANL_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install -g codex-cli
+      - run: codex review --pr ${{ github.event.number }}</pre>
+
+<h2>7. Sub-key ile bütçe kontrolü</h2>
+<pre>unichanl subkey create --name "ci-codex-runner" --monthly-cap 50 --scope openai-only
+# → CI için ayrı, aylık 50$ limitli anahtar</pre>
+
+<h2>8. Sorun giderme</h2>
+
+<h3>"401 Unauthorized"</h3>
+<p>OpenAI key (<code>sk-...</code>) yerine Unichanl key (<code>sk-unichanl-...</code>) kullanılmalı.</p>
+
+<h3>Codex hâlâ direkt OpenAI'a gidiyor</h3>
+<p>Bazı Codex CLI sürümleri <code>OPENAI_API_BASE</code> değişkenini kullanır; ikisini birden set edin.</p>
+
+<h3>Streaming yanıtlar takılıyor</h3>
+<p>Gateway varsayılan olarak SSE'yi destekler. Corporate proxy arkasındaysanız <code>NO_PROXY=127.0.0.1</code> set edin.</p>
+
+<h2>İlgili rehberler</h2>
+<ul>
+<li><a href="/rehber/entegrasyon-claude-code.html">Claude Code Entegrasyonu</a></li>
+<li><a href="/rehber/entegrasyon-cursor.html">Cursor Entegrasyonu</a></li>
+<li><a href="/rehber/entegrasyon-gemini-cli.html">Gemini CLI Entegrasyonu</a></li>
+<li><a href="/rehber/one-api-multiple-ai-models.html">One API for Multiple AI Models</a></li>
+<li><a href="/karsilastirma/openrouter-alternative.html">OpenRouter Alternative</a></li>
+<li><a href="/fiyatlandirma.html">Fiyatlandırma</a></li>
+</ul>
+
+<a href="/fiyatlandirma.html" class="cta">Unichanl'ı 5$ ile dene →</a>
+</main>
+<footer>© Unichanl · <a href="/gizlilik-politikasi.html">Gizlilik</a> · <a href="/kvkk-aydinlatma-metni.html">KVKK</a></footer>
+</body>
+</html>

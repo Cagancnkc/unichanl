@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" type="image/png" href="/favicon.png?v=2">
+<title>Claude Code Router: Unichanl Kurulumu (2026)</title>
+<meta name="description" content="Claude Code için Unichanl router kurulumu: ANTHROPIC_BASE_URL, gateway key, failover, rate limit havuzu ve Windows/macOS/Linux adım adım rehber.">
+<link rel="canonical" href="https://unichanl.com/rehber/claude-code-router.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Claude Code Router: Unichanl Kurulumu">
+<meta property="og:description" content="Claude Code için Unichanl gateway kurulumu, env ayarları ve failover.">
+<meta property="og:url" content="https://unichanl.com/rehber/claude-code-router.html">
+<meta property="og:image" content="https://unichanl.com/favicon.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Ana Sayfa","item":"https://unichanl.com/"},{"@type":"ListItem","position":2,"name":"Rehber","item":"https://unichanl.com/rehber/"},{"@type":"ListItem","position":3,"name":"Claude Code Router","item":"https://unichanl.com/rehber/claude-code-router.html"}]},{"@type":"TechArticle","headline":"Claude Code Router: Unichanl Kurulumu","description":"Claude Code için Unichanl gateway kurulumu ve router konfigürasyonu.","author":{"@type":"Organization","name":"Unichanl"},"publisher":{"@type":"Organization","name":"Unichanl","logo":{"@type":"ImageObject","url":"https://unichanl.com/favicon.png"}},"datePublished":"2026-09-16","dateModified":"2026-09-16","inLanguage":"tr-TR"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html,body{background:#03090B;color:#F2F5F4;font-family:'Archivo',system-ui,sans-serif;line-height:1.6}a{color:#7FD1AE;text-decoration:none}a:hover{text-decoration:underline}.wrap{max-width:820px;margin:0 auto;padding:60px 24px 100px}header.nav{border-bottom:1px solid #132023;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto}header.nav a.brand{font-weight:700;font-size:18px;color:#F2F5F4}header.nav nav a{margin-left:22px;color:#C7CFCE;font-size:14px}h1{font-family:'Newsreader',serif;font-weight:400;font-size:44px;line-height:1.1;letter-spacing:-.02em;margin-bottom:12px}h2{font-family:'Newsreader',serif;font-weight:400;font-size:28px;margin:44px 0 14px}h3{font-size:18px;font-weight:600;margin:22px 0 8px}.meta{color:#7A8A87;font-size:13px;margin-bottom:26px}code{background:#071114;padding:2px 6px;border-radius:4px;font-family:'JetBrains Mono',mono;font-size:13px;color:#7FD1AE}pre{background:#071114;border:1px solid #132023;border-radius:8px;padding:14px 16px;overflow-x:auto;margin:12px 0;color:#C7CFCE;line-height:1.5;font-family:'JetBrains Mono',mono;font-size:13px}.tldr{background:#071114;border:1px solid #132023;border-radius:12px;padding:20px 22px;margin:20px 0 30px;font-size:15px;color:#C7CFCE}.tldr strong{color:#F2F5F4}p{margin:12px 0;color:#C7CFCE}ul,ol{margin:12px 0 12px 22px;color:#C7CFCE}li{margin:6px 0}table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}th,td{border:1px solid #132023;padding:12px 14px;text-align:left;vertical-align:top}th{background:#071114;color:#F2F5F4;font-weight:600}td{color:#C7CFCE}.cta{display:inline-block;background:#F2F5F4;color:#03090B;padding:14px 28px;border-radius:24px;font-weight:600;margin-top:20px}footer{border-top:1px solid #132023;padding:30px 24px;text-align:center;color:#7A8A87;font-size:13px;max-width:1200px;margin:0 auto}.crumb{color:#7A8A87;font-size:13px;margin-bottom:16px}.crumb a{color:#7A8A87}</style>
+</head>
+<body>
+<header class="nav"><a href="/" class="brand">Unichanl</a><nav><a href="/landing.html">Ürün</a><a href="/fiyatlandirma.html">Fiyatlandırma</a><a href="/dokumanlar.html">Dokümanlar</a><a href="/karsilastirma/">Karşılaştırma</a></nav></header>
+<main class="wrap">
+<div class="crumb"><a href="/">Ana sayfa</a> › <a href="/rehber/">Rehber</a> › Claude Code Router</div>
+<h1>Claude Code Router: Unichanl Kurulumu</h1>
+<div class="meta">Güncelleme: 16 Eylül 2026 · 6 dk okuma</div>
+
+<div class="tldr"><strong>TL;DR:</strong> Claude Code'u Unichanl üzerinden çalıştırmak için tek bir <code>ANTHROPIC_BASE_URL=http://127.0.0.1:20128</code> ayarı ve gateway key yeterlidir. Unichanl birden fazla Anthropic anahtarını havuzlar, rate limit'e girdiğinizde otomatik failover yapar, provider outage sırasında istekleri Bedrock/Vertex'e yönlendirir. Windows, macOS ve Linux'ta 2 dakikada kurulur.</div>
+
+<h2>Neden Claude Code + Unichanl?</h2>
+<p>Claude Code, Anthropic API'ye direkt konuşan bir CLI'dır. Uzun kodlama seanslarında en sık karşılaşılan problem tek anahtarın rate limit'e girmesi ve session'ın kesilmesidir. Unichanl router olarak devreye girdiğinde:</p>
+<ul>
+<li>2+ Anthropic anahtarını havuzlar, biri limit'e girerse diğeri devralır.</li>
+<li>Anthropic direkt outage yaşarsa aynı Sonnet ailesini AWS Bedrock veya Google Vertex üzerinden servis eder.</li>
+<li>Prompt/response içeriğini loglamaz — sadece metadata (token, latency).</li>
+<li>Kullandıkça öde, marj yok — 5$ minimum topup.</li>
+</ul>
+
+<h2>Gereksinimler</h2>
+<ul>
+<li>Node.js 20+ (Claude Code için zaten gerekli).</li>
+<li>Unichanl hesabı ve gateway key (<a href="/fiyatlandirma.html">fiyatlandırma sayfasından</a> 5$ ile).</li>
+<li>En az bir provider anahtarı (Anthropic önerilir; opsiyonel olarak OpenAI/Google/Bedrock).</li>
+</ul>
+
+<h2>Adım 1: Unichanl'ı yükle</h2>
+<pre>npm install -g unichanl
+unichanl --version</pre>
+
+<h2>Adım 2: Gateway'i başlat</h2>
+<pre>unichanl start --key sk-unichanl-YOUR_KEY
+
+# Çıktı:
+# [unichanl] gateway listening on 127.0.0.1:20128
+# [unichanl] upstreams: anthropic-direct, bedrock, vertex
+# [unichanl] routing mode: failover
+</pre>
+
+<h2>Adım 3: Claude Code env değişkenlerini ayarla</h2>
+
+<h3>macOS / Linux</h3>
+<pre># ~/.zshrc veya ~/.bashrc
+export ANTHROPIC_BASE_URL=http://127.0.0.1:20128
+export ANTHROPIC_API_KEY=sk-unichanl-YOUR_KEY
+
+# Değişiklikleri yükle
+source ~/.zshrc</pre>
+
+<h3>Windows (PowerShell)</h3>
+<pre>[Environment]::SetEnvironmentVariable("ANTHROPIC_BASE_URL", "http://127.0.0.1:20128", "User")
+[Environment]::SetEnvironmentVariable("ANTHROPIC_API_KEY", "sk-unichanl-YOUR_KEY", "User")
+
+# Yeni PowerShell penceresi açın</pre>
+
+<h2>Adım 4: Doğrulama</h2>
+<pre># Claude Code'un gateway'e gittiğini doğrula
+claude "merhaba, hangi model ile konuşuyorum?"
+
+# Unichanl loglarını izle
+unichanl logs --follow</pre>
+
+<h2>Adım 5: Failover'ı test et</h2>
+<p>Dashboard'a girip primary anahtarı geçici olarak devre dışı bırakın. Claude Code oturumunuz kesilmez — istek ikinci anahtara veya Bedrock upstream'ine düşer. Unichanl logunda şu satır görünür:</p>
+<pre>[unichanl] anthropic-primary rate_limit → failover to bedrock-us-east
+[unichanl] latency +42ms, request succeeded</pre>
+
+<h2>Router davranışını özelleştirme</h2>
+<p>Unichanl dashboard'ında 4 routing modu vardır:</p>
+<table>
+<thead><tr><th>Mod</th><th>Ne yapar?</th><th>Kim için?</th></tr></thead>
+<tbody>
+<tr><td>failover (varsayılan)</td><td>Sıralı deneme</td><td>Çoğu Claude Code kullanıcısı</td></tr>
+<tr><td>round-robin</td><td>Anahtarları sırayla</td><td>Rate limit havuzlaması</td></tr>
+<tr><td>cost</td><td>En ucuz uygun model</td><td>Bütçe kısıtlı ekipler</td></tr>
+<tr><td>latency</td><td>En hızlı provider</td><td>Interactive REPL kullanımı</td></tr>
+</tbody>
+</table>
+
+<h2>Somut kullanım senaryosu</h2>
+<p>Cuma akşamı büyük bir refactor seansı. 3 saat kesintisiz Claude Code kullanıyorsunuz. 1. saatte Anthropic direkt anahtar Tier-2 limit'e giriyor — Unichanl otomatik olarak Bedrock'a düşüyor, siz farkında bile değilsiniz. 2. saatte Bedrock'ta us-east-1 kısa süreli sorun yaşıyor — Vertex EU üzerinden aynı Sonnet 4 servis ediliyor. Session hiç kesilmiyor. Toplam ek gecikme: ~80ms.</p>
+
+<h2>Sorun giderme</h2>
+
+<h3>"Connection refused" hatası</h3>
+<p>Gateway çalışmıyor. <code>unichanl status</code> ile kontrol edin ve gerekirse <code>unichanl start</code> ile yeniden başlatın.</p>
+
+<h3>Claude Code hâlâ direkt Anthropic'e gidiyor</h3>
+<p>Env değişkenleri yüklenmemiş olabilir. Yeni bir terminal penceresi açın ve <code>echo $ANTHROPIC_BASE_URL</code> ile doğrulayın.</p>
+
+<h3>"Invalid API key"</h3>
+<p>Gateway key ile Anthropic key'i karışmış olabilir. <code>ANTHROPIC_API_KEY</code>, Anthropic'in <code>sk-ant-...</code> anahtarı değil, Unichanl'ın <code>sk-unichanl-...</code> anahtarı olmalı.</p>
+
+<h2>Kalıcı arka plan servisi</h2>
+<pre># pm2 ile
+npm install -g pm2
+pm2 start "unichanl start --key sk-unichanl-YOUR_KEY" --name unichanl
+pm2 save
+pm2 startup</pre>
+
+<h2>İlgili rehberler</h2>
+<ul>
+<li><a href="/rehber/entegrasyon-claude-code.html">Claude Code Entegrasyon Rehberi</a></li>
+<li><a href="/rehber/cursor-ai-gateway.html">Cursor Entegrasyonu</a></li>
+<li><a href="/rehber/ai-model-router.html">AI Model Router / LLM Routing</a></li>
+<li><a href="/karsilastirma/unichanl-vs-openrouter.html">Unichanl vs OpenRouter</a></li>
+<li><a href="/fiyatlandirma.html">Fiyatlandırma</a></li>
+</ul>
+
+<a href="/fiyatlandirma.html" class="cta">Unichanl'ı 5$ ile dene →</a>
+</main>
+<footer>© Unichanl · <a href="/gizlilik-politikasi.html">Gizlilik</a> · <a href="/kvkk-aydinlatma-metni.html">KVKK</a></footer>
+</body>
+</html>
