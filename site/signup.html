@@ -248,7 +248,7 @@ window.doSignup=async function(e){
     localStorage.setItem('unichanl_key',j.key);
     localStorage.setItem('unichanl_email',email);
     if(window.ucTrack) ucTrack('signup_success',{method:'email'});
-    location.href='/dashboard.html';
+    location.href='/onboarding.html';
   }catch(err){
     if(window.ucTrack) ucTrack('signup_error',{method:'email',reason:(err.message||String(err)).slice(0,80)});
     showSignupErr('Hata: '+(err.message||err));

@@ -96,7 +96,7 @@ async function exchange(token) {
       ucTrack('login_success', { method: 'google' });
       ucTrack('signup_success', { method: 'google' });
     }
-    location.href = '/dashboard.html';
+    location.href = '/onboarding.html';
   } catch (e) {
     console.error('[callback] fetch failed', e);
     showError(e.message || 'network');
