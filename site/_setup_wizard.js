@@ -19,6 +19,8 @@
     DISMISSED: 'unichanl.wizard.dismissed',
     WELCOME: 'unichanl.wizard.welcome_shown',
     INT_DONE: 'unichanl.wizard.step.integration.done',
+    API_DONE: 'unichanl.wizard.step.apiKey.done',
+    RULE_DONE: 'unichanl.wizard.step.rules.done',
     skipKey: function (k) { return 'unichanl.wizard.step.' + k + '.skipped'; }
   };
   var SS_COLLAPSED = 'unichanl.wizard.collapsed';
@@ -51,10 +53,14 @@
   function stepState(step) {
     var onb = (window.__unichanl && window.__unichanl.onboarding) || null;
     var done = false, skipped = ls(LS.skipKey(step.key)) === '1';
-    if (step.key === 'integration') {
+    if (step.key === 'topup') {
+      done = !!(onb && onb.steps && onb.steps.topup && onb.steps.topup.done);
+    } else if (step.key === 'apiKey') {
+      done = ls(LS.API_DONE) === '1';
+    } else if (step.key === 'rules') {
+      done = ls(LS.RULE_DONE) === '1';
+    } else if (step.key === 'integration') {
       done = ls(LS.INT_DONE) === '1';
-    } else if (onb && onb.steps && onb.steps[step.key]) {
-      done = !!onb.steps[step.key].done;
     }
     return { done: done, skipped: skipped };
   }
@@ -402,6 +408,18 @@
       if (ls(LS.INT_DONE) === '1') return;
       lsSet(LS.INT_DONE, '1');
       track('wizard_integration_done');
+      render();
+    },
+    markApiKeyDone: function () {
+      if (ls(LS.API_DONE) === '1') return;
+      lsSet(LS.API_DONE, '1');
+      track('wizard_apikey_done');
+      render();
+    },
+    markRulesDone: function () {
+      if (ls(LS.RULE_DONE) === '1') return;
+      lsSet(LS.RULE_DONE, '1');
+      track('wizard_rules_done');
       render();
     }
   };
