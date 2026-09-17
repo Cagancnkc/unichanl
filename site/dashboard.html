@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>unichanl · Panel</title>
 <link rel="icon" type="image/png" href="/favicon.png?v=2">
-<script defer src="/_first_topup.js"></script>
+<script>try{performance.mark&&performance.mark('uc:boot-start');}catch(_){}</script>
 <script defer src="/_analytics.js"></script>
-<script defer src="/_setup_wizard.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://www.googletagmanager.com">
 <link rel="preconnect" href="https://www.clarity.ms">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" onload="this.rel='stylesheet'">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" onload="this.rel='stylesheet'">
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=Newsreader:wght@400&display=swap">
 <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:wght@400&family=JetBrains+Mono:wght@400;500;600;700&display=swap"></noscript>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JCH03R81M2"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-JCH03R81M2');</script>
@@ -31,8 +31,16 @@ window.ucWithUtm=function(u){var q=location.search;return q?u+(u.includes('?')?'
 (function(){try{sessionStorage.setItem('uc_src',ucUtm().source)}catch(e){}})();
 </script>
 <script>
-(function(){var load=function(){var s=document.createElement('script');s.src='/_onboarding.js';s.defer=true;document.head.appendChild(s)};
-if('requestIdleCallback' in window){requestIdleCallback(load,{timeout:2000})}else{setTimeout(load,800)}})();
+(function(){
+  var inject=function(src){var s=document.createElement('script');s.src=src;s.defer=true;document.head.appendChild(s)};
+  var load=function(){
+    // Non-critical companion scripts: setup wizard, first-topup modal, onboarding sync.
+    inject('/_setup_wizard.js');
+    inject('/_first_topup.js');
+    inject('/_onboarding.js');
+  };
+  if('requestIdleCallback' in window){requestIdleCallback(load,{timeout:2000})}else{setTimeout(load,800)}
+})();
 </script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -355,6 +363,25 @@ async function api(path,opts={}){
   return data;
 }
 
+/* ---------- Short-TTL API cache ---------- */
+const _apiCache=new Map(); // path -> {t, data, inflight}
+function apiCached(path,ttlMs=30000){
+  const now=Date.now();
+  const hit=_apiCache.get(path);
+  if(hit){
+    if(hit.inflight)return hit.inflight;
+    if(now-hit.t<ttlMs)return Promise.resolve(hit.data);
+  }
+  const p=api(path).then(d=>{_apiCache.set(path,{t:Date.now(),data:d,inflight:null});return d;})
+    .catch(e=>{const cur=_apiCache.get(path);if(cur)cur.inflight=null;throw e;});
+  _apiCache.set(path,{t:hit?hit.t:0,data:hit?hit.data:null,inflight:p});
+  return p;
+}
+apiCached.invalidate=function(prefix){
+  for(const k of Array.from(_apiCache.keys())){if(k===prefix||k.startsWith(prefix))_apiCache.delete(k);}
+};
+apiCached.set=function(path,data){_apiCache.set(path,{t:Date.now(),data,inflight:null});};
+
 let toastTimer=null;
 function toast(msg,type='info',action){
   const el=$('#toast');
@@ -554,10 +581,11 @@ LOADERS.overview=async function(){
       </div>
     </div>`;
 
-  const [usage,bal,onb]=await Promise.all([
+  // Critical wave: usage + balance in parallel; render stats + credits pill ASAP.
+  // Onboarding status is fetched separately (deferred) by _onboarding.js.
+  const [usage,bal]=await Promise.all([
     api('/api/usage?limit=20').catch(()=>null),
-    api('/api/billing/balance').catch(()=>null),
-    api('/api/dashboard/onboarding-status').catch(()=>null),
+    apiCached('/api/billing/balance',30000).catch(()=>null),
   ]);
 
   const stats=$('#ov-stats');
@@ -576,47 +604,56 @@ LOADERS.overview=async function(){
     statCard('ORT. GECİKME',avgLat?avgLat+' ms':'—','modeller arası p50'),
     statCard('BAKİYE',fmtUsd(balance),'cüzdan')
   ].join('');
+  try{performance.mark&&performance.mark('uc:overview-ready');}catch(_){}
 
-  $('#ov-chart').innerHTML=buildLineChart(usage?.analytics?.dailyUsage||[]);
+  // Deferred wave: chart, model distribution, recent requests table.
+  // These are below the first stat cards and can safely paint one frame later.
+  const renderRest=()=>{
+    $('#ov-chart').innerHTML=buildLineChart(usage?.analytics?.dailyUsage||[]);
 
-  const dist=$('#ov-dist');
-  const byModel=usage?.byModel||[];
-  if(!byModel.length){dist.innerHTML='<div class="empty" style="padding:20px 0">Henüz yönlendirme verisi yok.</div>';}
-  else{
-    const totals=byModel.map(m=>({name:m.modelId||'model',count:m._count?.id||0}));
-    const sum=totals.reduce((a,b)=>a+b.count,0)||1;
-    const colors=['#DFFF00','#4ADE80','#60A5FA','#F472B6','#FBBF24','#A78BFA'];
-    dist.innerHTML=totals.slice(0,6).map((d,i)=>{
-      const pct=Math.round((d.count/sum)*100);
-      return `<div style="margin-bottom:15px">
-        <div class="row-split" style="font-size:12.5px;margin-bottom:6px"><span class="mono" style="color:#C7CFCE;font-size:11.5px">${esc(d.name)}</span><span class="mono" style="color:#657172;font-size:11px">${pct}%</span></div>
-        <div style="height:6px;border-radius:4px;background:#0B171A;overflow:hidden"><div style="height:100%;width:${pct}%;background:${colors[i%colors.length]};border-radius:4px"></div></div>
-      </div>`;
-    }).join('');
-  }
+    const dist=$('#ov-dist');
+    const byModel=usage?.byModel||[];
+    if(!byModel.length){dist.innerHTML='<div class="empty" style="padding:20px 0">Henüz yönlendirme verisi yok.</div>';}
+    else{
+      const totals=byModel.map(m=>({name:m.modelId||'model',count:m._count?.id||0}));
+      const sum=totals.reduce((a,b)=>a+b.count,0)||1;
+      const colors=['#DFFF00','#4ADE80','#60A5FA','#F472B6','#FBBF24','#A78BFA'];
+      dist.innerHTML=totals.slice(0,6).map((d,i)=>{
+        const pct=Math.round((d.count/sum)*100);
+        return `<div style="margin-bottom:15px">
+          <div class="row-split" style="font-size:12.5px;margin-bottom:6px"><span class="mono" style="color:#C7CFCE;font-size:11.5px">${esc(d.name)}</span><span class="mono" style="color:#657172;font-size:11px">${pct}%</span></div>
+          <div style="height:6px;border-radius:4px;background:#0B171A;overflow:hidden"><div style="height:100%;width:${pct}%;background:${colors[i%colors.length]};border-radius:4px"></div></div>
+        </div>`;
+      }).join('');
+    }
 
-  const rec=$('#ov-recent');
-  if(!recent.length){rec.innerHTML='<div class="empty">Henüz istek yok. İlk isteğini gönderdiğinde burada görünecek.</div>';}
-  else{
-    rec.innerHTML=`<div style="display:grid;grid-template-columns:110px 1fr 180px 110px 90px 100px;padding:10px 22px;font:600 10px 'JetBrains Mono';letter-spacing:.1em;color:#4C5758;border-bottom:1px solid #132023">
-      <span>ZAMAN</span><span>OTURUM</span><span>MODEL</span><span>DURUM</span><span>GECİKME</span><span style="text-align:right">MALİYET</span>
-    </div>`+recent.slice(0,20).map(r=>{
-      const status=r.errorCode?'err':'ok';
-      const clr=status==='ok'?'#4ADE80':'#F87171';
-      const stTxt=status==='ok'?'Başarılı':(r.errorCode||'Hata');
-      return `<div style="display:grid;grid-template-columns:110px 1fr 180px 110px 90px 100px;padding:13px 22px;align-items:center;border-bottom:1px solid #0C171A;font-size:13px">
-        <span class="mono" style="font-size:11.5px;color:#657172">${esc(fmtTimeShort(r.createdAt))}</span>
-        <span style="color:#C7CFCE;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:16px">${esc(r.sessionId||'—')}</span>
-        <span class="mono" style="font-size:12px;color:#C7CFCE;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.modelId||'—')}</span>
-        <span><span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:${clr}"><span style="width:6px;height:6px;border-radius:50%;background:${clr}"></span>${esc(stTxt)}</span></span>
-        <span class="mono" style="font-size:12px;color:#98A3A3">${r.latencyMs?r.latencyMs+' ms':'—'}</span>
-        <span class="mono" style="font-size:12px;color:#98A3A3;text-align:right">${fmtUsd(r.costUsd||0)}</span>
-      </div>`;
-    }).join('');
-  }
+    const rec=$('#ov-recent');
+    if(!recent.length){rec.innerHTML='<div class="empty">Henüz istek yok. İlk isteğini gönderdiğinde burada görünecek.</div>';}
+    else{
+      rec.innerHTML=`<div style="display:grid;grid-template-columns:110px 1fr 180px 110px 90px 100px;padding:10px 22px;font:600 10px 'JetBrains Mono';letter-spacing:.1em;color:#4C5758;border-bottom:1px solid #132023">
+        <span>ZAMAN</span><span>OTURUM</span><span>MODEL</span><span>DURUM</span><span>GECİKME</span><span style="text-align:right">MALİYET</span>
+      </div>`+recent.slice(0,20).map(r=>{
+        const status=r.errorCode?'err':'ok';
+        const clr=status==='ok'?'#4ADE80':'#F87171';
+        const stTxt=status==='ok'?'Başarılı':(r.errorCode||'Hata');
+        return `<div style="display:grid;grid-template-columns:110px 1fr 180px 110px 90px 100px;padding:13px 22px;align-items:center;border-bottom:1px solid #0C171A;font-size:13px">
+          <span class="mono" style="font-size:11.5px;color:#657172">${esc(fmtTimeShort(r.createdAt))}</span>
+          <span style="color:#C7CFCE;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:16px">${esc(r.sessionId||'—')}</span>
+          <span class="mono" style="font-size:12px;color:#C7CFCE;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(r.modelId||'—')}</span>
+          <span><span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:${clr}"><span style="width:6px;height:6px;border-radius:50%;background:${clr}"></span>${esc(stTxt)}</span></span>
+          <span class="mono" style="font-size:12px;color:#98A3A3">${r.latencyMs?r.latencyMs+' ms':'—'}</span>
+          <span class="mono" style="font-size:12px;color:#98A3A3;text-align:right">${fmtUsd(r.costUsd||0)}</span>
+        </div>`;
+      }).join('');
+    }
+  };
+  const scheduleRest=()=>{
+    if('requestIdleCallback' in window){requestIdleCallback(renderRest,{timeout:600});}
+    else{setTimeout(renderRest,0);}
+  };
+  requestAnimationFrame(scheduleRest);
 
   window.__unichanl=window.__unichanl||{};
-  if(onb)window.__unichanl.onboarding=onb;
   window.dispatchEvent(new Event('unichanl:onboarding'));
 };
 
@@ -788,12 +825,13 @@ LOADERS.models=async function(){
     setLoading(items.length,total);
     const pages=Math.ceil(total/LIMIT);
     if(pages>1){
-      const results=await Promise.all(
-        Array.from({length:pages-1},(_,i)=>fetchPage(i+2,LIMIT).then(r=>r?.models||[]).catch(()=>[]))
-      );
-      for(const chunk of results){
+      // Fetch remaining pages sequentially with a microtask yield between each,
+      // so we don't fire N parallel requests and don't block the main thread.
+      for(let p=2;p<=pages;p++){
+        const chunk=await fetchPage(p,LIMIT).then(r=>r?.models||[]).catch(()=>[]);
         items=items.concat(chunk);
         setLoading(items.length,total);
+        await new Promise(r=>setTimeout(r,0));
       }
     }
     return {items,total};
@@ -1310,7 +1348,7 @@ LOADERS.apikeys=async function(){
 };
 
 async function refreshKeys(){
-  const data=await api('/api/keys');
+  const data=await apiCached('/api/keys',30000);
   const keys=data?.keys||[];
   window.__unichanl=window.__unichanl||{};window.__unichanl.keys=keys;
   const b=$('#keys-body');
@@ -1329,7 +1367,7 @@ async function refreshKeys(){
     e.stopPropagation();
     if(!confirm('Bu anahtarı iptal etmek istediğine emin misin?'))return;
     btn.disabled=true;
-    try{await api('/api/keys/'+encodeURIComponent(btn.dataset.revoke),{method:'DELETE'});toast('Anahtar iptal edildi','ok');await refreshKeys();}
+    try{await api('/api/keys/'+encodeURIComponent(btn.dataset.revoke),{method:'DELETE'});apiCached.invalidate('/api/keys');toast('Anahtar iptal edildi','ok');await refreshKeys();}
     catch(err){toast(err.message||'İptal başarısız','err');btn.disabled=false;}
   }));
 }
@@ -1346,7 +1384,7 @@ function openCreateKeyModal(){
       const btn=$('#k-create',root);const name=($('#k-name',root).value||'').trim()||'anahtar-'+Date.now().toString(36);
       btn.disabled=true;
       try{
-        const res=await api('/api/keys',{method:'POST',body:JSON.stringify({name})});
+        const res=await api('/api/keys',{method:'POST',body:JSON.stringify({name})});apiCached.invalidate('/api/keys');
         try{window.UnichanlSetupWizard&&window.UnichanlSetupWizard.markApiKeyDone();}catch(_){}
         close();
         showRevealKey(res.key,name);
@@ -1523,7 +1561,7 @@ LOADERS.pricing=async function(){
   tog.addEventListener('click',async()=>{
     const on=!tog.classList.contains('on');
     tog.classList.toggle('on',on);
-    try{await api('/api/billing/recharge-settings',{method:'PUT',body:JSON.stringify({autoRechargeEnabled:on})});toast(on?'Otomatik yenileme açık':'Otomatik yenileme kapalı','ok');}
+    try{await api('/api/billing/recharge-settings',{method:'PUT',body:JSON.stringify({autoRechargeEnabled:on})});apiCached.invalidate('/api/billing/recharge-settings');toast(on?'Otomatik yenileme açık':'Otomatik yenileme kapalı','ok');}
     catch(err){tog.classList.toggle('on',!on);toast(err.message||'Güncellenemedi','err');}
   });
   $('#ar-save').addEventListener('click',async()=>{
@@ -1533,7 +1571,7 @@ LOADERS.pricing=async function(){
     if(!Number.isFinite(am)||am<5||am>1000){toast('Yüklenecek tutar $5-$1000 arası olmalı','err');return;}
     const btn=$('#ar-save');btn.disabled=true;
     try{
-      await api('/api/billing/recharge-settings',{method:'PUT',body:JSON.stringify({autoRechargeThreshold:th,autoRechargeAmount:am})});
+      await api('/api/billing/recharge-settings',{method:'PUT',body:JSON.stringify({autoRechargeThreshold:th,autoRechargeAmount:am})});apiCached.invalidate('/api/billing/recharge-settings');
       $('#ar-info').textContent='Eşik: $'+th.toFixed(2)+' · Yüklenecek: $'+am.toFixed(2);
       toast('Ayarlar kaydedildi','ok');
     }catch(err){toast(err.message||'Kaydedilemedi','err');}
@@ -1543,8 +1581,8 @@ LOADERS.pricing=async function(){
 
 async function refreshPricing(){
   const [bal,rc,sub]=await Promise.all([
-    api('/api/billing/balance').catch(()=>null),
-    api('/api/billing/recharge-settings').catch(()=>null),
+    apiCached('/api/billing/balance',30000).catch(()=>null),
+    apiCached('/api/billing/recharge-settings',30000).catch(()=>null),
     api('/api/billing/subscription').catch(()=>null),
   ]);
   window.updateCreditsPill(bal?.balanceUsd||0);
@@ -1593,6 +1631,15 @@ async function refreshPricing(){
   const start=(location.hash||'').replace(/^#\//,'')||'overview';
   await showView(start);
   try{document.getElementById('uc-skel')&&document.getElementById('uc-skel').remove();}catch(_){}
+  try{
+    if(performance&&performance.mark){
+      performance.mark('uc:tti');
+      if(performance.measure){performance.measure('uc:boot->tti','uc:boot-start','uc:tti');}
+      const entries=performance.getEntriesByName('uc:boot->tti');
+      const ms=entries&&entries.length?Math.round(entries[entries.length-1].duration):null;
+      if(ms!=null&&window.ucTrack)ucTrack('perf_tti',{ms,view:start});
+    }
+  }catch(_){}
   if(window.ucTrack) ucTrack('dashboard_view',{view:start});
   if(location.search.indexOf('checkout=success')>-1 && window.ucTrack) ucTrack('payment_success',{});
 })();
