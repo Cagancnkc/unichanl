@@ -247,6 +247,7 @@ window.doSignup=async function(e){
     if(!r.ok||!j.key){throw new Error((j.error&&j.error.message)||'Kayıt başarısız');}
     localStorage.setItem('unichanl_key',j.key);
     localStorage.setItem('unichanl_email',email);
+    try{localStorage.setItem('unichanl.onboarding.pending','1');}catch(_){}
     if(window.ucTrack) ucTrack('signup_success',{method:'email'});
     location.href='/onboarding.html';
   }catch(err){

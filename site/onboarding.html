@@ -286,6 +286,12 @@
 
 <script>
 (() => {
+  try {
+    if (!localStorage.getItem('unichanl_key')) {
+      location.replace('/signup.html');
+      return;
+    }
+  } catch(_) {}
   const STORAGE_KEY = "unichanl.onboarding";
   const TOTAL_STEPS = 7;
 
@@ -602,9 +608,9 @@
   };
   window.goSignup = function () {
     save();
-    let payload = "";
-    try { payload = btoa(unescape(encodeURIComponent(JSON.stringify(state.plan)))).slice(0, 1200); } catch (_) {}
-    location.href = "/signup.html?onboarding=1" + (payload ? "&plan=" + encodeURIComponent(payload) : "");
+    try { localStorage.removeItem('unichanl.onboarding.pending'); } catch(_) {}
+    try { localStorage.setItem('unichanl.onboarding.completed','1'); } catch(_) {}
+    location.href = "/dashboard.html";
   };
 
   // ---------- Screen 9: Plan Edit ----------

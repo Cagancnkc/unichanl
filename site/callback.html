@@ -92,6 +92,7 @@ async function exchange(token) {
       return showError(msg, code, rid, hint);
     }
     localStorage.setItem('unichanl_key', data.key);
+    try{localStorage.setItem('unichanl.onboarding.pending','1');}catch(_){}
     if (window.ucTrack) {
       ucTrack('login_success', { method: 'google' });
       ucTrack('signup_success', { method: 'google' });

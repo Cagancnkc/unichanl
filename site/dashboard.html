@@ -328,6 +328,7 @@ const getKey=()=>localStorage.getItem(KEY_STORAGE);
 const clearKey=()=>localStorage.removeItem(KEY_STORAGE);
 
 if(!getKey()){location.replace('/signup.html');}
+else if(localStorage.getItem('unichanl.onboarding.pending')==='1'){location.replace('/onboarding.html');}
 
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
