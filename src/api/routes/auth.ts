@@ -77,8 +77,21 @@ export async function authRoutes(app: FastifyInstance) {
       );
     }
 
-    const sbUser = (await userRes.json().catch(() => ({}))) as { email?: string };
+    const sbUser = (await userRes.json().catch(() => ({}))) as {
+      email?: string;
+      user_metadata?: {
+        full_name?: string;
+        name?: string;
+        avatar_url?: string;
+        picture?: string;
+      };
+    };
     const email = sbUser.email;
+    const meta = sbUser.user_metadata ?? {};
+    const avatarUrl = (typeof meta.avatar_url === 'string' && meta.avatar_url) ||
+      (typeof meta.picture === 'string' && meta.picture) || null;
+    const fullName = (typeof meta.full_name === 'string' && meta.full_name) ||
+      (typeof meta.name === 'string' && meta.name) || null;
 
     if (!email || typeof email !== 'string') {
       logger.warn({ requestId: req.id }, 'OAuth: Supabase user has no email');
@@ -97,7 +110,14 @@ export async function authRoutes(app: FastifyInstance) {
     if (!user) {
       try {
         user = await withPrismaRetry('user.create', req.id, () =>
-          prisma.user.create({ data: { email, name: email.split('@')[0] } }),
+          prisma.user.create({
+            data: {
+              email,
+              name: fullName ?? email.split('@')[0],
+              displayName: fullName,
+              avatarUrl,
+            },
+          }),
         );
       } catch (err) {
         if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
@@ -106,6 +126,17 @@ export async function authRoutes(app: FastifyInstance) {
         if (!user) {
           logger.error({ err, requestId: req.id, step: 'user.create', email }, 'OAuth: user create failed');
           throw err;
+        }
+      }
+    } else {
+      const patch: { avatarUrl?: string; displayName?: string } = {};
+      if (avatarUrl && user.avatarUrl !== avatarUrl) patch.avatarUrl = avatarUrl;
+      if (fullName && !user.displayName) patch.displayName = fullName;
+      if (Object.keys(patch).length > 0) {
+        try {
+          user = await prisma.user.update({ where: { id: user.id }, data: patch });
+        } catch (err) {
+          logger.warn({ err, requestId: req.id, userId: user.id }, 'OAuth: profile refresh failed');
         }
       }
     }

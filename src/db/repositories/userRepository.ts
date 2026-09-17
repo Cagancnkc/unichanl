@@ -92,4 +92,22 @@ export const userRepository = {
   async markAutoRechargeAttempted(id: string) {
     return prisma.user.update({ where: { id }, data: { lastAutoRechargeAttemptAt: new Date() } });
   },
+
+  async updateProfile(id: string, data: { displayName?: string | null; avatarUrl?: string | null }) {
+    const update: Prisma.UserUpdateInput = {};
+    if (data.displayName !== undefined) update.displayName = data.displayName;
+    if (data.avatarUrl !== undefined) update.avatarUrl = data.avatarUrl;
+    return prisma.user.update({ where: { id }, data: update });
+  },
+
+  async updateNotifications(id: string, data: { notifyEmailEnabled?: boolean; notifyLowBalanceEnabled?: boolean }) {
+    const update: Prisma.UserUpdateInput = {};
+    if (typeof data.notifyEmailEnabled === 'boolean') update.notifyEmailEnabled = data.notifyEmailEnabled;
+    if (typeof data.notifyLowBalanceEnabled === 'boolean') update.notifyLowBalanceEnabled = data.notifyLowBalanceEnabled;
+    return prisma.user.update({ where: { id }, data: update });
+  },
+
+  async deleteById(id: string) {
+    return prisma.user.delete({ where: { id } });
+  },
 };

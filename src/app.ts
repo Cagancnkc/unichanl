@@ -20,6 +20,7 @@ import { ruleRoutes } from './api/routes/rules.js';
 import { sessionRoutes } from './api/routes/sessions.js';
 import { onboardingRoutes } from './api/routes/onboarding.js';
 import { adminRoutes } from './api/routes/admin.js';
+import { userRoutes } from './api/routes/user.js';
 import { publicModelRoutes } from './api/routes/publicModels.js';
 import { analyticsRoutes } from './api/routes/analytics.js';
 import { generateRequestId } from './utils/id.js';
@@ -114,6 +115,7 @@ export async function createApp() {
       await protectedApp.register(sessionRoutes, { prefix: '/api' });
       await protectedApp.register(onboardingRoutes, { prefix: '/api' });
       await protectedApp.register(adminRoutes, { prefix: '/api' });
+      await protectedApp.register(userRoutes, { prefix: '/api' });
     },
   );
 
