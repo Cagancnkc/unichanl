@@ -27,6 +27,22 @@ const REPAIR_STATEMENTS: Array<{ label: string; sql: string }> = [
     sql: `ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "lastAutoRechargeAttemptAt" TIMESTAMP(3)`,
   },
   {
+    label: 'users.avatarUrl',
+    sql: `ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "avatarUrl" TEXT`,
+  },
+  {
+    label: 'users.displayName',
+    sql: `ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "displayName" TEXT`,
+  },
+  {
+    label: 'users.notifyEmailEnabled',
+    sql: `ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "notifyEmailEnabled" BOOLEAN NOT NULL DEFAULT true`,
+  },
+  {
+    label: 'users.notifyLowBalanceEnabled',
+    sql: `ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "notifyLowBalanceEnabled" BOOLEAN NOT NULL DEFAULT true`,
+  },
+  {
     label: 'models.description',
     sql: `ALTER TABLE "models" ADD COLUMN IF NOT EXISTS "description" TEXT`,
   },
