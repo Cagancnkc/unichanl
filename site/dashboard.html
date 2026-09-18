@@ -988,12 +988,89 @@ LOADERS.models=async function(){
 
 
 /* ---------- ROUTING ---------- */
-const RULE_STRATEGIES=[
-  {key:'lowest_cost',title:'En düşük maliyet',hint:'Her istekte en ucuz uygun modeli seçer. Maliyet optimizasyonu için ideal.'},
-  {key:'highest_quality',title:'En yüksek kalite',hint:'Kalite skoru en yüksek modeli tercih eder. Fiyattan bağımsız en iyi çıktı.'},
-  {key:'weighted_round_robin',title:'Ağırlıklı sıralı',hint:'Trafiği modeller arasında ağırlıklı olarak paylaştırır. Yük dengeleme.'},
-  {key:'failover',title:'Yedekli devir',hint:'Birincil model başarısız olursa yedeğe otomatik geçer. Yüksek kullanılabilirlik.'}
+const RT_TRIGGERS=['quota_exceeded','timeout','model_unavailable'];
+const PREF_TO_STRATEGY={lowestcost:'lowest_cost',premium:'highest_quality',balanced:'weighted_round_robin',fastest:'failover'};
+const STRATEGY_TO_PREF={lowest_cost:'lowestcost',highest_quality:'premium',weighted_round_robin:'balanced',failover:'fastest'};
+const PREF_META={
+  lowestcost:{label:'Düşük maliyet',color:'#7CE7B8'},
+  premium:{label:'Premium',color:'#DFFF00'},
+  balanced:{label:'Dengeli',color:'#8BB8FF'},
+  fastest:{label:'En hızlı',color:'#FFB86B'}
+};
+const RT_PROVIDERS=[
+  {key:'anthropic',name:'Anthropic (Claude)',slug:'claude',models:[
+    {id:'anthropic/claude-sonnet-4',label:'Claude Sonnet 4'},
+    {id:'anthropic/claude-opus-4',label:'Claude Opus 4'},
+    {id:'anthropic/claude-haiku-4',label:'Claude Haiku 4'}
+  ]},
+  {key:'openai',name:'OpenAI (GPT)',slug:'openai',models:[
+    {id:'openai/gpt-4o',label:'GPT-4o'},
+    {id:'openai/gpt-4-turbo',label:'GPT-4 Turbo'},
+    {id:'openai/o3-mini',label:'o3-mini'}
+  ]},
+  {key:'google',name:'Google (Gemini)',slug:'gemini',models:[
+    {id:'google/gemini-2.5-pro',label:'Gemini 2.5 Pro'},
+    {id:'google/gemini-2.5-flash',label:'Gemini 2.5 Flash'}
+  ]},
+  {key:'deepseek',name:'DeepSeek',slug:'deepseek',models:[
+    {id:'deepseek/deepseek-chat',label:'DeepSeek Chat'},
+    {id:'deepseek/deepseek-reasoner',label:'DeepSeek R1'}
+  ]},
+  {key:'xai',name:'xAI (Grok)',slug:'grok',models:[
+    {id:'x-ai/grok-2',label:'Grok 2'},
+    {id:'x-ai/grok-beta',label:'Grok Beta'}
+  ]},
+  {key:'mistral',name:'Mistral',slug:'mistral',models:[
+    {id:'mistralai/mistral-large',label:'Mistral Large'},
+    {id:'mistralai/mixtral-8x22b',label:'Mixtral 8x22B'}
+  ]},
+  {key:'meta',name:'Meta (Llama)',slug:'meta',models:[
+    {id:'meta-llama/llama-3.3-70b',label:'Llama 3.3 70B'}
+  ]}
 ];
+function rtModelInfo(id){
+  for(const p of RT_PROVIDERS){for(const m of p.models){if(m.id===id)return{id:m.id,label:m.label,provider:p};}}
+  const s=String(id||'').toLowerCase();
+  const p=RT_PROVIDERS.find(x=>s.includes(x.slug)||s.startsWith(x.key+'/'));
+  const label=String(id||'').split('/').pop()||id||'—';
+  return{id:id||'',label,provider:p||{key:'other',name:(String(id||'').split('/')[0]||'model'),slug:'openrouter'}};
+}
+function rtLogo(id,size){
+  const info=rtModelInfo(id);
+  const slug=info.provider.slug||'openrouter';
+  const s=size||36;
+  const url='https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/dark/'+slug+'-color.png';
+  const fb='https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest/dark/'+slug+'.png';
+  return '<img src="'+esc(url)+'" alt="" width="'+s+'" height="'+s+'" style="width:'+s+'px;height:'+s+'px;border-radius:8px;background:#0F1A1B;padding:4px;object-fit:contain" loading="lazy" onerror="if(!this.dataset.f){this.dataset.f=1;this.src=\''+esc(fb)+'\';}else{this.onerror=null;}">';
+}
+const RULE_PRESETS={
+  lowestcost:[
+    {primary:'deepseek/deepseek-chat',fallbacks:['google/gemini-2.5-flash','openai/gpt-4o'],why:'DeepSeek → Gemini Flash → GPT-4o. Kısa/orta istekler için maliyet optimizasyonu.'},
+    {primary:'google/gemini-2.5-flash',fallbacks:['deepseek/deepseek-chat','openai/gpt-4o'],why:'Flash birinci, DeepSeek yedek. Basit ve hızlı ucuz zincir.'}
+  ],
+  premium:[
+    {primary:'anthropic/claude-opus-4',fallbacks:['openai/gpt-4o','google/gemini-2.5-pro'],why:'Opus → GPT-4o → Gemini Pro. En yüksek kalite havuzu.'},
+    {primary:'openai/gpt-4o',fallbacks:['anthropic/claude-opus-4','google/gemini-2.5-pro'],why:'GPT-4o birinci, Opus + Gemini Pro yedek. Klasik premium.'}
+  ],
+  balanced:[
+    {primary:'anthropic/claude-sonnet-4',fallbacks:['openai/gpt-4o','google/gemini-2.5-pro'],why:'Sonnet → GPT-4o → Gemini Pro. Kalite/fiyat dengesi.'},
+    {primary:'openai/gpt-4o',fallbacks:['anthropic/claude-sonnet-4','deepseek/deepseek-chat'],why:'GPT-4o birinci, Sonnet + DeepSeek yedek. Karma denge.'}
+  ],
+  fastest:[
+    {primary:'google/gemini-2.5-flash',fallbacks:['anthropic/claude-haiku-4','deepseek/deepseek-chat'],why:'Flash → Haiku → DeepSeek. En düşük latency zinciri.'},
+    {primary:'openai/gpt-4o',fallbacks:['google/gemini-2.5-flash','anthropic/claude-haiku-4'],why:'GPT-4o hızlı, Flash + Haiku yedek.'}
+  ]
+};
+function tailorPresets(preference,primary){
+  const base=RULE_PRESETS[preference]||RULE_PRESETS.balanced;
+  if(!primary)return base;
+  const brand=rtModelInfo(primary).provider.key;
+  const out=base.map(p=>{
+    if(rtModelInfo(p.primary).provider.key===brand)return p;
+    return {primary:primary,fallbacks:p.fallbacks.filter(f=>f!==primary).slice(0,2),why:'Seçtiğin '+rtModelInfo(primary).label+' birincil; yedek zincir '+(PREF_META[preference]?.label||'').toLowerCase()+' önceliğine göre uyarlandı.'};
+  });
+  const seen=new Set();return out.filter(p=>{const k=p.primary+'|'+p.fallbacks.join(',');if(seen.has(k))return false;seen.add(k);return true;});
+}
 
 LOADERS.routing=async function(){
   const el=$('#view-routing');
@@ -1003,229 +1080,402 @@ LOADERS.routing=async function(){
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
         <div style="min-width:0">
           <h1 class="h1">Yönlendirme</h1>
-          <p class="sub">Aktif kurallar. Öncelik ve stratejiye göre model seçimi.</p>
+          <p class="sub">Kota (429), timeout ve model erişilemez durumlarında hangi yedek zincirin devreye gireceğini belirle.</p>
         </div>
-        <button id="rule-new" class="btn" data-wiz-target="rules"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Yönlendirme Kuralı Oluştur</button>
+        <button id="rule-new" class="btn" data-wiz-target="rules"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Yeni Yönlendirme Kuralı</button>
       </div>
-      <div class="card" style="overflow:hidden">
-        <div id="rules-body"><div class="empty">Yükleniyor…</div></div>
-      </div>
+      <div id="rules-body" style="margin-top:8px"><div class="empty">Yükleniyor…</div></div>
     </div>`;
   $('#rule-new').addEventListener('click',()=>openRuleWizard());
-  await renderRulesTable();
+  await renderRulesList();
 };
 
-async function renderRulesTable(){
+async function renderRulesList(){
   const b=$('#rules-body');
   if(!b)return;
   b.innerHTML='<div class="empty">Yükleniyor…</div>';
-  const data=await api('/api/rules');
-  const rules=data?.rules||[];
+  let rules=[];
+  try{const data=await api('/api/rules');rules=data?.rules||[];}
+  catch(err){b.innerHTML='<div class="empty" style="padding:40px 24px;color:#F87171">Kurallar yüklenemedi: '+esc(err.message||'hata')+'</div>';return;}
+
   if(!rules.length){
-    b.innerHTML=`<div class="empty" style="padding:56px 24px">
-      <div style="font-size:15px;color:#C7CFCE;margin-bottom:8px">Henüz yönlendirme kuralın yok.</div>
-      <div style="font-size:13px;color:#657172;margin-bottom:20px;max-width:440px;margin-left:auto;margin-right:auto">Kural olmadığında istekler varsayılan stratejiyle işlenir. İlk kuralını oluşturmak için aşağıdaki butona bas — adım adım rehber seni yönlendirir.</div>
-      <button id="rule-new-empty" class="btn" data-wiz-target="rules">İlk Kuralı Oluştur</button>
+    b.innerHTML=`<div class="card" style="border-style:dashed;border-color:#1C2A2D;padding:56px 24px;text-align:center">
+      <div style="width:52px;height:52px;border-radius:14px;background:rgba(223,255,0,.08);border:1px solid rgba(223,255,0,.28);display:grid;place-items:center;margin:0 auto 16px;color:#DFFF00">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h6"/></svg>
+      </div>
+      <div style="font-size:16px;color:#F2F5F4;margin-bottom:8px">Henüz yönlendirme kuralın yok</div>
+      <div style="font-size:13px;color:#98A3A3;margin:0 auto 22px;max-width:460px;line-height:1.5">Kota doldu (429), timeout veya model erişilemez durumlarında hangi yedek zincirin devreye gireceğini birkaç adımda tanımla.</div>
+      <button id="rule-new-empty" class="btn" style="font-size:14px;padding:12px 22px">+ Yeni Yönlendirme Kuralı Oluştur</button>
     </div>`;
     const b2=$('#rule-new-empty');if(b2)b2.addEventListener('click',()=>openRuleWizard());
     return;
   }
-  b.innerHTML=`<table class="tbl">
-    <thead><tr><th>AD</th><th>STRATEJİ</th><th>ÖNCELİK</th><th>DURUM</th></tr></thead>
-    <tbody>${rules.map(r=>{
-      const on=r.enabled!==false;
-      return `<tr>
-        <td><span style="color:#F2F5F4;font-weight:600">${esc(r.name||r.id)}</span>${r.description?`<div style="font-size:11.5px;color:#657172;margin-top:2px">${esc(r.description)}</div>`:''}</td>
-        <td class="mono" style="font-size:12px;color:#C7CFCE">${esc(r.strategy||'—')}</td>
-        <td class="mono" style="font-size:12px;color:#98A3A3">${r.priority??'—'}</td>
-        <td>${on?'<span class="pill ok">Aktif</span>':'<span class="pill mut">Pasif</span>'}</td>
-      </tr>`;
-    }).join('')}</tbody></table>`;
+
+  b.innerHTML='<div class="rules-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px">'+
+    rules.map(r=>renderRuleCard(r)).join('')+'</div>';
+  b.querySelectorAll('[data-rule-edit]').forEach(el=>el.onclick=()=>{
+    const r=rules.find(x=>x.id===el.dataset.ruleEdit);if(r)openRuleWizard(r);
+  });
+  b.querySelectorAll('[data-rule-del]').forEach(el=>el.onclick=()=>{
+    const id=el.dataset.ruleDel;const r=rules.find(x=>x.id===id);confirmDelete(r);
+  });
+  b.querySelectorAll('[data-rule-toggle]').forEach(el=>el.onclick=async()=>{
+    const id=el.dataset.ruleToggle;const r=rules.find(x=>x.id===id);if(!r)return;
+    try{
+      await api('/api/rules/'+id,{method:'PUT',body:JSON.stringify({name:r.name,description:r.description||undefined,strategy:r.strategy,conditions:r.conditions||{},priority:r.priority,enabled:!r.enabled})});
+      await renderRulesList();
+    }catch(err){toast(err.message||'Güncellenemedi','err');}
+  });
 }
 
-function openRuleWizard(){
-  const state={step:1,guide:false,name:'',description:'',strategy:'lowest_cost',priority:10,enabled:true,conditions:{modelPrefix:'',minTokens:'',maxTokens:'',userTier:''}};
-  const close=modal(ruleWizardHtml(state),{onMount:(root,closeFn)=>{bindRuleWizard(root,state,closeFn);}});
+function renderRuleCard(r){
+  const cond=(r.conditions&&typeof r.conditions==='object')?r.conditions:{};
+  const chain=cond.chain||{primary:'',fallbacks:[]};
+  const pref=cond.preference||STRATEGY_TO_PREF[r.strategy]||'balanced';
+  const meta=PREF_META[pref]||PREF_META.balanced;
+  const on=r.enabled!==false;
+  return `<div class="card" style="padding:16px;display:flex;flex-direction:column;gap:12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;min-width:0">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${on?'#7CE7B8':'#4C5758'}"></span>
+        <span style="font-weight:600;font-size:14px;color:#F2F5F4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.name||r.id)}</span>
+      </div>
+      <span class="pill" style="background:${meta.color}22;color:${meta.color};border:1px solid ${meta.color}55;font-size:10px">${esc(meta.label)}</span>
+    </div>
+    <div style="background:#050D0F;border:1px solid #132023;border-radius:10px;padding:12px;overflow-x:auto">
+      ${renderChainFlow(chain,{mini:true})}
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <button data-rule-toggle="${esc(r.id)}" class="link" style="font:600 10px 'JetBrains Mono';letter-spacing:.14em;color:${on?'#DFFF00':'#657172'};background:none;border:none;cursor:pointer;padding:0">${on?'AKTİF':'PASİF'}</button>
+      <div style="display:flex;gap:6px">
+        <button data-rule-edit="${esc(r.id)}" class="btn ghost" style="height:30px;padding:0 12px;font-size:12px">Düzenle</button>
+        <button data-rule-del="${esc(r.id)}" class="btn danger" style="height:30px;padding:0 12px;font-size:12px">Sil</button>
+      </div>
+    </div>
+  </div>`;
 }
 
-function ruleWizardHtml(s){
-  const pct=Math.round((s.step/4)*100);
+function renderChainFlow(chain,opts){
+  const mini=opts&&opts.mini;
+  const items=[chain.primary,...(chain.fallbacks||[])].filter(Boolean);
+  if(!items.length)return '<div style="color:#657172;font-size:12px;text-align:center;padding:8px">Zincir tanımlanmadı</div>';
+  const size=mini?36:52;
+  const rows=items.map((id,i)=>{
+    const info=rtModelInfo(id);
+    const role=i===0?'PRIMARY':'FALLBACK '+i;
+    const roleColor=i===0?'#DFFF00':'#98A3A3';
+    return `<div style="display:flex;flex-direction:column;align-items:center;min-width:${size+16}px">
+      ${rtLogo(id,size)}
+      <div style="font:600 9px 'JetBrains Mono';letter-spacing:.12em;color:${roleColor};margin-top:6px">${role}</div>
+      ${mini?'':'<div style="font-size:12px;color:#C7CFCE;margin-top:2px;max-width:140px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(info.label)+'</div>'}
+    </div>`;
+  });
+  const arrow='<div style="display:flex;align-items:center;color:#4C5758;padding:0 6px;margin-top:'+(size/2-6)+'px"><svg width="'+(mini?16:22)+'" height="10" viewBox="0 0 22 10" fill="none"><path d="M0 5h20M14 1l6 4-6 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
+  return '<div class="chain-flow" style="display:flex;align-items:flex-start;justify-content:flex-start;gap:0">'+rows.join(arrow)+'</div>';
+}
+
+function confirmDelete(r){
+  if(!r)return;
+  const close=modal(`
+    <h3 style="font-family:'Newsreader',serif;font-weight:400;font-size:20px;margin:0 0 8px">Kuralı sil</h3>
+    <p style="color:#98A3A3;font-size:13px;line-height:1.5;margin:0 0 20px">"<strong style="color:#F2F5F4">${esc(r.name)}</strong>" kalıcı olarak silinecek. Devam edilsin mi?</p>
+    <div style="display:flex;justify-content:flex-end;gap:8px">
+      <button id="del-cancel" class="btn ghost">Vazgeç</button>
+      <button id="del-ok" class="btn danger">Sil</button>
+    </div>`,{onMount:(root,closeFn)=>{
+    root.querySelector('#del-cancel').onclick=closeFn;
+    root.querySelector('#del-ok').onclick=async()=>{
+      try{await api('/api/rules/'+r.id,{method:'DELETE'});toast('Silindi','ok');closeFn();await renderRulesList();}
+      catch(err){toast(err.message||'Silinemedi','err');}
+    };
+  }});
+}
+
+/* ------- Wizard ------- */
+function openRuleWizard(existing){
+  const cond=(existing&&existing.conditions&&typeof existing.conditions==='object')?existing.conditions:{};
+  const chain=cond.chain||{primary:'',fallbacks:[]};
+  const state={
+    step:1,
+    editingId:existing?existing.id:null,
+    name:existing?(existing.name||''):'',
+    preference:cond.preference||(existing?STRATEGY_TO_PREF[existing.strategy]:'')||'',
+    primary:chain.primary||'',
+    fallbackCount:(chain.fallbacks&&chain.fallbacks.length)?chain.fallbacks.length:2,
+    chain:{primary:chain.primary||'',fallbacks:(chain.fallbacks||[]).slice(0,2)},
+    enabled:existing?existing.enabled!==false:true
+  };
+  if(existing)state.step=5;
+  modal(wizHtml(state),{onMount:(root,closeFn)=>bindWiz(root,state,closeFn)});
+}
+
+function wizHtml(s){
+  const stepLabel=s.editingId?'Düzenle':('Adım '+Math.min(s.step,3)+'/3');
   return `
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
       <div style="width:34px;height:34px;border-radius:9px;background:rgba(223,255,0,.12);border:1px solid rgba(223,255,0,.35);display:grid;place-items:center;color:#DFFF00">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h6"/></svg>
       </div>
-      <div style="flex:1">
-        <div style="font:600 10px 'JetBrains Mono';color:#DFFF00;letter-spacing:.14em;text-transform:uppercase">Sihirbaz · Adım ${s.step}/4</div>
-        <h3 style="font-family:'Newsreader',serif;font-weight:400;font-size:22px;margin:2px 0 0">Yeni Yönlendirme Kuralı</h3>
+      <div style="flex:1;min-width:0">
+        <div style="font:600 10px 'JetBrains Mono';color:#DFFF00;letter-spacing:.14em;text-transform:uppercase">${esc(stepLabel)}</div>
+        <h3 style="font-family:'Newsreader',serif;font-weight:400;font-size:22px;margin:2px 0 0">${s.editingId?'Kuralı Düzenle':'Yeni Yönlendirme Kuralı'}</h3>
       </div>
-      <button id="rw-guide-toggle" class="link" title="Kılavuz görünümü" style="color:${s.guide?'#DFFF00':'#98A3A3'};font:600 11px 'JetBrains Mono';letter-spacing:.1em">${s.guide?'KILAVUZ ✓':'KILAVUZ'}</button>
     </div>
-    <div style="height:4px;background:#1C2A2D;border-radius:99px;overflow:hidden;margin:14px 0 18px"><div style="width:${pct}%;height:100%;background:#DFFF00;transition:width .2s"></div></div>
-    <div id="rw-body">${ruleWizardStep(s)}</div>
+    ${s.editingId?'':'<div style="height:4px;background:#1C2A2D;border-radius:99px;overflow:hidden;margin:14px 0 18px"><div style="width:'+Math.min(100,(Math.min(s.step,3)/3)*100)+'%;height:100%;background:#DFFF00;transition:width .2s"></div></div>'}
+    <div id="wiz-body">${wizStep(s)}</div>
     <div style="display:flex;justify-content:space-between;gap:10px;margin-top:22px;padding-top:16px;border-top:1px solid #132023">
-      <button id="rw-cancel" class="btn ghost">İptal</button>
-      <div style="display:flex;gap:8px">
-        ${s.step>1?'<button id="rw-back" class="btn ghost">Geri</button>':''}
-        ${s.step<4?'<button id="rw-next" class="btn">İleri</button>':'<button id="rw-submit" class="btn">Kuralı Oluştur</button>'}
-      </div>
+      <button id="wiz-cancel" class="btn ghost">İptal</button>
+      <div style="display:flex;gap:8px" id="wiz-actions">${wizActions(s)}</div>
     </div>`;
 }
 
-function ruleWizardStep(s){
-  const guide=s.guide;
+function wizActions(s){
+  if(s.editingId||s.step===5)return '<button id="wiz-save" class="btn">Kuralı Kaydet</button>';
+  if(s.step===4)return '<button id="wiz-back" class="btn ghost">Geri</button><button id="wiz-custom" class="btn ghost">Kendim oluşturacağım</button>';
+  const prev=s.step>1?'<button id="wiz-back" class="btn ghost">Geri</button>':'';
+  return prev+'<button id="wiz-next" class="btn">İleri</button>';
+}
+
+function wizStep(s){
+  if(s.editingId||s.step===5)return chainEditorHtml(s);
   if(s.step===1){
-    return `
-      ${guide?guideBox('Kurala tanımlayıcı bir isim ver. Örn: "Ucuz kısa mesajlar" veya "Yedek Claude". Açıklama opsiyoneldir ama ekipçe kullanacaksan faydalıdır.'):''}
-      <label style="display:block;font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:6px;text-transform:uppercase">Ad</label>
-      <input id="rw-name" class="inp" value="${esc(s.name)}" placeholder="Örn: Düşük maliyet kuralı" maxlength="80">
-      <label style="display:block;font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin:14px 0 6px;text-transform:uppercase">Açıklama (opsiyonel)</label>
-      <textarea id="rw-desc" class="inp" rows="3" placeholder="Ne zaman devreye giriyor?" maxlength="500">${esc(s.description)}</textarea>`;
+    const cards=[
+      {k:'lowestcost',title:'Düşük maliyet',desc:'En ucuz modeli önceliklendir. Yüksek hacimli işler.',bars:'▮▯▯'},
+      {k:'premium',title:'Premium kalite',desc:'Fiyat fark etmez, en iyi yanıt. Kritik işler.',bars:'▮▮▮'},
+      {k:'balanced',title:'Dengeli',desc:'Fiyat + kalite dengesi. Genel amaçlı.',bars:'▮▮▯'},
+      {k:'fastest',title:'En hızlı cevap',desc:'Latency öncelikli. İnteraktif akışlar.',bars:'⚡'}
+    ];
+    return `<p style="color:#98A3A3;font-size:13px;line-height:1.5;margin:0 0 18px">Yönlendirme sadece <strong style="color:#F2F5F4">429 (kota)</strong>, <strong style="color:#F2F5F4">timeout</strong> veya <strong style="color:#F2F5F4">model erişilemez</strong> durumlarında devreye girer.</p>
+    <div style="font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:10px;text-transform:uppercase">Önceliğin nedir?</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">
+      ${cards.map(c=>`<label class="wiz-pref" data-k="${c.k}" style="border:1px solid ${s.preference===c.k?'rgba(223,255,0,.5)':'#1C2A2D'};background:${s.preference===c.k?'rgba(223,255,0,.06)':'#03090B'};border-radius:10px;padding:14px;cursor:pointer;transition:all .12s">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <span style="font-weight:600;font-size:13.5px;color:#F2F5F4">${c.title}</span>
+          <span class="mono" style="font-size:11px;color:${s.preference===c.k?'#DFFF00':'#657172'}">${c.bars}</span>
+        </div>
+        <div style="font-size:12px;color:#98A3A3;line-height:1.4">${c.desc}</div>
+      </label>`).join('')}
+    </div>`;
   }
   if(s.step===2){
-    return `
-      ${guide?guideBox('Strateji, kural devreye girdiğinde hangi modelin seçileceğini belirler. Maliyet için "en düşük maliyet", kritik iş için "en yüksek kalite" veya "yedekli devir" tercih et.'):''}
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        ${RULE_STRATEGIES.map(x=>`
-          <label class="rw-strat ${s.strategy===x.key?'sel':''}" data-k="${x.key}" style="border:1px solid ${s.strategy===x.key?'rgba(223,255,0,.5)':'#1C2A2D'};background:${s.strategy===x.key?'rgba(223,255,0,.06)':'#03090B'};border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .12s">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-              <span style="width:14px;height:14px;border-radius:50%;border:2px solid ${s.strategy===x.key?'#DFFF00':'#4C5758'};display:inline-flex;align-items:center;justify-content:center">${s.strategy===x.key?'<span style="width:6px;height:6px;border-radius:50%;background:#DFFF00"></span>':''}</span>
-              <span style="font-weight:600;font-size:13.5px;color:#F2F5F4">${x.title}</span>
-            </div>
-            <div style="font-size:12px;color:#98A3A3;line-height:1.4;padding-left:24px">${x.hint}</div>
-          </label>`).join('')}
-      </div>`;
+    const options=RT_PROVIDERS.map(p=>'<optgroup label="'+esc(p.name)+'">'+p.models.map(m=>'<option value="'+esc(m.id)+'"'+(s.primary===m.id?' selected':'')+'>'+esc(m.label)+'</option>').join('')+'</optgroup>').join('');
+    return `<div style="font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:10px;text-transform:uppercase">Birincil model?</div>
+    <label class="wiz-primary-auto" style="display:flex;gap:10px;align-items:center;border:1px solid ${!s.primary?'rgba(223,255,0,.5)':'#1C2A2D'};background:${!s.primary?'rgba(223,255,0,.06)':'#03090B'};border-radius:10px;padding:14px;cursor:pointer;margin-bottom:12px">
+      <span style="width:14px;height:14px;border-radius:50%;border:2px solid ${!s.primary?'#DFFF00':'#4C5758'};display:inline-flex;align-items:center;justify-content:center;flex-shrink:0">${!s.primary?'<span style="width:6px;height:6px;border-radius:50%;background:#DFFF00"></span>':''}</span>
+      <div>
+        <div style="font-weight:600;font-size:13.5px;color:#F2F5F4">Hayır, sistem karar versin</div>
+        <div style="font-size:12px;color:#98A3A3;margin-top:2px">Önceliğine göre otomatik seç.</div>
+      </div>
+    </label>
+    <div style="border:1px solid ${s.primary?'rgba(223,255,0,.5)':'#1C2A2D'};background:${s.primary?'rgba(223,255,0,.06)':'#03090B'};border-radius:10px;padding:14px">
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+        <span style="width:14px;height:14px;border-radius:50%;border:2px solid ${s.primary?'#DFFF00':'#4C5758'};display:inline-flex;align-items:center;justify-content:center;flex-shrink:0">${s.primary?'<span style="width:6px;height:6px;border-radius:50%;background:#DFFF00"></span>':''}</span>
+        <span style="font-weight:600;font-size:13.5px;color:#F2F5F4">Evet, şu modeli birincil yap</span>
+      </div>
+      <select id="wiz-primary-select" class="inp" style="width:100%">
+        <option value="">— seç —</option>
+        ${options}
+      </select>
+    </div>`;
   }
   if(s.step===3){
-    const c=s.conditions;
-    return `
-      ${guide?guideBox('Koşullar opsiyoneldir. Boş bırakırsan kural tüm isteklere uygulanır. Model önekiyle sadece belirli modelleri kapsa (örn: "claude-"), token aralığıyla uzun/kısa istekleri hedefle.'):''}
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-        <div>
-          <label style="display:block;font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:6px;text-transform:uppercase">Model öneki</label>
-          <input id="rw-modelprefix" class="inp" value="${esc(c.modelPrefix)}" placeholder="claude-, gpt-4">
-        </div>
-        <div>
-          <label style="display:block;font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:6px;text-transform:uppercase">Kullanıcı planı</label>
-          <select id="rw-tier" class="inp">
-            <option value="">— hepsi —</option>
-            <option value="free"${c.userTier==='free'?' selected':''}>free</option>
-            <option value="pro"${c.userTier==='pro'?' selected':''}>pro</option>
-            <option value="team"${c.userTier==='team'?' selected':''}>team</option>
-            <option value="enterprise"${c.userTier==='enterprise'?' selected':''}>enterprise</option>
-          </select>
-        </div>
-        <div>
-          <label style="display:block;font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:6px;text-transform:uppercase">Min token</label>
-          <input id="rw-mintok" class="inp" type="number" min="0" value="${esc(c.minTokens)}" placeholder="0">
-        </div>
-        <div>
-          <label style="display:block;font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:6px;text-transform:uppercase">Max token</label>
-          <input id="rw-maxtok" class="inp" type="number" min="0" value="${esc(c.maxTokens)}" placeholder="—">
-        </div>
-      </div>`;
-  }
-  return `
-    ${guide?guideBox('Yüksek öncelik (1-100) önce değerlendirilir. Aynı öncelikte birden fazla kural varsa oluşturma sırasına göre değerlendirilir. Pasif kurallar kaydedilir ama çalıştırılmaz.'):''}
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:center">
-      <div>
-        <label style="display:block;font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:6px;text-transform:uppercase">Öncelik (1-100)</label>
-        <input id="rw-priority" class="inp" type="number" min="1" max="100" value="${s.priority}">
-      </div>
-      <div>
-        <label style="display:block;font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:6px;text-transform:uppercase">Durum</label>
-        <div style="display:flex;align-items:center;gap:10px;padding:9px 0">
-          <button id="rw-toggle" type="button" class="togg ${s.enabled?'on':''}"></button>
-          <span id="rw-toggle-lbl" style="font-size:13px;color:${s.enabled?'#DFFF00':'#657172'}">${s.enabled?'Aktif':'Pasif'}</span>
-        </div>
-      </div>
-    </div>
-    <div class="card" style="margin-top:18px;padding:14px 16px;background:#050D0F">
-      <div style="font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:8px;text-transform:uppercase">Özet</div>
-      <div style="font-size:13px;color:#C7CFCE;line-height:1.6">
-        <div><strong style="color:#F2F5F4">${esc(s.name||'—')}</strong></div>
-        <div>Strateji: <span class="mono" style="color:#DFFF00">${esc(s.strategy)}</span></div>
-        ${summarizeConditions(s.conditions)}
-      </div>
+    return `<div style="font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;margin-bottom:10px;text-transform:uppercase">Kaç yedek model olsun?</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      ${[1,2].map(n=>`<label class="wiz-fb" data-n="${n}" style="border:1px solid ${s.fallbackCount===n?'rgba(223,255,0,.5)':'#1C2A2D'};background:${s.fallbackCount===n?'rgba(223,255,0,.06)':'#03090B'};border-radius:10px;padding:20px;cursor:pointer;text-align:center">
+        <div style="font-family:'Newsreader',serif;font-weight:400;font-size:34px;color:${s.fallbackCount===n?'#DFFF00':'#F2F5F4'};margin-bottom:4px">${n}</div>
+        <div style="font-size:12px;color:#98A3A3">yedek model</div>
+      </label>`).join('')}
     </div>`;
+  }
+  if(s.step===4){
+    const presets=tailorPresets(s.preference,s.primary).slice(0,3).map(p=>({primary:p.primary,fallbacks:p.fallbacks.slice(0,s.fallbackCount),why:p.why}));
+    return `<p style="color:#98A3A3;font-size:13px;margin:0 0 14px">Cevaplarına göre önerilen zincirler:</p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      ${presets.map((p,i)=>`<div class="wiz-preset card" data-i="${i}" style="cursor:pointer;padding:14px;border:1px solid #1C2A2D;transition:all .12s">
+        <div style="margin-bottom:10px;overflow-x:auto">${renderChainFlow({primary:p.primary,fallbacks:p.fallbacks},{mini:false})}</div>
+        <div style="font-size:12.5px;color:#C7CFCE;line-height:1.5">${esc(p.why)}</div>
+        <button class="btn wiz-preset-use" data-i="${i}" style="margin-top:12px;width:100%;height:34px;font-size:12.5px">Bu zinciri kullan</button>
+      </div>`).join('')}
+    </div>`;
+  }
+  return '';
 }
 
-function guideBox(txt){
-  return `<div style="background:rgba(223,255,0,.06);border:1px solid rgba(223,255,0,.25);border-radius:9px;padding:11px 14px;font-size:12.5px;color:#C7CFCE;line-height:1.5;margin-bottom:14px"><span style="color:#DFFF00;font-weight:600">Kılavuz:</span> ${esc(txt)}</div>`;
+function chainEditorHtml(s){
+  const slots=[s.chain.primary||''];
+  for(let i=0;i<s.fallbackCount;i++)slots.push(s.chain.fallbacks[i]||'');
+  return `<p style="color:#98A3A3;font-size:13px;margin:0 0 14px">Zinciri düzenle. Slotları sürükleyerek sıralayabilir, tıklayarak değiştirebilirsin.</p>
+  <div class="chain-editor" style="background:#050D0F;border:1px solid #132023;border-radius:12px;padding:20px;overflow-x:auto">
+    <div id="chain-slots" style="display:flex;align-items:stretch;gap:0;min-width:min-content">
+      ${slots.map((id,i)=>slotHtml(id,i,slots.length)).join('')}
+    </div>
+  </div>
+  <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+    <div style="display:flex;gap:8px;align-items:center;flex:1;min-width:200px">
+      <label style="font:600 10px 'JetBrains Mono';color:#657172;letter-spacing:.14em;text-transform:uppercase">Ad</label>
+      <input id="wiz-name" class="inp" value="${esc(s.name)}" placeholder="(otomatik)" style="height:32px;flex:1;max-width:260px">
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="wiz-toggle-enabled" type="button" class="togg ${s.enabled?'on':''}" style="cursor:pointer"></button>
+      <span id="wiz-toggle-lbl" style="font-size:12px;color:${s.enabled?'#DFFF00':'#657172'}">${s.enabled?'Aktif':'Pasif'}</span>
+    </div>
+  </div>`;
 }
 
-function summarizeConditions(c){
-  const parts=[];
-  if(c.modelPrefix)parts.push('model öneki: '+c.modelPrefix);
-  if(c.userTier)parts.push('plan: '+c.userTier);
-  if(c.minTokens)parts.push('min token: '+c.minTokens);
-  if(c.maxTokens)parts.push('max token: '+c.maxTokens);
-  return parts.length?`<div>Koşullar: <span class="mono" style="color:#98A3A3">${esc(parts.join(', '))}</span></div>`:'<div style="color:#657172">Koşul: yok (tüm istekler)</div>';
+function slotHtml(id,i,total){
+  const role=i===0?'PRIMARY':'FALLBACK '+i;
+  const roleColor=i===0?'#DFFF00':'#98A3A3';
+  const isLast=i===total-1;
+  const info=id?rtModelInfo(id):null;
+  return `<div style="display:flex;align-items:stretch">
+    <div class="slot" draggable="true" data-i="${i}" style="min-width:150px;padding:14px;border:1.5px dashed ${id?'#1C2A2D':'#2A3A3D'};border-radius:12px;background:${id?'#0A1416':'transparent'};display:flex;flex-direction:column;align-items:center;gap:8px;cursor:grab">
+      <div style="font:600 9px 'JetBrains Mono';letter-spacing:.14em;color:${roleColor}">${role}</div>
+      ${id?
+        rtLogo(id,44)+
+        '<div style="font-size:12px;color:#F2F5F4;text-align:center;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(info.label)+'</div>'+
+        '<div style="display:flex;gap:4px">'+
+          '<button class="slot-change" data-i="'+i+'" style="background:#132023;border:1px solid #1C2A2D;border-radius:6px;color:#98A3A3;font-size:10px;padding:3px 8px;cursor:pointer">Değiştir</button>'+
+          '<button class="slot-clear" data-i="'+i+'" style="background:transparent;border:1px solid #1C2A2D;border-radius:6px;color:#98A3A3;font-size:10px;padding:3px 8px;cursor:pointer">×</button>'+
+        '</div>'
+      :
+        '<button class="slot-add" data-i="'+i+'" style="width:44px;height:44px;border-radius:10px;border:1px dashed #2A3A3D;background:transparent;color:#657172;font-size:20px;cursor:pointer">+</button>'+
+        '<div style="font-size:11px;color:#657172">Model ekle</div>'
+      }
+    </div>
+    ${!isLast?'<div class="chain-arrow" style="display:flex;align-items:center;color:#4C5758;padding:0 8px"><svg width="20" height="10" viewBox="0 0 22 10" fill="none"><path d="M0 5h20M14 1l6 4-6 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>':''}
+  </div>`;
 }
 
-function bindRuleWizard(root,s,closeFn){
+function openModelPicker(onPick){
+  const html=`
+    <h3 style="font-family:'Newsreader',serif;font-weight:400;font-size:20px;margin:0 0 14px">Model seç</h3>
+    <div style="display:flex;flex-direction:column;gap:6px;max-height:60vh;overflow:auto">
+      ${RT_PROVIDERS.map(p=>'<div style="font:600 10px \\'JetBrains Mono\\';color:#657172;letter-spacing:.14em;margin:10px 0 4px;text-transform:uppercase">'+esc(p.name)+'</div>'+p.models.map(m=>'<button class="pick-btn" data-id="'+esc(m.id)+'" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#050D0F;border:1px solid #132023;border-radius:8px;cursor:pointer;color:#F2F5F4;text-align:left;width:100%">'+rtLogo(m.id,28)+'<span style="font-size:13px">'+esc(m.label)+'</span></button>').join('')).join('')}
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid #132023">
+      <button id="pick-cancel" class="btn ghost">İptal</button>
+    </div>`;
+  modal(html,{onMount:(root,closeFn)=>{
+    root.querySelector('#pick-cancel').onclick=closeFn;
+    root.querySelectorAll('.pick-btn').forEach(el=>el.onclick=()=>{onPick(el.dataset.id);closeFn();});
+  }});
+}
+
+function bindWiz(root,s,closeFn){
   const rerender=()=>{
     const card=root.querySelector('.modal-card');
     card.innerHTML='';
-    card.insertAdjacentHTML('afterbegin',ruleWizardHtml(s));
-    bindRuleWizard(root,s,closeFn);
+    card.insertAdjacentHTML('afterbegin',wizHtml(s));
+    bindWiz(root,s,closeFn);
   };
-  const readStep=()=>{
-    if(s.step===1){
-      const n=root.querySelector('#rw-name');if(n)s.name=n.value.trim();
-      const d=root.querySelector('#rw-desc');if(d)s.description=d.value.trim();
-    }else if(s.step===3){
-      s.conditions={
-        modelPrefix:(root.querySelector('#rw-modelprefix')||{}).value?.trim()||'',
-        userTier:(root.querySelector('#rw-tier')||{}).value||'',
-        minTokens:(root.querySelector('#rw-mintok')||{}).value||'',
-        maxTokens:(root.querySelector('#rw-maxtok')||{}).value||''
-      };
-    }else if(s.step===4){
-      const p=parseInt((root.querySelector('#rw-priority')||{}).value,10);
-      if(Number.isFinite(p))s.priority=Math.min(100,Math.max(1,p));
-    }
-  };
-  const cancel=root.querySelector('#rw-cancel');if(cancel)cancel.onclick=closeFn;
-  const back=root.querySelector('#rw-back');if(back)back.onclick=()=>{readStep();s.step=Math.max(1,s.step-1);rerender();};
-  const next=root.querySelector('#rw-next');
+  root.querySelector('#wiz-cancel').onclick=closeFn;
+  const back=root.querySelector('#wiz-back');
+  if(back)back.onclick=()=>{s.step=Math.max(1,s.step-1);rerender();};
+  const next=root.querySelector('#wiz-next');
   if(next)next.onclick=()=>{
-    readStep();
-    if(s.step===1&&s.name.length<2){toast('Ad en az 2 karakter olmalı','err');return;}
-    s.step=Math.min(4,s.step+1);rerender();
+    if(s.step===1&&!s.preference){toast('Bir öncelik seç','err');return;}
+    if(s.step===2){const sel=root.querySelector('#wiz-primary-select');if(sel)s.primary=sel.value||'';}
+    s.step+=1;
+    rerender();
   };
-  const submit=root.querySelector('#rw-submit');
-  if(submit)submit.onclick=async()=>{
-    readStep();
-    if(!s.name||s.name.length<2){toast('Ad en az 2 karakter olmalı','err');return;}
-    submit.disabled=true;
+  const custom=root.querySelector('#wiz-custom');
+  if(custom)custom.onclick=()=>{
+    s.chain={primary:s.primary||'',fallbacks:[]};
+    s.step=5;
+    rerender();
+  };
+  root.querySelectorAll('.wiz-pref').forEach(el=>el.onclick=()=>{s.preference=el.dataset.k;rerender();});
+  root.querySelectorAll('.wiz-fb').forEach(el=>el.onclick=()=>{s.fallbackCount=parseInt(el.dataset.n,10)||1;rerender();});
+  const autoBtn=root.querySelector('.wiz-primary-auto');
+  if(autoBtn)autoBtn.onclick=()=>{s.primary='';rerender();};
+  const sel=root.querySelector('#wiz-primary-select');
+  if(sel)sel.onchange=()=>{s.primary=sel.value||'';rerender();};
+
+  root.querySelectorAll('.wiz-preset-use').forEach(el=>el.onclick=(ev)=>{
+    ev.stopPropagation();
+    const i=parseInt(el.dataset.i,10);
+    const presets=tailorPresets(s.preference,s.primary).slice(0,3).map(p=>({primary:p.primary,fallbacks:p.fallbacks.slice(0,s.fallbackCount)}));
+    const p=presets[i];if(!p)return;
+    s.chain={primary:p.primary,fallbacks:p.fallbacks.slice()};
+    s.step=5;
+    rerender();
+  });
+
+  root.querySelectorAll('.slot-add,.slot-change').forEach(el=>el.onclick=(ev)=>{
+    ev.stopPropagation();
+    const i=parseInt(el.dataset.i,10);
+    openModelPicker(id=>{
+      if(i===0)s.chain.primary=id;
+      else s.chain.fallbacks[i-1]=id;
+      rerender();
+    });
+  });
+  root.querySelectorAll('.slot-clear').forEach(el=>el.onclick=(ev)=>{
+    ev.stopPropagation();
+    const i=parseInt(el.dataset.i,10);
+    if(i===0)s.chain.primary='';
+    else s.chain.fallbacks[i-1]='';
+    rerender();
+  });
+
+  const slots=root.querySelectorAll('.slot[draggable]');
+  let dragIdx=null;
+  slots.forEach(el=>{
+    el.addEventListener('dragstart',()=>{dragIdx=parseInt(el.dataset.i,10);el.style.opacity='0.5';});
+    el.addEventListener('dragend',()=>{el.style.opacity='1';});
+    el.addEventListener('dragover',e=>{e.preventDefault();el.style.borderColor='#DFFF00';});
+    el.addEventListener('dragleave',()=>{el.style.borderColor='';});
+    el.addEventListener('drop',e=>{
+      e.preventDefault();el.style.borderColor='';
+      const dropIdx=parseInt(el.dataset.i,10);
+      if(dragIdx==null||dragIdx===dropIdx)return;
+      const arr=[s.chain.primary,...s.chain.fallbacks];
+      while(arr.length<=Math.max(dragIdx,dropIdx))arr.push('');
+      const t=arr[dragIdx];arr[dragIdx]=arr[dropIdx];arr[dropIdx]=t;
+      s.chain.primary=arr[0]||'';
+      s.chain.fallbacks=arr.slice(1,1+s.fallbackCount);
+      dragIdx=null;
+      rerender();
+    });
+  });
+
+  const tog=root.querySelector('#wiz-toggle-enabled');
+  if(tog)tog.onclick=()=>{s.enabled=!s.enabled;rerender();};
+
+  const save=root.querySelector('#wiz-save');
+  if(save)save.onclick=async()=>{
+    const nameInput=root.querySelector('#wiz-name');
+    if(nameInput)s.name=nameInput.value.trim();
+    if(!s.chain.primary){toast('Birincil model seç','err');return;}
+    const preference=s.preference||'balanced';
+    const strategy=PREF_TO_STRATEGY[preference]||'weighted_round_robin';
+    const fallbacks=s.chain.fallbacks.filter(Boolean).slice(0,2);
+    const info=rtModelInfo(s.chain.primary);
+    const autoName=((PREF_META[preference]&&PREF_META[preference].label)||'Kural')+' · '+info.label;
+    const body={
+      name:(s.name&&s.name.length>=2)?s.name:autoName,
+      strategy,
+      conditions:{chain:{primary:s.chain.primary,fallbacks},triggers:RT_TRIGGERS,preference},
+      priority:10,
+      enabled:s.enabled
+    };
+    save.disabled=true;
     try{
-      const conditions={};
-      if(s.conditions.modelPrefix)conditions.modelPrefix=s.conditions.modelPrefix;
-      if(s.conditions.userTier)conditions.userTier=s.conditions.userTier;
-      if(s.conditions.minTokens)conditions.minTokens=parseInt(s.conditions.minTokens,10);
-      if(s.conditions.maxTokens)conditions.maxTokens=parseInt(s.conditions.maxTokens,10);
-      await api('/api/rules',{method:'POST',body:JSON.stringify({
-        name:s.name,
-        description:s.description||undefined,
-        strategy:s.strategy,
-        conditions,
-        priority:s.priority,
-        enabled:s.enabled
-      })});
-      try{window.UnichanlSetupWizard&&window.UnichanlSetupWizard.markRulesDone();}catch(_){}
-      toast('Kural oluşturuldu','ok');
+      if(s.editingId){
+        await api('/api/rules/'+s.editingId,{method:'PUT',body:JSON.stringify(body)});
+        toast('Kural güncellendi','ok');
+      }else{
+        await api('/api/rules',{method:'POST',body:JSON.stringify(body)});
+        try{window.UnichanlSetupWizard&&window.UnichanlSetupWizard.markRulesDone();}catch(_){}
+        toast('Kural oluşturuldu','ok');
+      }
       closeFn();
-      await renderRulesTable();
+      await renderRulesList();
     }catch(err){
-      toast(err.message||'Kural oluşturulamadı','err');
-      submit.disabled=false;
+      toast(err.message||'Kaydedilemedi','err');
+      save.disabled=false;
     }
   };
-  const guide=root.querySelector('#rw-guide-toggle');if(guide)guide.onclick=()=>{readStep();s.guide=!s.guide;rerender();};
-  root.querySelectorAll('.rw-strat').forEach(el=>el.onclick=()=>{s.strategy=el.dataset.k;rerender();});
-  const tog=root.querySelector('#rw-toggle');
-  if(tog)tog.onclick=()=>{s.enabled=!s.enabled;const lbl=root.querySelector('#rw-toggle-lbl');tog.classList.toggle('on',s.enabled);if(lbl){lbl.textContent=s.enabled?'Aktif':'Pasif';lbl.style.color=s.enabled?'#DFFF00':'#657172';}};
 }
 
 /* ---------- REQUESTS (deprecated, kept for reference — merged into overview) ---------- */
